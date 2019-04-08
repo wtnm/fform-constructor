@@ -1,0 +1,122 @@
+input, textarea, select, button, html, body {
+    font-size: 16px
+}
+
+button, .radio-container > span {
+    background: #fff;
+    color: #888;
+    border: 1px solid #ccc;
+    border-radius: .2em;
+    padding: 0.3em 0.8em;
+}
+
+button:disabled {
+    background: #fff;
+    color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+button:hover {
+    background: #f5f5f5;
+    color: #000;
+}
+
+.wrapper, .layout, .body, .array-item, .radio, .flex {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+    align-items: stretch;
+}
+
+.required:after {
+    content: " *";
+}
+
+.title-container {
+    width: 100%;
+}
+
+.title-viewer {
+    margin-bottom: 0;
+}
+
+.title-viewer:after {
+    content: "";
+}
+
+.title-viewer-inverted {
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.wrapper {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.viewer {
+    margin-right: 1em;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.viewer-inverted {
+    margin-right: 1em;
+    font-weight: normal;
+    margin-bottom: 1.5em;
+}
+
+.hidden, .button-viewer {
+    display: none;
+}
+
+.inline {
+    flex-direction: row;
+}
+
+.shrink {
+    flex-grow: 0;
+}
+
+.expand {
+    flex-grow: 10;
+}
+
+.title, .radio-label {
+    margin-right: 1em;
+}
+
+
+.add-button {
+    margin-left: 1em;
+}
+
+.messages {
+    margin-top: -0.2em;
+    margin-bottom: 0.2em;
+}
+
+.priority_0 {
+    color: #e60900;
+}
+
+.priority_1 {
+    color: #ec9c00;
+}
+
+input[type="text"] {
+    margin-bottom: 0
+}
+
+.wrapper {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+.title {
+    margin-top: 0.5em;
+}
+
+label {
+    margin-bottom: 0;
+}

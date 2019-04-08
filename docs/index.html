@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>FForm constructor</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="./tacit.min.css">
+  
+    <!- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+      -->
+</head>
+<body>
+<article>
+    <div id="root"></div>
+</article>
+<script type='text/javascript'>
+  let search = window.location.search.substr(1);
+  search = search.split("&").map(v => v.split("=")).reduce((pre, [key, value]) => ({...pre, [key]: value}), {});
+  search.src = search.src || 'constructor.min';
+  document.write('<scr' + 'ipt type="text/javascript" src="' + search.src + '.js"></sc' + 'ript>');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+@import 'tacit/defs';
+
+$border-radius: 0.4em;
+$margin-base: 0.4em;
+$margin-side: 0.4em;
+
+fieldset {
+  margin-bottom: 0;
+}
+
+button, .radio-container > span {
+  background: $white;
+  color: darken($gray, 35);
+  border: 1px solid $gray;
+  border-radius: .2em;
+  padding: 0.3em 0.8em;
+  align-items: center;
+
+  &[disabled] {
+    background: $white;
+    color: darken($gray, 5);
+    cursor: not-allowed;
+  }
+
+  &:hover {
+    background: darken($white, 2);
+    color: $black;
+  }
+
+  &:checked {
+    background: $blue;
+    color: $white;
+  }
+}
+
+button {
+  margin-top: $margin-base;
+  margin-bottom: $margin-base;
+  //height: min-content;
+}
+
+
+.wrapper > button, .layout > button, .body > button, .flex > button {
+  height: fit-content;
+}
+
+.wrapper, .layout, .body, .array-item, .radio, .flex {
+  display: flex;
+  flex-flow: column;
+  flex: 1 1 auto;
+  align-items: stretch;
+}
+
+.wrapper {
+  padding: $margin-base $margin-side;
+}
+
+.wrapper-margin {
+  margin: $margin-base $margin-side;
+}
+
+.center {
+  align-items: center;
+}
+
+.required:after {
+  content: " *";
+}
+
+.hidden, .button-viewer {
+  display: none;
+}
+
+.inline {
+  flex-direction: row;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.shrink {
+  flex-grow: 0;
+}
+
+.expand {
+  flex-grow: 10;
+}
+
+.title {
+  //display: flex;
+  //align-items: center;
+  //flex-grow: 0;
+  margin-right: $margin-side;
+  margin-top: $margin-base;
+}
+
+.boolean-left-container {
+  margin-top: $margin-base;
+}
+
+.field-properties, .ff-layout {
+  position: relative;
+  margin-top: -$margin-base;
+  //margin-bottom: $margin-base;
+  padding: $margin-base/2 $margin-side $margin-base $margin-side;
+  background: rgba(240, 240, 240, 0.70);
+  border: 1px solid $gray;
+  border-top: 0;
+}
+
+.field-properties {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.ff-layout {
+  padding-top: 0;
+  margin-top: -$margin-base;
+  margin-bottom: $margin-base;
+
+}
+
+.object-wrapper {
+  padding: 0 0 $margin-base*0.7 0;
+}
+
+.object-prop {
+  margin-top: -$margin-base;
+  margin-bottom: -$margin-base;
+}
+
+.object-arg {
+  padding-bottom: 0;
+}
+
+.no-padding {
+  padding: 0;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+
+.object-bg {
+  background-color: rgba(0, 255, 0, 0.2);
+  padding: $margin-base $margin-side;
+}
+
+.field-bg {
+  background-color: rgba(0, 100, 255, 0.2);
+  padding: $margin-base $margin-side;
+}
+
+.field-selected {
+  background-color: rgba(0, 100, 255, 0.3);
+}
+
+
+.grayed + span {
+  background-color: darken($white, 4);
+}
+
+.disabled + span {
+  background-color: darken($white, 7);
+  color: darken($gray, 8);
+
+  &:hover {
+    background: darken($white, 7);
+    color: lighten($black, 15);
+  }
+}
+
+.selected {
+  background: $blue;
+  color: $white;
+
+  &:hover {
+    background: darken($blue, 2);
+    color: $white;
+  }
+}
+
+//.FGroup-cls {
+// background-color: rgba(4, 197, 10, 0.15);
+//  
+//}
+//
+//.object-xtend-array {
+//  padding: 0.0em $margin-side 0.0em $margin-side;
+//  background-color: rgba(0, 120, 201, 0.15);
+//}
+
+
+@import './radio';
+
+.unescaped > input:checked + span {
+  background: $white;
+  color: darken($gray, 35);
+
+  &:after {
+    content: " (unescaped)";
+  }
+}
+
+.height {
+  height: 65vh;;
+}
+
+.no-side-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.close {
+  display: flex;
+  flex-direction: row-reverse;
+  cursor: pointer;
+  padding: 0.2em;
+  margin-right: $margin-side;
+
+}
+
+.item-menu > button {
+  margin-right: -1px;
+}
+
+.item-menu {
+  &:first-child, &:first-child > span {
+    border-radius: $border-radius 0 0 $border-radius;
+  }
+
+  &:last-child, &:last-child > span {
+    border-radius: 0 $border-radius $border-radius 0;
+    margin-right: 0;
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.priority_0 {
+  color: #e60900;
+}
+
+.priority_1 {
+  color: #ec9c00;
+}

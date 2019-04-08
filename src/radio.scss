@@ -1,0 +1,49 @@
+
+.radio {
+  align-items: center;
+}
+
+.radio-container > span {
+  border: 0;
+  border-radius: 0;
+  display: inline-block;
+  margin: 0;
+}
+
+.radio-container > input {
+  display: none;
+}
+
+.radio-container > input + span {
+  cursor: pointer;
+}
+
+.radio-container > input:checked + span {
+  background: $blue;
+  color: $white;
+}
+
+.radio-container > input:indeterminate + span.title {
+  background-color: darken($white, 4);
+  color: darken($gray, 20);
+  //color: $white;
+}
+
+.radio-container {
+  display: inline-block;
+  border: 1px solid $gray;
+  margin-right: -1px;
+  border-radius: 0;
+  padding: 0;
+}
+
+.radio .radio-container {
+  &:first-child, &:first-child > span {
+    border-radius: $border-radius 0 0 $border-radius;
+  }
+
+  &:last-child, &:last-child > span {
+    border-radius: 0 $border-radius $border-radius 0;
+    margin: 0;
+  }
+}

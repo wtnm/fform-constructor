@@ -1,0 +1,147 @@
+{
+  "sets": {
+    "base": {
+      "Wrapper": {
+        "className": {
+          "wrapper": true
+        },
+        "ArrayItemBody": {
+          "className": {
+            "array-item": true
+          }
+        },
+        "ArrayItemMenu": {
+          "className": {
+            "array-menu": true
+          }
+        }
+      },
+      "Body": {
+        "className": {
+          "body": true
+        }
+      },
+      "Message": {
+        "className": {
+          "messages": true
+        }
+      }
+    },
+    "nBase": {
+      "Title": {
+        "className": {
+          "title": true
+        }
+      },
+      "Main": {
+        "className": {}
+      }
+    },
+    "object": {
+      "Title": {
+        "className": {
+          "title-container": true
+        },
+        "children": [
+          {
+            "className": {
+              "title": true
+            }
+          },
+          {
+            "className": {
+              "add-button": true
+            }
+          },
+          {
+            "className": {
+              "del-button": true
+            }
+          },
+          {
+            "className": {
+              "empty-message": true
+            }
+          }
+        ]
+      },
+      "Main": {
+        "LayoutDefaultClass": {
+          "layout": true
+        }
+      }
+    },
+    "booleanLeft": {
+      "Main": {
+        "className": "boolean-left-container",
+        "children": {
+          "0": {
+            "className": "boolean-left"
+          }
+        }
+      }
+    }
+  },
+  "parts": {
+    "RadioSelector": {
+      "className": {
+        "radio": true
+      },
+      "$_maps": {
+        "children": {
+          "0": {
+            "args": {
+              "2": {
+                "className": {
+                  "radio-container": true
+                }
+              },
+              "3": {
+                "className": {
+                  "radio-input": true
+                }
+              },
+              "4": {
+                "className": {
+                  "radio-label": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ArrayItemMenu": {
+      "className": {
+        "item-menu": true
+      },
+      "buttonsProps": {
+        "first": {
+          "children": [
+            "⇑"
+          ]
+        },
+        "last": {
+          "children": [
+            "⇓"
+          ]
+        },
+        "up": {
+          "children": [
+            "↑"
+          ]
+        },
+        "down": {
+          "children": [
+            "↓"
+          ]
+        },
+        "del": {
+          "children": [
+            "×"
+          ]
+        }
+      }
+    }
+  }
+}
