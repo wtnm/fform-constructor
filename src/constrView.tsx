@@ -655,14 +655,14 @@ async function getDataFromUrl(hash2Obj: { url: string, selector?: string }, self
     // value = JSON.parse(value);
     if (testJSONdata(value)) {
       const selector = decodeURI(hash2Obj.selector || '');
-      self.core.switch('/@/params/disabled', false);
+      //self.core.switch('/@/params/disabled', false);
       self.core.setValue({selector, value, viewer: selector ? value[selector] : {}}, {execute: true, replace: true});
       return
     }
   } catch (e) {
     self.openModal(['Failed to load data with error: ', <b key='bold'>{e.message}</b>, <br key='br'/>, ' Switched to local data.']);
   }
-  self.core.switch('/@/params/disabled', false);
+  //self.core.switch('/@/params/disabled', false);
   self.setStorage();
 }
 
@@ -679,7 +679,7 @@ class MainView extends React.PureComponent<any, any> {
       let hash2Obj: any = hash.split("&").map(v => v.split("="))
         .reduce((pre, [key, value]) => ({...pre, [key]: value}), {});
       if (hash2Obj.url) {
-        self.core.switch('/@/params/disabled', true);
+        //self.core.switch('/@/params/disabled', true);
         getDataFromUrl(hash2Obj, self);
         self.core.set('/@/storageName', '');
         return;
