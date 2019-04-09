@@ -7,154 +7,6 @@ import * as React from "react";
 const paramsEnum = ['autofocus', 'liveUpdate', 'liveValidate', 'readonly', 'disabled', 'hidden', 'norender', 'viewer'];
 
 
-const objectSchema: JsonSchema = {
-  type: "object",
-  ff_presets: 'object:noArrayControls',
-  ff_custom: {Wrapper: {className: {'object-prop': true}}},
-  ff_data: {moveOpts: []},
-  ff_params: {hideExternal: true, hideTopLine: false},
-  ff_dataMap: [{from: './@/params/expanded', to: './valueArray/@/params/hidden', $: '^/fn/not'}],
-  ff_layout: {
-    $_fields: [
-      {
-        $_maps: {'className/hidden': '@/params/hideTopLine'},
-        $_fields: [
-          {
-            className: {inline: true},
-            $_fields: [
-              '',
-              {
-                $_ref: '^/_parts/expandButton',
-                $_maps: {
-                  'className/hidden': '@/params/expandHidden'
-                }
-              },
-              {
-                "$_ref": "^/parts/ArrayAddButton",
-                "children": ["+prop"],
-                onClick: {
-                  $: true, args: [
-                    {$: '^/fn/arrayAdd', args: ["./valueArray", 1]},
-                    {$: '^/fn/setValue', args: [true, {path: "./@/params/expanded"}]}
-                  ]
-                },
-                $_maps: {
-                  'className/hidden': '@/params/propsAddHidden',
-                  disabled: false
-                }
-              },
-              'name',
-              'type',
-              'value',
-              {
-                _$widget: '^/widgets/Input',
-                className: {wrapper: true, expand: true},
-                _$useTag: "^/_widgets/ReactSelect",
-                onMenuOpen: '^/_usr/setMoveOpts',
-                onChange: '^/_usr/moveFieldIn',
-                closeMenuOnSelect: true,
-                isClearable: false,
-                placeholder: 'Select fields to move here...',
-                value: '',
-                $_maps: {
-                  'className/hidden': {$: '^/fn/equal', args: [true, '@/params/hideExternal', '@/params/fieldsAddHidden']},
-                  options: {$: '^/_usr/reactSelectValue', args: '@/moveOpts'}
-                }
-              },
-              {
-                "$_ref": "^/parts/ArrayAddButton",
-                "children": ["+field"],
-                onClick: {args: ["./fields", 1, {"setOneOf": 0}]},
-                style: {marginRight: '-1px'},
-                $_maps: {
-                  'className/hidden': '@/params/fieldsAddHidden',
-                  disabled: false
-                }
-              },
-              {
-                "$_ref": "^/parts/ArrayAddButton",
-                "children": ["+object"],
-                onClick: {args: ["./fields", 1, {"setOneOf": 1}]},
-                $_maps: {
-                  'className/hidden': '@/params/fieldsAddHidden',
-                  disabled: false
-                }
-              },
-              'fieldsEnabled',
-              {
-                buttons: ['up', 'down', 'del'],
-                $_ref: '^/parts/ArrayItemMenu',
-                style: {marginLeft: '1em'}
-              }
-            ]
-          },
-          'valueArray'
-        ]
-      }
-    ]
-  },
-  properties: {
-    name: {
-      type: "string",
-      ff_placeholder: 'Enter name...',
-    },
-    type: {
-      // title: 'type',
-      type: "string",
-      'default': 'string',
-      ff_presets: 'select:inlineTitle:shrink',
-      ff_dataMap: [
-        {from: './@/value', to: '../@/params/propsAddHidden,expandHidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'array', 'object']},
-        {from: './@/value', to: '../@/params/expanded', $: '^/fn/equal|^/_usr/ifFalse', args: ['${value}', 'array', 'object']},
-        {from: './@/value', to: '..', $: '^/_dataMaps/typeObject'},
-      ],
-
-      'enum': ['string', 'number', 'booleanNull', 'array', 'object']
-    },
-    value: {
-      oneOf: [
-        {
-          type: "string",
-          ff_placeholder: 'Enter value...',
-          ff_presets: 'string:expand',
-        }, {
-          type: "number",
-          ff_presets: 'number:expand',
-        }, {
-          type: "string",
-          ff_presets: 'radio:inlineItems:inlineTitle:shrink',
-          'enum': ['false', 'null', 'true'],
-          'default': 'null'
-          //ff_enumExten: {'false': {label: 'false'}, 'null': {label: 'null'}, 'true': {label: 'true'}},
-          //ff_custom: {$_parse: '^/_usr/eval',}
-        },
-
-      ]
-    },
-    fieldsEnabled: {
-      type: 'boolean',
-      title: '$_fields',
-      ff_presets: 'booleanLeft:shrink',
-      ff_params: {norender: true},
-      ff_custom: {Main: {className: {'radio-container': true}}},
-      ff_dataMap: [
-        {from: './@/value', to: '../fields/@/params/hidden', $: '^/fn/not'},
-        {from: './@/value', to: '../@/params/fieldsAddHidden', $: '^/fn/not'},
-        {from: './@/value', to: '../@/params/fieldsShown'}
-      ],
-    },
-    valueArray: {
-      type: 'array',
-      ff_layout: ['^/_parts/emptyArray'],
-      ff_presets: 'array:noTitle',
-      items: {
-        $ref: '#/definitions/object'
-      }
-    },
-
-  }
-};
-
 const FFormSchema: JsonSchema = {
   definitions: {
     tristateNoPadding: {
@@ -266,7 +118,7 @@ const FFormSchema: JsonSchema = {
             fields: {
               type: 'array',
               ff_presets: 'array:noTitle',
-              //ff_layout: ['^/_parts/emptyArray'],
+              //ff_custom: {Main: {LayoutDefaultClass: {block: true}}},
               items: {
                 ff_oneOfSelector: '^/_usr/oneOfField',
                 oneOf: [
@@ -367,7 +219,6 @@ const FFormSchema: JsonSchema = {
         {$ref: '#/definitions/object'},
         {ff_custom: {Wrapper: {className: {'object-prop': false}}}}]
     },
-    object: objectSchema,
     field: {
       type: "object",
       ff_presets: 'object:noArrayControls',
@@ -378,7 +229,7 @@ const FFormSchema: JsonSchema = {
         }
       },
       ff_layout: {
-        className: {layout: true},
+        className: {layout: true, block: true},
         // ff_params: {showMoveOut: false},
         $_fields: [{
           className: {inline: true, layout: true},
@@ -944,7 +795,7 @@ const FFormSchema: JsonSchema = {
                         {
                           items: {type: "string"},
                           ff_data: {fData: {enum: paramsEnum}},
-                          ff_placeholder:'Select params. Add leading "!" to set param to "false".',
+                          ff_placeholder: 'Select params. Add leading "!" to set param to "false".',
                           ff_custom: {
                             $_ref: '^/sets/inlineTitle:^/sets/expand',
                           }
@@ -1072,4 +923,4 @@ const FFormSchema: JsonSchema = {
 
 export {paramsEnum}
 export default FFormSchema;
-export {objectSchema}
+// export {objectSchema}

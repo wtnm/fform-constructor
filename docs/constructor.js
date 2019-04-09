@@ -7349,7 +7349,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "fieldset {\n  margin-bottom: 0; }\n\nbutton, .radio-container > span {\n  background: #fff;\n  color: #737373;\n  border: 1px solid #ccc;\n  border-radius: .2em;\n  padding: 0.3em 0.8em;\n  align-items: center; }\n  button[disabled], .radio-container > span[disabled] {\n    background: #fff;\n    color: #bfbfbf;\n    cursor: not-allowed; }\n  button:hover, .radio-container > span:hover {\n    background: #fafafa;\n    color: #000; }\n  button:checked, .radio-container > span:checked {\n    background: #367ac3;\n    color: #fff; }\n\nbutton {\n  margin-top: 0.4em;\n  margin-bottom: 0.4em; }\n\n.wrapper > button, .layout > button, .body > button, .flex > button {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content; }\n\n.wrapper, .layout, .body, .array-item, .radio, .flex {\n  display: flex;\n  flex-flow: column;\n  flex: 1 1 auto;\n  align-items: stretch; }\n\n.wrapper {\n  padding: 0.4em 0.4em; }\n\n.wrapper-margin {\n  margin: 0.4em 0.4em; }\n\n.center {\n  align-items: center; }\n\n.required:after {\n  content: \" *\"; }\n\n.hidden, .button-viewer {\n  display: none; }\n\n.inline {\n  flex-direction: row; }\n\n.wrap {\n  flex-wrap: wrap; }\n\n.shrink {\n  flex-grow: 0; }\n\n.expand {\n  flex-grow: 10; }\n\n.title {\n  margin-right: 0.4em;\n  margin-top: 0.4em; }\n\n.boolean-left-container {\n  margin-top: 0.4em; }\n\n.field-properties, .ff-layout {\n  position: relative;\n  margin-top: -0.4em;\n  padding: 0.2em 0.4em 0.4em 0.4em;\n  background: rgba(240, 240, 240, 0.7);\n  border: 1px solid #ccc;\n  border-top: 0; }\n\n.field-properties {\n  border-bottom: 0;\n  padding-bottom: 0; }\n\n.ff-layout {\n  padding-top: 0;\n  margin-top: -0.4em;\n  margin-bottom: 0.4em; }\n\n.object-wrapper {\n  padding: 0 0 0.28em 0; }\n\n.object-prop {\n  margin-top: -0.4em;\n  margin-bottom: -0.4em; }\n\n.object-arg {\n  padding-bottom: 0; }\n\n.no-padding {\n  padding: 0; }\n\n.no-margin {\n  margin: 0; }\n\n.object-bg {\n  background-color: rgba(0, 255, 0, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-bg {\n  background-color: rgba(0, 100, 255, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-selected {\n  background-color: rgba(0, 100, 255, 0.3); }\n\n.grayed + span {\n  background-color: whitesmoke; }\n\n.disabled + span {\n  background-color: #ededed;\n  color: #b8b8b8; }\n  .disabled + span:hover {\n    background: #ededed;\n    color: #262626; }\n\n.selected {\n  background: #367ac3;\n  color: #fff; }\n  .selected:hover {\n    background: #3475bb;\n    color: #fff; }\n\n.radio {\n  align-items: center; }\n\n.radio-container > span {\n  border: 0;\n  border-radius: 0;\n  display: inline-block;\n  margin: 0; }\n\n.radio-container > input {\n  display: none; }\n\n.radio-container > input + span {\n  cursor: pointer; }\n\n.radio-container > input:checked + span {\n  background: #367ac3;\n  color: #fff; }\n\n.radio-container > input:indeterminate + span.title {\n  background-color: whitesmoke;\n  color: #999999; }\n\n.radio-container {\n  display: inline-block;\n  border: 1px solid #ccc;\n  margin-right: -1px;\n  border-radius: 0;\n  padding: 0; }\n\n.radio .radio-container:first-child, .radio .radio-container:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.radio .radio-container:last-child, .radio .radio-container:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin: 0; }\n\n.unescaped > input:checked + span {\n  background: #fff;\n  color: #737373; }\n  .unescaped > input:checked + span:after {\n    content: \" (unescaped)\"; }\n\n.height {\n  height: 65vh; }\n\n.no-side-padding {\n  padding-left: 0;\n  padding-right: 0; }\n\n.close {\n  display: flex;\n  flex-direction: row-reverse;\n  cursor: pointer;\n  padding: 0.2em;\n  margin-right: 0.4em; }\n\n.item-menu > button {\n  margin-right: -1px; }\n\n.item-menu:first-child, .item-menu:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.item-menu:last-child, .item-menu:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin-right: 0; }\n\n.bold {\n  font-weight: bold; }\n\n.priority_0 {\n  color: #e60900; }\n\n.priority_1 {\n  color: #ec9c00; }\n", "", {"version":3,"sources":["C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/styles.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/tacit/_defs.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/radio.scss"],"names":[],"mappings":"AAMA;EACE,iBAAgB,EAAA;;AAGlB;EACE,iBCoBU;EDnBV,eAAwB;EACxB,uBCmBS;EDlBT,oBAAmB;EACnB,qBAAoB;EACpB,oBAAmB,EAAA;EANrB;IASI,iBCYQ;IDXR,eAAuB;IACvB,oBAAmB,EAAA;EAXvB;IAeI,oBAA6B;IAC7B,YCIQ,EAAA;EDpBZ;IAoBI,oBCGU;IDFV,YCAQ,EAAA;;ADIZ;EACE,kBAjCiB;EAkCjB,qBAlCiB,EAAA;;AAuCnB;EACE,4BAAmB;EAAnB,yBAAmB;EAAnB,oBAAmB,EAAA;;AAGrB;EACE,cAAa;EACb,kBAAiB;EACjB,eAAc;EACd,qBAAoB,EAAA;;AAGtB;EACE,qBAlDiB,EAAA;;AAqDnB;EACE,oBAtDiB,EAAA;;AAyDnB;EACE,oBAAmB,EAAA;;AAGrB;EACE,cAAa,EAAA;;AAGf;EACE,cAAa,EAAA;;AAGf;EACE,oBAAmB,EAAA;;AAGrB;EACE,gBAAe,EAAA;;AAGjB;EACE,aAAY,EAAA;;AAGd;EACE,cAAa,EAAA;;AAGf;EAIE,oBAzFiB;EA0FjB,kBA3FiB,EAAA;;AA8FnB;EACE,kBA/FiB,EAAA;;AAkGnB;EACE,mBAAkB;EAClB,mBApGiB;EAsGjB,iCArGiB;EAsGjB,qCAAqC;EACrC,uBC3ES;ED4ET,cAAa,EAAA;;AAGf;EACE,iBAAgB;EAChB,kBAAiB,EAAA;;AAGnB;EACE,eAAc;EACd,mBAnHiB;EAoHjB,qBApHiB,EAAA;;AAwHnB;EACE,sBAA+B,EAAA;;AAGjC;EACE,mBA7HiB;EA8HjB,sBA9HiB,EAAA;;AAiInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,WAAU,EAAA;;AAGZ;EACE,UAAS,EAAA;;AAIX;EACE,uCAAsC;EACtC,qBA/IiB,EAAA;;AAkJnB;EACE,yCAAwC;EACxC,qBApJiB,EAAA;;AAuJnB;EACE,yCAAwC,EAAA;;AAI1C;EACE,6BAAmC,EAAA;;AAGrC;EACE,0BAAmC;EACnC,eAAuB,EAAA;EAFzB;IAKI,oBAA6B;IAC7B,eAA0B,EAAA;;AAI9B;EACE,oBC9IY;ED+IZ,YCjJU,EAAA;ED+IZ;IAKI,oBAA4B;IAC5B,YCrJQ,EAAA;;AC9BZ;EACE,oBAAmB,EAAA;;AAGrB;EACE,UAAS;EACT,iBAAgB;EAChB,sBAAqB;EACrB,UAAS,EAAA;;AAGX;EACE,cAAa,EAAA;;AAGf;EACE,gBAAe,EAAA;;AAGjB;EACE,oBDYY;ECXZ,YDSU,EAAA;;ACNZ;EACE,6BAAmC;EACnC,eAAwB,EAAA;;AAI1B;EACE,sBAAqB;EACrB,uBDDS;ECET,mBAAkB;EAClB,iBAAgB;EAChB,WAAU,EAAA;;AAGZ;EAEI,+BFvCiB,EAAA;;AEqCrB;EAMI,+BAAgD;EAChD,UAAS,EAAA;;AFuJb;EACE,iBCvKU;EDwKV,eAAwB,EAAA;EAF1B;IAKI,wBAAuB,EAAA;;AAI3B;EACE,aAAY,EAAA;;AAGd;EACE,gBAAe;EACf,iBAAgB,EAAA;;AAGlB;EACE,cAAa;EACb,4BAA2B;EAC3B,gBAAe;EACf,eAAc;EACd,oBAxNiB,EAAA;;AA4NnB;EACE,mBAAkB,EAAA;;AAGpB;EAEI,+BApOiB,EAAA;;AAkOrB;EAMI,+BAAgD;EAChD,gBAAe,EAAA;;AAInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,eAAc,EAAA;;AAGhB;EACE,eAAc,EAAA","file":"styles.scss","sourcesContent":["@import 'tacit/defs';\r\n\r\n$border-radius: 0.4em;\r\n$margin-base: 0.4em;\r\n$margin-side: 0.4em;\r\n\r\nfieldset {\r\n  margin-bottom: 0;\r\n}\r\n\r\nbutton, .radio-container > span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n  border: 1px solid $gray;\r\n  border-radius: .2em;\r\n  padding: 0.3em 0.8em;\r\n  align-items: center;\r\n\r\n  &[disabled] {\r\n    background: $white;\r\n    color: darken($gray, 5);\r\n    cursor: not-allowed;\r\n  }\r\n\r\n  &:hover {\r\n    background: darken($white, 2);\r\n    color: $black;\r\n  }\r\n\r\n  &:checked {\r\n    background: $blue;\r\n    color: $white;\r\n  }\r\n}\r\n\r\nbutton {\r\n  margin-top: $margin-base;\r\n  margin-bottom: $margin-base;\r\n  //height: min-content;\r\n}\r\n\r\n\r\n.wrapper > button, .layout > button, .body > button, .flex > button {\r\n  height: fit-content;\r\n}\r\n\r\n.wrapper, .layout, .body, .array-item, .radio, .flex {\r\n  display: flex;\r\n  flex-flow: column;\r\n  flex: 1 1 auto;\r\n  align-items: stretch;\r\n}\r\n\r\n.wrapper {\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.wrapper-margin {\r\n  margin: $margin-base $margin-side;\r\n}\r\n\r\n.center {\r\n  align-items: center;\r\n}\r\n\r\n.required:after {\r\n  content: \" *\";\r\n}\r\n\r\n.hidden, .button-viewer {\r\n  display: none;\r\n}\r\n\r\n.inline {\r\n  flex-direction: row;\r\n}\r\n\r\n.wrap {\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.shrink {\r\n  flex-grow: 0;\r\n}\r\n\r\n.expand {\r\n  flex-grow: 10;\r\n}\r\n\r\n.title {\r\n  //display: flex;\r\n  //align-items: center;\r\n  //flex-grow: 0;\r\n  margin-right: $margin-side;\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.boolean-left-container {\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.field-properties, .ff-layout {\r\n  position: relative;\r\n  margin-top: -$margin-base;\r\n  //margin-bottom: $margin-base;\r\n  padding: $margin-base/2 $margin-side $margin-base $margin-side;\r\n  background: rgba(240, 240, 240, 0.70);\r\n  border: 1px solid $gray;\r\n  border-top: 0;\r\n}\r\n\r\n.field-properties {\r\n  border-bottom: 0;\r\n  padding-bottom: 0;\r\n}\r\n\r\n.ff-layout {\r\n  padding-top: 0;\r\n  margin-top: -$margin-base;\r\n  margin-bottom: $margin-base;\r\n\r\n}\r\n\r\n.object-wrapper {\r\n  padding: 0 0 $margin-base*0.7 0;\r\n}\r\n\r\n.object-prop {\r\n  margin-top: -$margin-base;\r\n  margin-bottom: -$margin-base;\r\n}\r\n\r\n.object-arg {\r\n  padding-bottom: 0;\r\n}\r\n\r\n.no-padding {\r\n  padding: 0;\r\n}\r\n\r\n.no-margin {\r\n  margin: 0;\r\n}\r\n\r\n\r\n.object-bg {\r\n  background-color: rgba(0, 255, 0, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-bg {\r\n  background-color: rgba(0, 100, 255, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-selected {\r\n  background-color: rgba(0, 100, 255, 0.3);\r\n}\r\n\r\n\r\n.grayed + span {\r\n  background-color: darken($white, 4);\r\n}\r\n\r\n.disabled + span {\r\n  background-color: darken($white, 7);\r\n  color: darken($gray, 8);\r\n\r\n  &:hover {\r\n    background: darken($white, 7);\r\n    color: lighten($black, 15);\r\n  }\r\n}\r\n\r\n.selected {\r\n  background: $blue;\r\n  color: $white;\r\n\r\n  &:hover {\r\n    background: darken($blue, 2);\r\n    color: $white;\r\n  }\r\n}\r\n\r\n//.FGroup-cls {\r\n// background-color: rgba(4, 197, 10, 0.15);\r\n//  \r\n//}\r\n//\r\n//.object-xtend-array {\r\n//  padding: 0.0em $margin-side 0.0em $margin-side;\r\n//  background-color: rgba(0, 120, 201, 0.15);\r\n//}\r\n\r\n\r\n@import './radio';\r\n\r\n.unescaped > input:checked + span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n\r\n  &:after {\r\n    content: \" (unescaped)\";\r\n  }\r\n}\r\n\r\n.height {\r\n  height: 65vh;;\r\n}\r\n\r\n.no-side-padding {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n\r\n.close {\r\n  display: flex;\r\n  flex-direction: row-reverse;\r\n  cursor: pointer;\r\n  padding: 0.2em;\r\n  margin-right: $margin-side;\r\n\r\n}\r\n\r\n.item-menu > button {\r\n  margin-right: -1px;\r\n}\r\n\r\n.item-menu {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin-right: 0;\r\n  }\r\n}\r\n\r\n.bold {\r\n  font-weight: bold;\r\n}\r\n\r\n.priority_0 {\r\n  color: #e60900;\r\n}\r\n\r\n.priority_1 {\r\n  color: #ec9c00;\r\n}","// The MIT License (MIT)\n//\n// Copyright (c) 2015-2017 Yegor Bugayenko\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included\n// in all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n// SOFTWARE.\n\n// sizes\n$em: 14px;\n\n// fonts\n$sans-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;\n$monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;\n\n// colors\n$black: #000;\n$white: #fff;\n$gray: #ccc;\n$blue: #367ac3;\n$red: #db423c;\n$green: #3fa75f;\n$orange: #ffa203;\n\n// responsive\n$mobile-width: 767px;\n\n%sans-serif {\n  font-family: $sans-serif;\n  font-size: $em;\n  font-stretch: normal;\n  font-style: normal;\n  font-weight: 300;\n  line-height: 1.65em;\n}","\r\n.radio {\r\n  align-items: center;\r\n}\r\n\r\n.radio-container > span {\r\n  border: 0;\r\n  border-radius: 0;\r\n  display: inline-block;\r\n  margin: 0;\r\n}\r\n\r\n.radio-container > input {\r\n  display: none;\r\n}\r\n\r\n.radio-container > input + span {\r\n  cursor: pointer;\r\n}\r\n\r\n.radio-container > input:checked + span {\r\n  background: $blue;\r\n  color: $white;\r\n}\r\n\r\n.radio-container > input:indeterminate + span.title {\r\n  background-color: darken($white, 4);\r\n  color: darken($gray, 20);\r\n  //color: $white;\r\n}\r\n\r\n.radio-container {\r\n  display: inline-block;\r\n  border: 1px solid $gray;\r\n  margin-right: -1px;\r\n  border-radius: 0;\r\n  padding: 0;\r\n}\r\n\r\n.radio .radio-container {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin: 0;\r\n  }\r\n}"],"sourceRoot":""}]);
+exports.push([module.i, "fieldset {\n  margin-bottom: 0; }\n\nbutton, .radio-container > span {\n  background: #fff;\n  color: #737373;\n  border: 1px solid #ccc;\n  border-radius: .2em;\n  padding: 0.3em 0.8em;\n  align-items: center; }\n  button[disabled], .radio-container > span[disabled] {\n    background: #fff;\n    color: #bfbfbf;\n    cursor: not-allowed; }\n  button:hover, .radio-container > span:hover {\n    background: #fafafa;\n    color: #000; }\n  button:checked, .radio-container > span:checked {\n    background: #367ac3;\n    color: #fff; }\n\nbutton {\n  margin-top: 0.4em;\n  margin-bottom: 0.4em; }\n\n.wrapper > button, .layout > button, .body > button, .flex > button {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content; }\n\n.wrapper, .layout, .body, .array-item, .radio, .flex {\n  display: flex;\n  flex-flow: column;\n  flex: 1 1 auto;\n  align-items: stretch; }\n\n.wrapper {\n  padding: 0.4em 0.4em; }\n\n.wrapper-margin {\n  margin: 0.4em 0.4em; }\n\n.center {\n  align-items: center; }\n\n.required:after {\n  content: \" *\"; }\n\n.hidden, .button-viewer {\n  display: none; }\n\n.inline {\n  flex-direction: row; }\n\n.wrap {\n  flex-wrap: wrap; }\n\n.shrink {\n  flex-grow: 0; }\n\n.expand {\n  flex-grow: 10; }\n\n.title {\n  margin-right: 0.4em;\n  margin-top: 0.4em; }\n\n.boolean-left-container {\n  margin-top: 0.4em; }\n\n.field-properties, .ff-layout {\n  position: relative;\n  margin-top: -0.4em;\n  padding: 0.2em 0.4em 0.4em 0.4em;\n  background: rgba(240, 240, 240, 0.7);\n  border: 1px solid #ccc;\n  border-top: 0; }\n\n.field-properties {\n  border-bottom: 0;\n  padding-bottom: 0; }\n\n.ff-layout {\n  padding-top: 0;\n  margin-top: -0.4em;\n  margin-bottom: 0.4em; }\n\n.object-wrapper {\n  padding: 0 0 0.28em 0; }\n\n.object-prop {\n  margin-top: -0.4em;\n  margin-bottom: -0.4em; }\n\n.object-arg {\n  padding-bottom: 0; }\n\n.no-padding {\n  padding: 0; }\n\n.no-margin {\n  margin: 0; }\n\n.object-bg {\n  background-color: rgba(0, 255, 0, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-bg {\n  background-color: rgba(0, 100, 255, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-selected {\n  background-color: rgba(0, 100, 255, 0.3); }\n\n.grayed + span {\n  background-color: whitesmoke; }\n\n.disabled + span {\n  background-color: #ededed;\n  color: #b8b8b8; }\n  .disabled + span:hover {\n    background: #ededed;\n    color: #262626; }\n\n.selected {\n  background: #367ac3;\n  color: #fff; }\n  .selected:hover {\n    background: #3475bb;\n    color: #fff; }\n\n.radio {\n  align-items: center; }\n\n.radio-container > span {\n  border: 0;\n  border-radius: 0;\n  display: inline-block;\n  margin: 0; }\n\n.radio-container > input {\n  display: none; }\n\n.radio-container > input + span {\n  cursor: pointer; }\n\n.radio-container > input:checked + span {\n  background: #367ac3;\n  color: #fff; }\n\n.radio-container > input:indeterminate + span.title {\n  background-color: whitesmoke;\n  color: #999999; }\n\n.radio-container {\n  display: inline-block;\n  border: 1px solid #ccc;\n  margin-right: -1px;\n  border-radius: 0;\n  padding: 0; }\n\n.radio .radio-container:first-child, .radio .radio-container:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.radio .radio-container:last-child, .radio .radio-container:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin: 0; }\n\n.unescaped > input:checked + span {\n  background: #fff;\n  color: #737373; }\n  .unescaped > input:checked + span:after {\n    content: \" (unescaped)\"; }\n\n.height {\n  height: 65vh; }\n\n.no-side-padding {\n  padding-left: 0;\n  padding-right: 0; }\n\n.close {\n  display: flex;\n  flex-direction: row-reverse;\n  cursor: pointer;\n  padding: 0.2em;\n  margin-right: 0.4em; }\n\n.item-menu > button {\n  margin-right: -1px; }\n\n.item-menu:first-child, .item-menu:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.item-menu:last-child, .item-menu:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin-right: 0; }\n\n.bold {\n  font-weight: bold; }\n\n.priority_0 {\n  color: #e60900; }\n\n.priority_1 {\n  color: #ec9c00; }\n\n.block {\n  display: block; }\n", "", {"version":3,"sources":["C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/styles.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/tacit/_defs.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/radio.scss"],"names":[],"mappings":"AAMA;EACE,iBAAgB,EAAA;;AAGlB;EACE,iBCoBU;EDnBV,eAAwB;EACxB,uBCmBS;EDlBT,oBAAmB;EACnB,qBAAoB;EACpB,oBAAmB,EAAA;EANrB;IASI,iBCYQ;IDXR,eAAuB;IACvB,oBAAmB,EAAA;EAXvB;IAeI,oBAA6B;IAC7B,YCIQ,EAAA;EDpBZ;IAoBI,oBCGU;IDFV,YCAQ,EAAA;;ADIZ;EACE,kBAjCiB;EAkCjB,qBAlCiB,EAAA;;AAuCnB;EACE,4BAAmB;EAAnB,yBAAmB;EAAnB,oBAAmB,EAAA;;AAGrB;EACE,cAAa;EACb,kBAAiB;EACjB,eAAc;EACd,qBAAoB,EAAA;;AAGtB;EACE,qBAlDiB,EAAA;;AAqDnB;EACE,oBAtDiB,EAAA;;AAyDnB;EACE,oBAAmB,EAAA;;AAGrB;EACE,cAAa,EAAA;;AAGf;EACE,cAAa,EAAA;;AAGf;EACE,oBAAmB,EAAA;;AAGrB;EACE,gBAAe,EAAA;;AAGjB;EACE,aAAY,EAAA;;AAGd;EACE,cAAa,EAAA;;AAGf;EAIE,oBAzFiB;EA0FjB,kBA3FiB,EAAA;;AA8FnB;EACE,kBA/FiB,EAAA;;AAkGnB;EACE,mBAAkB;EAClB,mBApGiB;EAsGjB,iCArGiB;EAsGjB,qCAAqC;EACrC,uBC3ES;ED4ET,cAAa,EAAA;;AAGf;EACE,iBAAgB;EAChB,kBAAiB,EAAA;;AAGnB;EACE,eAAc;EACd,mBAnHiB;EAoHjB,qBApHiB,EAAA;;AAwHnB;EACE,sBAA+B,EAAA;;AAGjC;EACE,mBA7HiB;EA8HjB,sBA9HiB,EAAA;;AAiInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,WAAU,EAAA;;AAGZ;EACE,UAAS,EAAA;;AAIX;EACE,uCAAsC;EACtC,qBA/IiB,EAAA;;AAkJnB;EACE,yCAAwC;EACxC,qBApJiB,EAAA;;AAuJnB;EACE,yCAAwC,EAAA;;AAI1C;EACE,6BAAmC,EAAA;;AAGrC;EACE,0BAAmC;EACnC,eAAuB,EAAA;EAFzB;IAKI,oBAA6B;IAC7B,eAA0B,EAAA;;AAI9B;EACE,oBC9IY;ED+IZ,YCjJU,EAAA;ED+IZ;IAKI,oBAA4B;IAC5B,YCrJQ,EAAA;;AC9BZ;EACE,oBAAmB,EAAA;;AAGrB;EACE,UAAS;EACT,iBAAgB;EAChB,sBAAqB;EACrB,UAAS,EAAA;;AAGX;EACE,cAAa,EAAA;;AAGf;EACE,gBAAe,EAAA;;AAGjB;EACE,oBDYY;ECXZ,YDSU,EAAA;;ACNZ;EACE,6BAAmC;EACnC,eAAwB,EAAA;;AAI1B;EACE,sBAAqB;EACrB,uBDDS;ECET,mBAAkB;EAClB,iBAAgB;EAChB,WAAU,EAAA;;AAGZ;EAEI,+BFvCiB,EAAA;;AEqCrB;EAMI,+BAAgD;EAChD,UAAS,EAAA;;AFuJb;EACE,iBCvKU;EDwKV,eAAwB,EAAA;EAF1B;IAKI,wBAAuB,EAAA;;AAI3B;EACE,aAAY,EAAA;;AAGd;EACE,gBAAe;EACf,iBAAgB,EAAA;;AAGlB;EACE,cAAa;EACb,4BAA2B;EAC3B,gBAAe;EACf,eAAc;EACd,oBAxNiB,EAAA;;AA4NnB;EACE,mBAAkB,EAAA;;AAGpB;EAEI,+BApOiB,EAAA;;AAkOrB;EAMI,+BAAgD;EAChD,gBAAe,EAAA;;AAInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,eAAc,EAAA;;AAGhB;EACE,eAAc,EAAA;;AAGhB;EACE,eACF,EAAA","file":"styles.scss","sourcesContent":["@import 'tacit/defs';\r\n\r\n$border-radius: 0.4em;\r\n$margin-base: 0.4em;\r\n$margin-side: 0.4em;\r\n\r\nfieldset {\r\n  margin-bottom: 0;\r\n}\r\n\r\nbutton, .radio-container > span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n  border: 1px solid $gray;\r\n  border-radius: .2em;\r\n  padding: 0.3em 0.8em;\r\n  align-items: center;\r\n\r\n  &[disabled] {\r\n    background: $white;\r\n    color: darken($gray, 5);\r\n    cursor: not-allowed;\r\n  }\r\n\r\n  &:hover {\r\n    background: darken($white, 2);\r\n    color: $black;\r\n  }\r\n\r\n  &:checked {\r\n    background: $blue;\r\n    color: $white;\r\n  }\r\n}\r\n\r\nbutton {\r\n  margin-top: $margin-base;\r\n  margin-bottom: $margin-base;\r\n  //height: min-content;\r\n}\r\n\r\n\r\n.wrapper > button, .layout > button, .body > button, .flex > button {\r\n  height: fit-content;\r\n}\r\n\r\n.wrapper, .layout, .body, .array-item, .radio, .flex {\r\n  display: flex;\r\n  flex-flow: column;\r\n  flex: 1 1 auto;\r\n  align-items: stretch;\r\n}\r\n\r\n.wrapper {\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.wrapper-margin {\r\n  margin: $margin-base $margin-side;\r\n}\r\n\r\n.center {\r\n  align-items: center;\r\n}\r\n\r\n.required:after {\r\n  content: \" *\";\r\n}\r\n\r\n.hidden, .button-viewer {\r\n  display: none;\r\n}\r\n\r\n.inline {\r\n  flex-direction: row;\r\n}\r\n\r\n.wrap {\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.shrink {\r\n  flex-grow: 0;\r\n}\r\n\r\n.expand {\r\n  flex-grow: 10;\r\n}\r\n\r\n.title {\r\n  //display: flex;\r\n  //align-items: center;\r\n  //flex-grow: 0;\r\n  margin-right: $margin-side;\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.boolean-left-container {\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.field-properties, .ff-layout {\r\n  position: relative;\r\n  margin-top: -$margin-base;\r\n  //margin-bottom: $margin-base;\r\n  padding: $margin-base/2 $margin-side $margin-base $margin-side;\r\n  background: rgba(240, 240, 240, 0.70);\r\n  border: 1px solid $gray;\r\n  border-top: 0;\r\n}\r\n\r\n.field-properties {\r\n  border-bottom: 0;\r\n  padding-bottom: 0;\r\n}\r\n\r\n.ff-layout {\r\n  padding-top: 0;\r\n  margin-top: -$margin-base;\r\n  margin-bottom: $margin-base;\r\n\r\n}\r\n\r\n.object-wrapper {\r\n  padding: 0 0 $margin-base*0.7 0;\r\n}\r\n\r\n.object-prop {\r\n  margin-top: -$margin-base;\r\n  margin-bottom: -$margin-base;\r\n}\r\n\r\n.object-arg {\r\n  padding-bottom: 0;\r\n}\r\n\r\n.no-padding {\r\n  padding: 0;\r\n}\r\n\r\n.no-margin {\r\n  margin: 0;\r\n}\r\n\r\n\r\n.object-bg {\r\n  background-color: rgba(0, 255, 0, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-bg {\r\n  background-color: rgba(0, 100, 255, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-selected {\r\n  background-color: rgba(0, 100, 255, 0.3);\r\n}\r\n\r\n\r\n.grayed + span {\r\n  background-color: darken($white, 4);\r\n}\r\n\r\n.disabled + span {\r\n  background-color: darken($white, 7);\r\n  color: darken($gray, 8);\r\n\r\n  &:hover {\r\n    background: darken($white, 7);\r\n    color: lighten($black, 15);\r\n  }\r\n}\r\n\r\n.selected {\r\n  background: $blue;\r\n  color: $white;\r\n\r\n  &:hover {\r\n    background: darken($blue, 2);\r\n    color: $white;\r\n  }\r\n}\r\n\r\n//.FGroup-cls {\r\n// background-color: rgba(4, 197, 10, 0.15);\r\n//  \r\n//}\r\n//\r\n//.object-xtend-array {\r\n//  padding: 0.0em $margin-side 0.0em $margin-side;\r\n//  background-color: rgba(0, 120, 201, 0.15);\r\n//}\r\n\r\n\r\n@import './radio';\r\n\r\n.unescaped > input:checked + span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n\r\n  &:after {\r\n    content: \" (unescaped)\";\r\n  }\r\n}\r\n\r\n.height {\r\n  height: 65vh;;\r\n}\r\n\r\n.no-side-padding {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n\r\n.close {\r\n  display: flex;\r\n  flex-direction: row-reverse;\r\n  cursor: pointer;\r\n  padding: 0.2em;\r\n  margin-right: $margin-side;\r\n\r\n}\r\n\r\n.item-menu > button {\r\n  margin-right: -1px;\r\n}\r\n\r\n.item-menu {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin-right: 0;\r\n  }\r\n}\r\n\r\n.bold {\r\n  font-weight: bold;\r\n}\r\n\r\n.priority_0 {\r\n  color: #e60900;\r\n}\r\n\r\n.priority_1 {\r\n  color: #ec9c00;\r\n}\r\n\r\n.block {\r\n  display: block\r\n}","// The MIT License (MIT)\n//\n// Copyright (c) 2015-2017 Yegor Bugayenko\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included\n// in all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n// SOFTWARE.\n\n// sizes\n$em: 14px;\n\n// fonts\n$sans-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;\n$monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;\n\n// colors\n$black: #000;\n$white: #fff;\n$gray: #ccc;\n$blue: #367ac3;\n$red: #db423c;\n$green: #3fa75f;\n$orange: #ffa203;\n\n// responsive\n$mobile-width: 767px;\n\n%sans-serif {\n  font-family: $sans-serif;\n  font-size: $em;\n  font-stretch: normal;\n  font-style: normal;\n  font-weight: 300;\n  line-height: 1.65em;\n}","\r\n.radio {\r\n  align-items: center;\r\n}\r\n\r\n.radio-container > span {\r\n  border: 0;\r\n  border-radius: 0;\r\n  display: inline-block;\r\n  margin: 0;\r\n}\r\n\r\n.radio-container > input {\r\n  display: none;\r\n}\r\n\r\n.radio-container > input + span {\r\n  cursor: pointer;\r\n}\r\n\r\n.radio-container > input:checked + span {\r\n  background: $blue;\r\n  color: $white;\r\n}\r\n\r\n.radio-container > input:indeterminate + span.title {\r\n  background-color: darken($white, 4);\r\n  color: darken($gray, 20);\r\n  //color: $white;\r\n}\r\n\r\n.radio-container {\r\n  display: inline-block;\r\n  border: 1px solid $gray;\r\n  margin-right: -1px;\r\n  border-radius: 0;\r\n  padding: 0;\r\n}\r\n\r\n.radio .radio-container {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin: 0;\r\n  }\r\n}"],"sourceRoot":""}]);
 
 // exports
 
@@ -47031,151 +47031,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const stateLib_1 = __webpack_require__(/*! fform/src/stateLib */ "../fform/src/stateLib.tsx");
 const paramsEnum = ['autofocus', 'liveUpdate', 'liveValidate', 'readonly', 'disabled', 'hidden', 'norender', 'viewer'];
 exports.paramsEnum = paramsEnum;
-const objectSchema = {
-    type: "object",
-    ff_presets: 'object:noArrayControls',
-    ff_custom: { Wrapper: { className: { 'object-prop': true } } },
-    ff_data: { moveOpts: [] },
-    ff_params: { hideExternal: true, hideTopLine: false },
-    ff_dataMap: [{ from: './@/params/expanded', to: './valueArray/@/params/hidden', $: '^/fn/not' }],
-    ff_layout: {
-        $_fields: [
-            {
-                $_maps: { 'className/hidden': '@/params/hideTopLine' },
-                $_fields: [
-                    {
-                        className: { inline: true },
-                        $_fields: [
-                            '',
-                            {
-                                $_ref: '^/_parts/expandButton',
-                                $_maps: {
-                                    'className/hidden': '@/params/expandHidden'
-                                }
-                            },
-                            {
-                                "$_ref": "^/parts/ArrayAddButton",
-                                "children": ["+prop"],
-                                onClick: {
-                                    $: true, args: [
-                                        { $: '^/fn/arrayAdd', args: ["./valueArray", 1] },
-                                        { $: '^/fn/setValue', args: [true, { path: "./@/params/expanded" }] }
-                                    ]
-                                },
-                                $_maps: {
-                                    'className/hidden': '@/params/propsAddHidden',
-                                    disabled: false
-                                }
-                            },
-                            'name',
-                            'type',
-                            'value',
-                            {
-                                _$widget: '^/widgets/Input',
-                                className: { wrapper: true, expand: true },
-                                _$useTag: "^/_widgets/ReactSelect",
-                                onMenuOpen: '^/_usr/setMoveOpts',
-                                onChange: '^/_usr/moveFieldIn',
-                                closeMenuOnSelect: true,
-                                isClearable: false,
-                                placeholder: 'Select fields to move here...',
-                                value: '',
-                                $_maps: {
-                                    'className/hidden': { $: '^/fn/equal', args: [true, '@/params/hideExternal', '@/params/fieldsAddHidden'] },
-                                    options: { $: '^/_usr/reactSelectValue', args: '@/moveOpts' }
-                                }
-                            },
-                            {
-                                "$_ref": "^/parts/ArrayAddButton",
-                                "children": ["+field"],
-                                onClick: { args: ["./fields", 1, { "setOneOf": 0 }] },
-                                style: { marginRight: '-1px' },
-                                $_maps: {
-                                    'className/hidden': '@/params/fieldsAddHidden',
-                                    disabled: false
-                                }
-                            },
-                            {
-                                "$_ref": "^/parts/ArrayAddButton",
-                                "children": ["+object"],
-                                onClick: { args: ["./fields", 1, { "setOneOf": 1 }] },
-                                $_maps: {
-                                    'className/hidden': '@/params/fieldsAddHidden',
-                                    disabled: false
-                                }
-                            },
-                            'fieldsEnabled',
-                            {
-                                buttons: ['up', 'down', 'del'],
-                                $_ref: '^/parts/ArrayItemMenu',
-                                style: { marginLeft: '1em' }
-                            }
-                        ]
-                    },
-                    'valueArray'
-                ]
-            }
-        ]
-    },
-    properties: {
-        name: {
-            type: "string",
-            ff_placeholder: 'Enter name...',
-        },
-        type: {
-            // title: 'type',
-            type: "string",
-            'default': 'string',
-            ff_presets: 'select:inlineTitle:shrink',
-            ff_dataMap: [
-                { from: './@/value', to: '../@/params/propsAddHidden,expandHidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'array', 'object'] },
-                { from: './@/value', to: '../@/params/expanded', $: '^/fn/equal|^/_usr/ifFalse', args: ['${value}', 'array', 'object'] },
-                { from: './@/value', to: '..', $: '^/_dataMaps/typeObject' },
-            ],
-            'enum': ['string', 'number', 'booleanNull', 'array', 'object']
-        },
-        value: {
-            oneOf: [
-                {
-                    type: "string",
-                    ff_placeholder: 'Enter value...',
-                    ff_presets: 'string:expand',
-                }, {
-                    type: "number",
-                    ff_presets: 'number:expand',
-                }, {
-                    type: "string",
-                    ff_presets: 'radio:inlineItems:inlineTitle:shrink',
-                    'enum': ['false', 'null', 'true'],
-                    'default': 'null'
-                    //ff_enumExten: {'false': {label: 'false'}, 'null': {label: 'null'}, 'true': {label: 'true'}},
-                    //ff_custom: {$_parse: '^/_usr/eval',}
-                },
-            ]
-        },
-        fieldsEnabled: {
-            type: 'boolean',
-            title: '$_fields',
-            ff_presets: 'booleanLeft:shrink',
-            ff_params: { norender: true },
-            ff_custom: { Main: { className: { 'radio-container': true } } },
-            ff_dataMap: [
-                { from: './@/value', to: '../fields/@/params/hidden', $: '^/fn/not' },
-                { from: './@/value', to: '../@/params/fieldsAddHidden', $: '^/fn/not' },
-                { from: './@/value', to: '../@/params/fieldsShown' }
-            ],
-        },
-        valueArray: {
-            type: 'array',
-            ff_layout: ['^/_parts/emptyArray'],
-            ff_presets: 'array:noTitle',
-            items: {
-                $ref: '#/definitions/object'
-            }
-        },
-    }
-};
-exports.objectSchema = objectSchema;
 const FFormSchema = {
     definitions: {
         tristateNoPadding: {
@@ -47286,7 +47141,7 @@ const FFormSchema = {
                         fields: {
                             type: 'array',
                             ff_presets: 'array:noTitle',
-                            //ff_layout: ['^/_parts/emptyArray'],
+                            //ff_custom: {Main: {LayoutDefaultClass: {block: true}}},
                             items: {
                                 ff_oneOfSelector: '^/_usr/oneOfField',
                                 oneOf: [
@@ -47387,7 +47242,6 @@ const FFormSchema = {
                 { ff_custom: { Wrapper: { className: { 'object-prop': false } } } }
             ]
         },
-        object: objectSchema,
         field: {
             type: "object",
             ff_presets: 'object:noArrayControls',
@@ -47398,7 +47252,7 @@ const FFormSchema = {
                 }
             },
             ff_layout: {
-                className: { layout: true },
+                className: { layout: true, block: true },
                 // ff_params: {showMoveOut: false},
                 $_fields: [{
                         className: { inline: true, layout: true },
@@ -48058,6 +47912,7 @@ const FFormSchema = {
     ]
 };
 exports.default = FFormSchema;
+// export {objectSchema}
 
 
 /***/ }),
