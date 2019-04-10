@@ -145,27 +145,27 @@ if (typeof window != 'undefined') {
     window['_setErrors']('error', '');
 
     let dataErrors = {};
-    if (getIn(data, 'js')) {
-      if (window['data_js'] !== data.js) {
-        window['data_js'] = data.js;
-        window['js_objects'] = null;
-        window['js_errs'] = null;
+    if (getIn(data, 'elements')) {
+      if (window['data_elements'] !== data.elements) {
+        window['data_elements'] = data.elements;
+        window['elements_objects'] = null;
+        window['elements_errs'] = null;
       }
       elements = async () => {
-        let res = await Promise.all((data.js.links || []).map(async (lnk: any, lnum: number) => {
+        let res = await Promise.all((data.elements.links || []).map(async (lnk: any, lnum: number) => {
             let module: any = {};
             try {
               if (lnk.from.split('.').slice(-1)[0] == 'json') module = await (await fetch(lnk.from)).json();
               else module = await importModule(lnk.from);
             } catch (e) {
-              setIn(dataErrors, e.message, 'js', 'links', lnum);
+              setIn(dataErrors, e.message, 'elements', 'links', lnum);
               return [];
             }
 
             if (!lnk['import'].length) return [module];
             else return lnk['import'].map((v: string) => {
               if (isUndefined(module[v])) {
-                setIn(dataErrors, '"' + v + '" is undefined', 'js', 'links', lnum);
+                setIn(dataErrors, '"' + v + '" is undefined', 'elements', 'links', lnum);
                 return {};
               }
               return module[v]
@@ -174,12 +174,12 @@ if (typeof window != 'undefined') {
         ));
         const objs: any[] = [];
         res.forEach(v => push2array(objs, v));
-        let code = data.js.code.trim() || '';
+        let code = data.elements.code.trim() || '';
         if (code[0] != '{') code = '{' + code + '}';
         try {
           eval('code=' + code + ';');
         } catch (e) {
-          setIn(dataErrors, e.stack, 'js', 'code');
+          setIn(dataErrors, e.stack, 'elements', 'code');
           code = {}
         }
         objs.push(code);
@@ -188,26 +188,26 @@ if (typeof window != 'undefined') {
       };
     }
     let schema: any;
-    if (getIn(data, 'json')) schema = async () => {
-      let res = await Promise.all((data.json.links || []).map(async (lnk: any, lnum: number) => {
+    if (getIn(data, 'schema')) schema = async () => {
+      let res = await Promise.all((data.schema.links || []).map(async (lnk: any, lnum: number) => {
           let module: any = {};
           try {
             module = await (await fetch(lnk.link)).json();
           } catch (e) {
-            setIn(dataErrors, e.stack, 'json', 'links', lnum, 'link');
+            setIn(dataErrors, e.stack, 'schema', 'links', lnum, 'link');
           }
           return makeSlice(normalizePath(lnk.path), module);
         }
       ));
-      let schema = data.json.code || {};
-      return merge.all(schema, res);
+      let code = data.schema.code || {};
+      return merge.all(code, res);
     };
     if (!elements) return;
-    elements = window['js_objects'] || await elements();
-    window['js_errs'] = window['js_errs'] || getIn(dataErrors, 'js');
-    window['js_objects'] = elements;
-    setIn(dataErrors, window['js_errs'], 'js');
-    if (!dataErrors['js']) delete dataErrors['js'];
+    elements = window['elements_objects'] || await elements();
+    window['elements_errs'] = window['elements_errs'] || getIn(dataErrors, 'elements');
+    window['elements_objects'] = elements;
+    setIn(dataErrors, window['elements_errs'], 'elements');
+    if (!dataErrors['elements']) delete dataErrors['elements'];
     schema = await schema();
     elements = fformElements.extend(elements);
     while (!window['viewerRef']) await sleep(500);

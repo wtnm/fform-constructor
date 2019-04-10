@@ -48344,7 +48344,7 @@ const setStorage = function (key, value) {
     key && localStorage.setItem(key, LZString.compress(JSON.stringify(value)));
 };
 const schemaTemplate = {
-    "js": {
+    "elements": {
         "links": [
             {
                 "import": [],
@@ -48576,7 +48576,7 @@ const viewerSchema = {
         },
     },
     type: 'object',
-    ff_data: { selector: { value: 'json', enum: ['form', 'json', 'js', 'css', 'props',] } },
+    ff_data: { selector: { value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',] } },
     ff_dataMap: [{ from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${value}'] }],
     ff_layout: {
         style: { marginLeft: '1em' },
@@ -48599,7 +48599,7 @@ const viewerSchema = {
             }]
     },
     properties: {
-        json: {
+        schema: {
             type: 'object',
             ff_data: {
                 value2schema: '', value2schemaError: ''
@@ -48676,7 +48676,7 @@ const viewerSchema = {
                 }
             }
         },
-        js: {
+        elements: {
             type: 'object',
             properties: {
                 links: {
@@ -48770,7 +48770,7 @@ class ConstrView extends React.PureComponent {
     }
     _syncValues(values) {
         const self = this;
-        const jsonValues = commonLib_1.getIn(values, 'json', 'code') || {};
+        const jsonValues = commonLib_1.getIn(values, 'schema', 'code') || {};
         if (self._jsonValues !== jsonValues) {
             self._jsonValues = jsonValues;
             self._formValues = constrUtils_1.JSON2formValues(self._jsonValues, commonLib_1.getIn(values, 'name') || '');
@@ -48791,9 +48791,9 @@ class ConstrView extends React.PureComponent {
         const errorsUPD = [];
         self._formValues = formValues;
         self._jsonValues = constrUtils_1.formValues2JSON(formValues, [], errorsUPD);
-        let viewerValues = Object.assign({}, (self.props.value || {}), { json: Object.assign({}, (commonLib_1.getIn(self.props.value, 'json') || {}), { code: self._jsonValues }), name: formValues.name || '' });
+        let viewerValues = Object.assign({}, (self.props.value || {}), { schema: Object.assign({}, (commonLib_1.getIn(self.props.value, 'schema') || {}), { code: self._jsonValues }), name: formValues.name || '' });
         self._viewerChange(viewerValues);
-        self.viewerCore.set('#/json/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : []);
+        self.viewerCore.set('#/schema/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : []);
     }
     render() {
         let self = this;

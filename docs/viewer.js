@@ -41921,14 +41921,14 @@ if (typeof window != 'undefined') {
             let elements;
             window['_setErrors']('error', '');
             let dataErrors = {};
-            if (commonLib_1.getIn(data, 'js')) {
-                if (window['data_js'] !== data.js) {
-                    window['data_js'] = data.js;
-                    window['js_objects'] = null;
-                    window['js_errs'] = null;
+            if (commonLib_1.getIn(data, 'elements')) {
+                if (window['data_elements'] !== data.elements) {
+                    window['data_elements'] = data.elements;
+                    window['elements_objects'] = null;
+                    window['elements_errs'] = null;
                 }
                 elements = () => __awaiter(this, void 0, void 0, function* () {
-                    let res = yield Promise.all((data.js.links || []).map((lnk, lnum) => __awaiter(this, void 0, void 0, function* () {
+                    let res = yield Promise.all((data.elements.links || []).map((lnk, lnum) => __awaiter(this, void 0, void 0, function* () {
                         let module = {};
                         try {
                             if (lnk.from.split('.').slice(-1)[0] == 'json')
@@ -41937,7 +41937,7 @@ if (typeof window != 'undefined') {
                                 module = yield importModule_1.importModule(lnk.from);
                         }
                         catch (e) {
-                            commonLib_1.setIn(dataErrors, e.message, 'js', 'links', lnum);
+                            commonLib_1.setIn(dataErrors, e.message, 'elements', 'links', lnum);
                             return [];
                         }
                         if (!lnk['import'].length)
@@ -41945,7 +41945,7 @@ if (typeof window != 'undefined') {
                         else
                             return lnk['import'].map((v) => {
                                 if (commonLib_1.isUndefined(module[v])) {
-                                    commonLib_1.setIn(dataErrors, '"' + v + '" is undefined', 'js', 'links', lnum);
+                                    commonLib_1.setIn(dataErrors, '"' + v + '" is undefined', 'elements', 'links', lnum);
                                     return {};
                                 }
                                 return module[v];
@@ -41953,14 +41953,14 @@ if (typeof window != 'undefined') {
                     })));
                     const objs = [];
                     res.forEach(v => commonLib_1.push2array(objs, v));
-                    let code = data.js.code.trim() || '';
+                    let code = data.elements.code.trim() || '';
                     if (code[0] != '{')
                         code = '{' + code + '}';
                     try {
                         eval('code=' + code + ';');
                     }
                     catch (e) {
-                        commonLib_1.setIn(dataErrors, e.stack, 'js', 'code');
+                        commonLib_1.setIn(dataErrors, e.stack, 'elements', 'code');
                         code = {};
                     }
                     objs.push(code);
@@ -41968,29 +41968,29 @@ if (typeof window != 'undefined') {
                 });
             }
             let schema;
-            if (commonLib_1.getIn(data, 'json'))
+            if (commonLib_1.getIn(data, 'schema'))
                 schema = () => __awaiter(this, void 0, void 0, function* () {
-                    let res = yield Promise.all((data.json.links || []).map((lnk, lnum) => __awaiter(this, void 0, void 0, function* () {
+                    let res = yield Promise.all((data.schema.links || []).map((lnk, lnum) => __awaiter(this, void 0, void 0, function* () {
                         let module = {};
                         try {
                             module = yield (yield fetch(lnk.link)).json();
                         }
                         catch (e) {
-                            commonLib_1.setIn(dataErrors, e.stack, 'json', 'links', lnum, 'link');
+                            commonLib_1.setIn(dataErrors, e.stack, 'schema', 'links', lnum, 'link');
                         }
                         return commonLib_1.makeSlice(stateLib_1.normalizePath(lnk.path), module);
                     })));
-                    let schema = data.json.code || {};
-                    return commonLib_1.merge.all(schema, res);
+                    let code = data.schema.code || {};
+                    return commonLib_1.merge.all(code, res);
                 });
             if (!elements)
                 return;
-            elements = window['js_objects'] || (yield elements());
-            window['js_errs'] = window['js_errs'] || commonLib_1.getIn(dataErrors, 'js');
-            window['js_objects'] = elements;
-            commonLib_1.setIn(dataErrors, window['js_errs'], 'js');
-            if (!dataErrors['js'])
-                delete dataErrors['js'];
+            elements = window['elements_objects'] || (yield elements());
+            window['elements_errs'] = window['elements_errs'] || commonLib_1.getIn(dataErrors, 'elements');
+            window['elements_objects'] = elements;
+            commonLib_1.setIn(dataErrors, window['elements_errs'], 'elements');
+            if (!dataErrors['elements'])
+                delete dataErrors['elements'];
             schema = yield schema();
             elements = fform_1.elements.extend(elements);
             while (!window['viewerRef'])

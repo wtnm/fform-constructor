@@ -1,6 +1,6 @@
 [
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -45,7 +45,7 @@
             },
             "error": ""
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -73,7 +73,7 @@
             "props": []
         },
         "data": {
-            "json": {
+            "schema": {
                 "links": [
                     {
                         "path": "#/definitions/imported",
@@ -99,7 +99,7 @@
                     }
                 }
             },
-            "js": {
+            "elements": {
                 "links": [
                     {
                         "import": [],
@@ -125,7 +125,7 @@
         "name": "simple form"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -310,7 +310,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -336,7 +336,7 @@
         "name": "layouts and viewer"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "array",
@@ -510,7 +510,7 @@
                 ]
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -536,7 +536,7 @@
         "name": "arrays and oneOf"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -588,7 +588,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -614,7 +614,7 @@
         "name": "dataMaps"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -634,7 +634,7 @@
                     ]
                 },
                 "properties": {
-                    "json": {
+                    "schema": {
                         "type": "string",
                         "pattern": "json",
                         "title": "json",
@@ -680,7 +680,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -706,7 +706,7 @@
         "name": "validation"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -762,7 +762,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -788,7 +788,7 @@
         "name": "format and parse"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -830,7 +830,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],
@@ -856,7 +856,7 @@
         "name": "custom input"
     },
     {
-        "json": {
+        "schema": {
             "links": [],
             "code": {
                 "type": "object",
@@ -978,7 +978,7 @@
                             ]
                         },
                         "properties": {
-                            "json": {
+                            "schema": {
                                 "type": "string",
                                 "pattern": "json",
                                 "title": "json",
@@ -1079,7 +1079,7 @@
                 }
             }
         },
-        "js": {
+        "elements": {
             "links": [
                 {
                     "import": [],

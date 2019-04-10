@@ -32,7 +32,7 @@ const setStorage = function (key: string, value: any) {
 
 
 const schemaTemplate = {
-  "js": {
+  "elements": {
     "links": [
       {
         "import": [],
@@ -273,7 +273,7 @@ const viewerSchema: JsonSchema = {
   },
 
   type: 'object',
-  ff_data: {selector: {value: 'json', enum: ['form', 'json', 'js', 'css', 'props',]}},
+  ff_data: {selector: {value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',]}},
   ff_dataMap: [{from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${value}']}],
   ff_layout: {
     style: {marginLeft: '1em'},
@@ -296,7 +296,7 @@ const viewerSchema: JsonSchema = {
     }]
   },
   properties: {
-    json: {
+    schema: {
       type: 'object',
       ff_data: {
         value2schema: '', value2schemaError: ''
@@ -376,7 +376,7 @@ const viewerSchema: JsonSchema = {
       }
 
     },
-    js: {
+    elements: {
       type: 'object',
       properties: {
         links: {
@@ -477,7 +477,7 @@ class ConstrView extends React.PureComponent<any, any> {
 
   _syncValues(values: any) {
     const self = this;
-    const jsonValues = getIn(values, 'json', 'code') || {};
+    const jsonValues = getIn(values, 'schema', 'code') || {};
     if (self._jsonValues !== jsonValues) {
       self._jsonValues = jsonValues;
       self._formValues = JSON2formValues(self._jsonValues, getIn(values, 'name') || '');
@@ -502,11 +502,11 @@ class ConstrView extends React.PureComponent<any, any> {
     self._jsonValues = formValues2JSON(formValues, [], errorsUPD);
     let viewerValues = {
       ...(self.props.value || {}),
-      json: {...(getIn(self.props.value, 'json') || {}), code: self._jsonValues},
+      schema: {...(getIn(self.props.value, 'schema') || {}), code: self._jsonValues},
       name: formValues.name || ''
     };
     self._viewerChange(viewerValues);
-    self.viewerCore.set('#/json/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : [])
+    self.viewerCore.set('#/schema/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : [])
   }
 
   render() {
