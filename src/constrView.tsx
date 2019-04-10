@@ -30,6 +30,24 @@ const setStorage = function (key: string, value: any) {
   );
 };
 
+
+const schemaTemplate = {
+  "js": {
+    "links": [
+      {
+        "import": [],
+        "from": "styles.json"
+      }
+    ]
+  },
+  "css": {
+    "links": [
+      "tacit.min.css",
+      "style.css"
+    ]
+  },
+};
+
 function getJSONType(value: any) {
   let type = value === null ? 'null' : typeof value;
   if (type == 'number' && types.integer(value)) type = 'integer';
@@ -84,7 +102,7 @@ const mainLib = {
       let value = this.api.get('./value@value');
       if (!isArray(value)) value = [];
       // const num = objKeys(value).length;
-      value = value.concat({});
+      value = value.concat(schemaTemplate);
       this.api.set('./value@value', value, {replace: true});
     },
     delSchema: function () {

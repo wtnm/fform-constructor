@@ -3348,14 +3348,12 @@ class FField extends FRefsGeneric {
         // console.log(valueSet, 'setValue=', setValue,'path=',path)
         if (valueSet) {
             let prevData = self.getData();
-            if (self._cached)
-                prevData = commonLib_1.merge(prevData, { value: self._cached.value }, { replace: { value: opts.replace } });
-            self._cached = { value, opts }; //{value: self._parseValue(value, prevData)};
+            self._cached = { value, opts };
             if (fieldCache) {
                 if (self._cachedTimeout)
                     clearTimeout(self._cachedTimeout);
                 self._cachedTimeout = setTimeout(self._updateCachedValue.bind(self), fieldCache);
-                const data = commonLib_1.merge(prevData, { value: self._cached.value }, { replace: { value: opts.replace } });
+                const data = self.getData();
                 const mappedData = self._mappedData;
                 self.get = (...pathes) => {
                     let path = stateLib_1.normalizePath(pathes, self.path);
@@ -3422,7 +3420,6 @@ class FField extends FRefsGeneric {
         self._setMappedData(undefined, self.getData(), 'build');
         self._rebuild = false;
     }
-    // todo: SSR support
     _setMappedData(prevData, nextData, updateStage) {
         const self = this;
         let _gData = self.getData;
@@ -3435,8 +3432,10 @@ class FField extends FRefsGeneric {
         }
         return false;
     }
-    getData(branch = commonLib_1.getIn(this, 'state', 'branch')) {
-        return this.pFForm.getDataObject(branch, this);
+    getData(branch) {
+        const self = this;
+        const data = self.pFForm.getDataObject(branch || commonLib_1.getIn(self, 'state', 'branch'), self);
+        return self._cached ? commonLib_1.merge(data, { value: self._cached.value }, { replace: { value: self._cached.opts.replace } }) : data;
     }
     shouldComponentUpdate(nextProps, nextState) {
         const self = this;
@@ -3450,8 +3449,8 @@ class FField extends FRefsGeneric {
             return true;
         self.$branch = nextState.branch;
         let updateComponent = false;
-        const nextData = self.getData(commonLib_1.getIn(nextState, 'branch'));
         const prevData = self.getData();
+        const nextData = self.getData(commonLib_1.getIn(nextState, 'branch'));
         if (commonLib_1.getIn(nextData, 'oneOf') !== commonLib_1.getIn(prevData, 'oneOf'))
             return (self._rebuild = true);
         try {
@@ -48344,6 +48343,22 @@ const getStorage = function (key) {
 const setStorage = function (key, value) {
     key && localStorage.setItem(key, LZString.compress(JSON.stringify(value)));
 };
+const schemaTemplate = {
+    "js": {
+        "links": [
+            {
+                "import": [],
+                "from": "styles.json"
+            }
+        ]
+    },
+    "css": {
+        "links": [
+            "tacit.min.css",
+            "style.css"
+        ]
+    },
+};
 function getJSONType(value) {
     let type = value === null ? 'null' : typeof value;
     if (type == 'number' && stateLib_1.types.integer(value))
@@ -48398,7 +48413,7 @@ const mainLib = {
             if (!commonLib_1.isArray(value))
                 value = [];
             // const num = objKeys(value).length;
-            value = value.concat({});
+            value = value.concat(schemaTemplate);
             this.api.set('./value@value', value, { replace: true });
         },
         delSchema: function () {
