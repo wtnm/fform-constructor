@@ -48992,9 +48992,14 @@ class MainView extends React.PureComponent {
     setStorage(name = 'fformSchemas') {
         const self = this;
         self.core.set('/@/storageName', name);
-        let data = getStorage(name);
-        if (data && testJSONdata(data))
-            self.core.setValue(data, { execute: true, replace: true });
+        try {
+            let data = getStorage(name);
+            if (data && testJSONdata(data))
+                self.core.setValue(data, { execute: true, replace: true });
+        }
+        catch (e) {
+            self.openModal(['Failed to load data with error: ', React.createElement("b", { key: 'bold' }, e.message), React.createElement("br", { key: 'br' }), '']);
+        }
     }
     render() {
         let self = this;
