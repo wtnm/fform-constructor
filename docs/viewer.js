@@ -4293,6 +4293,8 @@ class FField extends FRefsGeneric {
         const self = this;
         if (!path.length)
             return self.$refs['@Main'];
+        if (path.length == 1 && path[0] == stateLib_1.SymData)
+            return self;
         if (path[0][0] == '@')
             return path.length == 1 ? self.$refs[path[0]] : self.$refs[path[0]].getRef(path.slice(1));
         return self.$refs['@Main'] && self.$refs['@Main'].getRef && self.$refs['@Main'].getRef(path);
@@ -5383,8 +5385,8 @@ let elementsBase = {
                                 _$widget: 'input',
                                 type: 'radio',
                                 onChange: { $: '^/fn/eventValue|setValue|updCached', args: ['${value}', { path: './@/selector/value' }] },
-                                onBlur: { $: '^/fn/blur' },
-                                onFocus: { $: '^/fn/focus' },
+                                onBlur: '^/sets/nBase/Main/onBlur',
+                                onFocus: '^/sets/nBase/Main/onFocus',
                             },
                             { _$useTag: 'span', _$cx: '^/_$cx', },
                             true

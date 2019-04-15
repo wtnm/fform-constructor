@@ -3293,6 +3293,8 @@ class FField extends FRefsGeneric {
         const self = this;
         if (!path.length)
             return self.$refs['@Main'];
+        if (path.length == 1 && path[0] == stateLib_1.SymData)
+            return self;
         if (path[0][0] == '@')
             return path.length == 1 ? self.$refs[path[0]] : self.$refs[path[0]].getRef(path.slice(1));
         return self.$refs['@Main'] && self.$refs['@Main'].getRef && self.$refs['@Main'].getRef(path);
@@ -4383,8 +4385,8 @@ let elementsBase = {
                                 _$widget: 'input',
                                 type: 'radio',
                                 onChange: { $: '^/fn/eventValue|setValue|updCached', args: ['${value}', { path: './@/selector/value' }] },
-                                onBlur: { $: '^/fn/blur' },
-                                onFocus: { $: '^/fn/focus' },
+                                onBlur: '^/sets/nBase/Main/onBlur',
+                                onFocus: '^/sets/nBase/Main/onFocus',
                             },
                             { _$useTag: 'span', _$cx: '^/_$cx', },
                             true
@@ -46702,7 +46704,12 @@ function splitSets(elements) {
 let constrElements = {
     sets: {
         base: { [SymTypes]: [] },
-        nBase: { [SymTypes]: [] },
+        nBase: {
+            [SymTypes]: [],
+            Main: {
+                onFocus: { $: '^/fn/focus|^/_usr/unSelectField' }
+            }
+        },
         null: { [SymTypes]: ['null'] },
         string: { [SymTypes]: ['string'] },
         number: { [SymTypes]: ['number'] },
@@ -46776,6 +46783,16 @@ let constrElements = {
                 this.api.set('./@/params/fieldSelected', !curSelected);
                 mainForm.api.set('/@/fieldSelected', curSelected ? '' : this.path);
                 event.stopPropagation();
+            }
+        },
+        unSelectField() {
+            let mainForm = this.pFForm.parent;
+            if (mainForm) {
+                let fieldSelected = mainForm.api.get('/@/fieldSelected');
+                if (fieldSelected) {
+                    this.api.set(fieldSelected + '@/params/fieldSelected', false);
+                    mainForm.api.set('/@/fieldSelected', '');
+                }
             }
         },
         ifTrue: function (value) {
@@ -48343,6 +48360,23 @@ const getStorage = function (key) {
 const setStorage = function (key, value) {
     key && localStorage.setItem(key, LZString.compress(JSON.stringify(value)));
 };
+document && document.body.addEventListener("keydown", function (e) {
+    e = e || window.event;
+    if (e.ctrlKey) {
+        if ((e.code == 'KeyC' || e.code == 'KeyX')) {
+            if (!window['_RefFFormConstructor'])
+                return;
+            let rootField = window['_RefFFormConstructor'].getRef('/@');
+            mainElements._usr.cutCopyField.call(rootField, e.code == 'KeyC');
+        }
+        else if (e.code == 'KeyV') {
+            if (!window['_RefFFormConstructor'])
+                return;
+            let rootField = window['_RefFFormConstructor'].getRef('/@');
+            mainElements._usr.pasteField.call(rootField);
+        }
+    }
+}, false);
 const schemaTemplate = {
     "elements": {
         "links": [
@@ -48802,8 +48836,8 @@ class ConstrView extends React.PureComponent {
         else
             return null;
         return (React.createElement("div", { className: 'inline layout' },
-            React.createElement(fform_1.FForm, Object.assign({ parent: self.props.$FField.pFForm, touched: true, "_$useTag": 'div', className: 'layout', style: { width: '60%' }, core: self.schemaCore }, (self.props.schemaProps || {}), { disabled: self.props.disabled, value: self._formValues, onChange: self._schemaChange })),
-            React.createElement(fform_1.FForm, Object.assign({ touched: true, "_$useTag": 'div', className: 'layout', style: { width: '40%' }, core: self.viewerCore }, (self.props.viewerProps || {}), { disabled: self.props.disabled, value: self.props.value, onChange: self._viewerChange }))));
+            React.createElement(fform_1.FForm, Object.assign({ parent: self.props.$FField.pFForm, touched: true, "_$useTag": 'div', className: 'layout', style: { width: '55%' }, core: self.schemaCore }, (self.props.schemaProps || {}), { disabled: self.props.disabled, value: self._formValues, onChange: self._schemaChange })),
+            React.createElement(fform_1.FForm, Object.assign({ touched: true, "_$useTag": 'div', className: 'layout', style: { width: '45%' }, core: self.viewerCore }, (self.props.viewerProps || {}), { disabled: self.props.disabled, value: self.props.value, onChange: self._viewerChange }))));
     }
 }
 const mainSchema = {
@@ -48892,7 +48926,8 @@ const mainSchema = {
             type: 'string',
             default: '0',
             ff_presets: 'radio:inlineItems:inlineTitle:shrink',
-            ff_dataMap: [{ from: './@/value', to: '../@/selectorValue' }]
+            ff_dataMap: [{ from: './@/value', to: '../@/selectorValue' }],
+            ff_custom: { Main: { className: { wrap: true } } }
         },
         value: {
             type: ['array', 'object'],
@@ -49008,7 +49043,7 @@ class MainView extends React.PureComponent {
                 React.createElement("div", { className: "modal" },
                     React.createElement("a", { className: "close", onClick: this.closeModal }, "\u00D7"),
                     self.state.text)),
-            React.createElement(fform_1.FForm, Object.assign({ touched: true, "_$useTag": 'div', onChange: (v) => setStorage(self.core.get('/@/storageName'), v), core: self.core }, self.props))));
+            React.createElement(fform_1.FForm, Object.assign({ ref: (r) => window && (window['_RefFFormConstructor'] = r), touched: true, "_$useTag": 'div', onChange: (v) => setStorage(self.core.get('/@/storageName'), v), core: self.core }, self.props))));
     }
 }
 exports.default = MainView;

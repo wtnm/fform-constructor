@@ -8,7 +8,6 @@ import {getCreateIn, getIn, isArray, isEqual, isFunction, isUndefined, merge, ob
 import {formValues2JSON, JSON2formValues} from './constrUtils'
 import {object2PathValues, path2string, SymData, types} from "fform/src/stateLib";
 import Popup from "reactjs-popup";
-import {isIdentifier} from "@babel/types";
 // import constrSchema from './constrSchema'
 
 const LZString = require('lz-string');
@@ -30,6 +29,20 @@ const setStorage = function (key: string, value: any) {
   );
 };
 
+document && document.body.addEventListener("keydown", function (e) {
+  e = e || window.event;
+  if (e.ctrlKey) {
+    if ((e.code == 'KeyC' || e.code == 'KeyX')) {
+      if (!window['_RefFFormConstructor']) return;
+      let rootField = window['_RefFFormConstructor'].getRef('/@');
+      mainElements._usr.cutCopyField.call(rootField, e.code == 'KeyC')
+    } else if (e.code == 'KeyV') {
+      if (!window['_RefFFormConstructor']) return;
+      let rootField = window['_RefFFormConstructor'].getRef('/@');
+      mainElements._usr.pasteField.call(rootField)
+    }
+  }
+}, false);
 
 const schemaTemplate = {
   "elements": {
@@ -147,7 +160,7 @@ const mainLib = {
         const value = schemaApi.getValue({path: fieldSelected});
         this.api.set('/@/fieldSaved', value, {replace: true});
         if (!copy) {
-          schemaApi.arrayItemOps(fieldSelected, 'del')
+          schemaApi.arrayItemOps(fieldSelected, 'del');
           schemaApi.set(fieldSelected + '@/params/fieldSelected', false);
           this.api.set('/@/fieldSelected', '');
         }
@@ -515,9 +528,9 @@ class ConstrView extends React.PureComponent<any, any> {
     else return null;
 
     return (<div className='inline layout'>
-      <FForm parent={self.props.$FField.pFForm} touched _$useTag='div' className='layout' style={{width: '60%'}} core={self.schemaCore} {...(self.props.schemaProps || {})}
+      <FForm parent={self.props.$FField.pFForm} touched _$useTag='div' className='layout' style={{width: '55%'}} core={self.schemaCore} {...(self.props.schemaProps || {})}
              disabled={self.props.disabled} value={self._formValues} onChange={self._schemaChange}/>
-      <FForm touched _$useTag='div' className='layout' style={{width: '40%'}} core={self.viewerCore} {...(self.props.viewerProps || {})}
+      <FForm touched _$useTag='div' className='layout' style={{width: '45%'}} core={self.viewerCore} {...(self.props.viewerProps || {})}
              disabled={self.props.disabled} value={self.props.value} onChange={self._viewerChange}/>
     </div>)
   }
@@ -610,7 +623,8 @@ const mainSchema: JsonSchema = {
       type: 'string',
       default: '0',
       ff_presets: 'radio:inlineItems:inlineTitle:shrink',
-      ff_dataMap: [{from: './@/value', to: '../@/selectorValue'}]
+      ff_dataMap: [{from: './@/value', to: '../@/selectorValue'}],
+      ff_custom: {Main: {className: {wrap: true}}}
     },
 
     value: {
@@ -734,7 +748,7 @@ class MainView extends React.PureComponent<any, any> {
           {self.state.text}
         </div>
       </Popup>
-      <FForm touched _$useTag='div' onChange={(v: any) => setStorage(self.core.get('/@/storageName'), v)} core={self.core} {...self.props}/>
+      <FForm ref={(r) => window && (window['_RefFFormConstructor'] = r)} touched _$useTag='div' onChange={(v: any) => setStorage(self.core.get('/@/storageName'), v)} core={self.core} {...self.props}/>
     </div>)
   }
 }

@@ -792,6 +792,66 @@
             "links": [],
             "code": {
                 "type": "object",
+                "definitions": {
+                    "someField": {
+                        "type": "string",
+                        "title": "someField",
+                        "ff_presets": "string:inlineTitle"
+                    }
+                },
+                "ff_layout": {
+                    "$_fields": [
+                        "someFieldRef",
+                        "someFieldExten"
+                    ]
+                },
+                "properties": {
+                    "someFieldRef": {
+                        "$ref": "#/definitions/someField"
+                    },
+                    "someFieldExten": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/someField"
+                            },
+                            {
+                                "title": "someFieldExten"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": ""
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": ""
+            }
+        },
+        "name": "schema exten"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
                 "ff_layout": {
                     "$_fields": [
                         "reactSelect",
@@ -973,19 +1033,11 @@
                         ],
                         "ff_layout": {
                             "$_fields": [
-                                "json",
-                                "sync"
+                                "sync",
+                                "schema"
                             ]
                         },
                         "properties": {
-                            "schema": {
-                                "type": "string",
-                                "pattern": "json",
-                                "title": "json",
-                                "default": "json",
-                                "ff_presets": "string:inlineTitle",
-                                "ff_placeholder": "Enter \"json\" to pass validation..."
-                            },
                             "sync": {
                                 "type": "string",
                                 "title": "sync",
@@ -998,6 +1050,14 @@
                                     }
                                 ],
                                 "ff_placeholder": "Enter \"sync\" to pass validation..."
+                            },
+                            "schema": {
+                                "type": "string",
+                                "pattern": "json",
+                                "title": "json",
+                                "default": "json",
+                                "ff_presets": "string:inlineTitle",
+                                "ff_placeholder": "Enter \"json\" to pass validation..."
                             }
                         }
                     },

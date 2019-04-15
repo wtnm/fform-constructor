@@ -32,7 +32,12 @@ function splitSets(elements: any) {
 let constrElements = {
   sets: {
     base: {[SymTypes]: []},
-    nBase: {[SymTypes]: []},
+    nBase: {
+      [SymTypes]: [],
+      Main: {
+        onFocus: {$: '^/fn/focus|^/_usr/unSelectField'}
+      }
+    },
     null: {[SymTypes]: ['null']},
     string: {[SymTypes]: ['string']},
     number: {[SymTypes]: ['number']},
@@ -105,6 +110,16 @@ let constrElements = {
         this.api.set('./@/params/fieldSelected', !curSelected);
         mainForm.api.set('/@/fieldSelected', curSelected ? '' : this.path);
         event.stopPropagation();
+      }
+    },
+    unSelectField() {
+      let mainForm = this.pFForm.parent;
+      if (mainForm) {
+        let fieldSelected = mainForm.api.get('/@/fieldSelected');
+        if (fieldSelected) {
+          this.api.set(fieldSelected + '@/params/fieldSelected', false);
+          mainForm.api.set('/@/fieldSelected', '');
+        }
       }
     },
     ifTrue: function (value: any) {
