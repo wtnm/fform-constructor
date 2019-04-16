@@ -5004,12 +5004,12 @@ function classNames(...styles) {
 //  elements
 /////////////////////////////////////////////
 let elementsBase = {
-    extend: function (elements, opts) {
+    extend(elements, opts) {
         return commonLib_1.merge.all(this, elements, opts);
     },
     types: ['string', 'integer', 'number', 'object', 'array', 'boolean', 'null'],
     widgets: {
-        FSection: FSection,
+        Section: FSection,
         Generic: GenericWidget,
         Input: UniversalInput,
         Autowidth: Autowidth,
@@ -5171,7 +5171,7 @@ let elementsBase = {
         object: {
             $_ref: '^/sets/base',
             Main: {
-                _$widget: '^/widgets/FSection',
+                _$widget: '^/widgets/Section',
                 _$cx: '^/_$cx',
                 $_reactRef: true,
                 uniqKey: 'params/uniqKey',
@@ -5276,78 +5276,47 @@ let elementsBase = {
         bnnDual: { Main: { children: { 0: { dual: true } } } }
     },
     fn: {
-        api: function (fn, ...args) { this.api[fn](...args); },
-        format: function (str, ...args) {
+        api(fn, ...args) { this.api[fn](...args); },
+        format(str, ...args) {
             return args.reduce((str, val, i) => str.replace('${' + i + '}', val), str);
         },
-        iif: (iif, trueVal, falseVaL) => (iif ? [trueVal] : [falseVaL]),
-        not: function (v) {
-            return [!v];
-        },
-        equal: function (a, ...args) { return [args.some(b => a === b)]; },
-        messages: function (messages, staticProps = {}) {
-            const { className: cnSP = {} } = staticProps, restSP = __rest(staticProps, ["className"]);
-            return [commonLib_1.objKeys(messages).map(priority => {
-                    const _a = messages[priority], { norender, texts, className = {} } = _a, rest = __rest(_a, ["norender", "texts", "className"]);
-                    const children = [];
-                    commonLib_1.objKeys(texts).forEach((key) => commonLib_1.toArray(texts[key]).forEach((v, i, arr) => (commonLib_1.isString(v) && commonLib_1.isString(children[children.length - 1])) ? children.push(v, { _$widget: 'br' }) : children.push(v)));
-                    if (norender || !children.length)
-                        return null;
-                    return Object.assign({ children }, restSP, { className: Object.assign({ ['priority_' + priority]: true }, cnSP, className) }, rest);
-                })];
-        },
-        getArrayStart: function () { return [stateLib_1.arrayStart(this.schemaPart)]; },
-        getProp: function (key) { return [commonLib_1.getIn(this, stateLib_1.normalizePath(key))]; },
-        arrayOfEnum: function (enumVals, enumExten = {}, staticProps = {}, name) {
-            return [enumVals.map(val => {
-                    let extenProps = getExten(enumExten, val);
-                    return Object.assign({ value: val, key: val, children: [extenProps.label || val], name: name && (this.name + (name === true ? '' : name)) }, extenProps, staticProps);
-                })];
-        },
-        enumInputs: function (enumVals = [], enumExten = {}, containerProps = {}, inputProps = {}, labelProps = {}, name) {
-            // inputProps = this.wrapFns(inputProps);
-            return [enumVals.map(val => {
-                    let extenProps = getExten(enumExten, val);
-                    return Object.assign({ key: val }, containerProps, { children: [
-                            Object.assign({ value: val, name: name && (this.props.name + (name === true ? '' : name)) }, commonLib_1.merge(inputProps, extenProps)),
-                            Object.assign({}, labelProps, { children: [extenProps.label || val] })
-                        ] });
-                })];
-        },
-        enumInputProps: function (enumVals = [], ...rest) {
-            let props = {};
-            for (let i = 0; i < rest.length; i += 2)
-                props[rest[i]] = rest[i + 1];
-            return [enumVals.map(val => { return { 'children': { '0': props } }; })];
-        },
-        enumInputValue: function (enumVals = [], value, property = 'checked') {
-            value = commonLib_1.toArray(value);
-            return [enumVals.map(val => { return { 'children': { '0': { [property]: !!~value.indexOf(val) } } }; })];
-        },
+        iif(iif, trueVal, falseVaL, ...args) { return [iif ? trueVal : falseVaL, ...args]; },
+        not(v, ...args) { return [!v, ...args]; },
+        equal(a, ...args) { return [args.some(b => a === b)]; },
+        getArrayStart(...args) { return [stateLib_1.arrayStart(this.schemaPart), ...args]; },
+        getProp(key, ...args) { return [commonLib_1.getIn(this, stateLib_1.normalizePath(key)), ...args]; },
         eventValue: (event, ...args) => [event.target.value, ...args],
         eventChecked: (event, ...args) => [event.target.checked, ...args],
         eventMultiple: (event, ...args) => [Array.from(event.target.options).filter((o) => o.selected).map((v) => v.value), ...args],
-        parseNumber: (value, int = false, empty = null, ...rest) => [value === '' ? empty : (int ? parseInt : parseFloat)(value), ...rest],
-        setValue: function (value, opts = {}) { this.api.setValue(value, opts); },
-        arrayAdd: function (path, value = 1, opts = {}) {
-            this.api.arrayAdd(path, value, opts);
+        parseNumber: (value, int = false, empty = null, ...args) => [value === '' ? empty : (int ? parseInt : parseFloat)(value), ...args],
+        setValue(value, opts = {}, ...args) {
+            this.api.setValue(value, opts);
+            return args;
         },
-        arrayItemOps: function (path, key, opts = {}) { this.api.arrayItemOps(path, key, opts); },
-        focus: function (value) {
+        // arrayAdd(path: any, value: number = 1, opts: any = {}, ...args: any[]) {
+        //   this.api.arrayAdd(path, value, opts);
+        //   return args;
+        // },
+        // arrayItemOps(path: any, key: any, opts: any = {}, ...args: any[]) {
+        //   this.api.arrayItemOps(path, key, opts);
+        //   return args;
+        // },
+        focus(value, ...args) {
             this.api.set('/@/active', this.path, { noValidation: true });
-            //console.log('focus ', this.path);
+            return args;
         },
-        blur: function () {
+        blur(...args) {
             this.api.set('./', -1, { [stateLib_1.SymData]: ['status', 'untouched'], noValidation: true, macros: 'setStatus' });
             this.api.set('/@/active', undefined, { noValidation: true });
             this._updateCachedValue(true);
-            // console.log('blur ', this.path);
-            return [!this.liveValidate ? this.api.validate('./') : null]; // {execute: true}
+            !this.liveValidate && this.api.validate('./');
+            return args;
         },
-        updCached: function () {
+        updCached(...args) {
             this._forceUpd = true;
+            return args;
         },
-        eventCheckboxes: function (event) {
+        eventCheckboxes(event, ...args) {
             const selected = (this.getData().value || []).slice();
             const value = event.target.value;
             const at = selected.indexOf(value);
@@ -5358,12 +5327,50 @@ let elementsBase = {
                 updated.splice(at, 1);
             const all = this.getData().fData.enum;
             updated.sort((a, b) => all.indexOf(a) > all.indexOf(b));
-            return [updated];
+            return [updated, ...args];
         },
-        radioClear: function (value, nullValue = null) {
+        radioClear(value, nullValue = null, ...args) {
             if (this.api.getValue() === value)
                 this.api.setValue(nullValue);
-        }
+            return args;
+        },
+        messages(messages, staticProps = {}) {
+            const { className: cnSP = {} } = staticProps, restSP = __rest(staticProps, ["className"]);
+            return [commonLib_1.objKeys(messages).map(priority => {
+                    const _a = messages[priority], { norender, texts, className = {} } = _a, rest = __rest(_a, ["norender", "texts", "className"]);
+                    const children = [];
+                    commonLib_1.objKeys(texts).forEach((key) => commonLib_1.toArray(texts[key]).forEach((v, i, arr) => (commonLib_1.isString(v) && commonLib_1.isString(children[children.length - 1])) ? children.push(v, { _$widget: 'br' }) : children.push(v)));
+                    if (norender || !children.length)
+                        return null;
+                    return Object.assign({ children }, restSP, { className: Object.assign({ ['priority_' + priority]: true }, cnSP, className) }, rest);
+                })];
+        },
+        arrayOfEnum(enumVals, enumExten = {}, staticProps = {}, name) {
+            return [enumVals.map(val => {
+                    let extenProps = getExten(enumExten, val);
+                    return Object.assign({ value: val, key: val, children: [extenProps.label || val], name: name && (this.name + (name === true ? '' : name)) }, extenProps, staticProps);
+                })];
+        },
+        enumInputs(enumVals = [], enumExten = {}, containerProps = {}, inputProps = {}, labelProps = {}, name) {
+            // inputProps = this.wrapFns(inputProps);
+            return [enumVals.map(val => {
+                    let extenProps = getExten(enumExten, val);
+                    return Object.assign({ key: val }, containerProps, { children: [
+                            Object.assign({ value: val, name: name && (this.props.name + (name === true ? '' : name)) }, commonLib_1.merge(inputProps, extenProps)),
+                            Object.assign({}, labelProps, { children: [extenProps.label || val] })
+                        ] });
+                })];
+        },
+        enumInputProps(enumVals = [], ...rest) {
+            let props = {};
+            for (let i = 0; i < rest.length; i += 2)
+                props[rest[i]] = rest[i + 1];
+            return [enumVals.map(val => { return { 'children': { '0': props } }; })];
+        },
+        enumInputValue(enumVals = [], value, property = 'checked') {
+            value = commonLib_1.toArray(value);
+            return [enumVals.map(val => { return { 'children': { '0': { [property]: !!~value.indexOf(val) } } }; })];
+        },
     },
     parts: {
         RadioSelector: {
@@ -5436,7 +5443,7 @@ let elementsBase = {
         ArrayAddButton: {
             $_ref: '^/parts/Button',
             children: ['+'],
-            onClick: { $: '^/fn/arrayAdd', args: ['./'] },
+            onClick: { $: '^/fn/api', args: ['arrayAdd', './', 1] },
             $_maps: {
                 'className/hidden': { $: '^/fn/equal | ^/fn/not', args: ['@/fData/type', 'array'] },
                 'disabled': { $: '^/fn/equal', args: [true, { $: '^/fn/not', args: '@/fData/canAdd' }, '@params/disabled'] }
@@ -5445,7 +5452,7 @@ let elementsBase = {
         ArrayDelButton: {
             $_ref: '^/parts/Button',
             children: ['-'],
-            onClick: { $: '^/fn/arrayAdd', args: ['./', -1] },
+            onClick: { $: '^/fn/api', args: ['arrayAdd', './', -1] },
             $_maps: {
                 'className/hidden': { $: '^/fn/equal | ^/fn/not', args: ['@/fData/type', 'array'] },
                 'disabled': { $: '^/fn/equal', args: [true, { $: '^/fn/not', args: '@/length' }, '@params/disabled'] },
@@ -5460,7 +5467,7 @@ let elementsBase = {
             _$widget: '^/widgets/ItemMenu',
             _$cx: '^/_$cx',
             buttons: ['first', 'last', 'up', 'down', 'del'],
-            onClick: { $: '^/fn/arrayItemOps', args: ['./', '${value}'] },
+            onClick: { $: '^/fn/api', args: ['arrayItemOps', './', '${value}'] },
             buttonsProps: {
                 first: { disabledCheck: 'canUp' },
                 last: { disabledCheck: 'canDown' },
@@ -5470,7 +5477,7 @@ let elementsBase = {
             },
             $_maps: { arrayItem: '@/arrayItem', 'className/button-viewer': '@/params/viewer', disabled: '@params/disabled' },
         },
-        expander: { _$widget: 'div', className: { expand: true } }
+        Expander: { _$widget: 'div', className: { expand: true } }
     },
     _$cx: classNames
 };
@@ -6230,12 +6237,19 @@ function updateDirtyPROC(state, UPDATABLE, inital, currentChanges, track = [], f
     if (!schemaPart || isSelfManaged(state, track)) { //direct compare
         let current = commonLib_1.getIn(state, SymData, 'current', track);
         let value = forceDirty || current !== inital ? 1 : -1;
-        let path = schemaPart ? track : track.slice(0, -1);
-        state = updatePROC(state, UPDATABLE, makeNUpdate(path, ['status', 'dirty'], value, false, { macros: 'setStatus', }));
+        let path = track;
+        let keyPath = ['status', 'dirty'];
+        if (!schemaPart) {
+            path = path.slice();
+            keyPath.push(path.pop(), keyPath.pop());
+        }
+        state = updatePROC(state, UPDATABLE, makeNUpdate(path, keyPath, value, false, { macros: 'setStatus', }));
     }
     else {
         let keys = commonLib_1.objKeys(currentChanges || {});
         if (schemaPart.type == 'array') {
+            if (!~keys.indexOf('length'))
+                keys.push('length');
             let existKeys = branchKeys(commonLib_1.getIn(state, track));
             keys = keys.filter(k => isNaN(parseInt(k)) || ~existKeys.indexOf(k));
         }
@@ -6271,12 +6285,12 @@ function updateState(dispatch) {
         oldCurrent = commonLib_1.merge(oldCurrent, UPDATABLE.forceCheck);
         UPDATABLE.forceCheck = undefined;
     }
-    let currentChanges = commonLib_1.mergeState(oldCurrent, commonLib_1.getIn(state, SymData, 'current'), { diff: true }).changes;
-    if (prevState[SymData].inital !== state[SymData].inital) { // check dirty for all
-        state = updatePROC(state, UPDATABLE, makeNUpdate([], ['status', 'dirty'], 0, false, { macros: 'switch' })); //reset all dirty
-        state = setDirtyPROC(state, UPDATABLE, state[SymData].inital, state[SymData].current);
+    if (prevState[SymData].inital !== state[SymData].inital) { // check dirty for inital changes
+        let initalChanges = commonLib_1.mergeState(prevState[SymData].inital, state[SymData].inital, { diff: true }).changes;
+        state = updateDirtyPROC(state, UPDATABLE, state[SymData].inital, initalChanges);
     }
-    else if (currentChanges)
+    let currentChanges = commonLib_1.mergeState(oldCurrent, commonLib_1.getIn(state, SymData, 'current'), { diff: true }).changes;
+    if (currentChanges)
         state = updateDirtyPROC(state, UPDATABLE, state[SymData].inital, currentChanges); // check dirty only for changes
     state = setPristinePROC(state, UPDATABLE, state[SymData].inital);
     state = mergeUPD_PROC(state, UPDATABLE);
@@ -40598,7 +40612,7 @@ const FFormSchema = {
                                     {
                                         "$_ref": "^/parts/ArrayAddButton",
                                         "children": ["+field"],
-                                        onClick: { args: ["./fields", 1, { "setOneOf": 0 }] },
+                                        onClick: { args: { 1: "./fields", 3: { "setOneOf": 0 } } },
                                         style: { marginRight: '-1px' },
                                         $_maps: {
                                             'className/hidden': '!@/params/fieldsShown',
@@ -40608,7 +40622,7 @@ const FFormSchema = {
                                     {
                                         "$_ref": "^/parts/ArrayAddButton",
                                         "children": ["+object"],
-                                        onClick: { args: ["./fields", 1, { "setOneOf": 1 }] },
+                                        onClick: { args: { 1: "./fields", 3: { "setOneOf": 1 } } },
                                         $_maps: {
                                             'className/hidden': '!@/params/fieldsShown',
                                             disabled: false
@@ -40680,7 +40694,7 @@ const FFormSchema = {
                             {
                                 "$_ref": "^/parts/ArrayAddButton",
                                 "children": ["+field"],
-                                onClick: { args: ["./layout/fields", 1, { "setOneOf": 0 }] },
+                                onClick: { args: { 1: "./layout/fields", 3: { "setOneOf": 0 } } },
                                 style: { marginRight: '-1px' },
                                 $_maps: {
                                     'className/hidden': '@/params/fieldsAddHidden',
@@ -40690,7 +40704,7 @@ const FFormSchema = {
                             {
                                 "$_ref": "^/parts/ArrayAddButton",
                                 "children": ["+object"],
-                                onClick: { args: ["./layout/fields", 1, { "setOneOf": 1 }] },
+                                onClick: { args: { 1: "./layout/fields", 3: { "setOneOf": 1 } } },
                                 $_maps: {
                                     'className/hidden': '@/params/fieldsAddHidden',
                                     disabled: false
@@ -40789,7 +40803,7 @@ const FFormSchema = {
                                                         {
                                                             "$_ref": "^/parts/ArrayAddButton",
                                                             "children": ["+definition"],
-                                                            onClick: { args: ["./definitions", 1, { "setOneOf": 0 }] },
+                                                            onClick: { args: { 1: "./definitions", 3: { "setOneOf": 0 } } },
                                                             $_maps: {
                                                                 'className/hidden': false,
                                                                 disabled: false
@@ -40862,7 +40876,7 @@ const FFormSchema = {
                                         numberProps: {
                                             type: "object",
                                             ff_presets: 'object:inlineLayout:noTitle',
-                                            ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', { $_ref: '^/parts/expander' }],
+                                            ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', { $_ref: '^/parts/Expander' }],
                                             properties: {
                                                 multipleOf: {
                                                     title: 'Multiple of',
@@ -40903,7 +40917,7 @@ const FFormSchema = {
                                             ff_presets: 'object:noTitle',
                                             ff_layout: [{
                                                     className: { inline: true },
-                                                    $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', { $_ref: '^/parts/expander' }]
+                                                    $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', { $_ref: '^/parts/Expander' }]
                                                 }],
                                             // ff_params: {hidden: true},
                                             properties: {
@@ -41100,7 +41114,7 @@ const FFormSchema = {
                                                 {
                                                     "$_ref": "^/parts/ArrayAddButton",
                                                     "children": ["+validator"],
-                                                    onClick: { args: ["./ff_validators", 1, { "setOneOf": 0 }] },
+                                                    onClick: { args: { 1: "./ff_validators", 3: { "setOneOf": 0 } } },
                                                     style: { marginRight: '-1px' },
                                                     $_maps: {
                                                         'className/hidden': false,
@@ -41110,7 +41124,7 @@ const FFormSchema = {
                                                 {
                                                     "$_ref": "^/parts/ArrayAddButton",
                                                     "children": ["+dataMap"],
-                                                    onClick: { args: ["./ff_dataMap", 1, { "setOneOf": 0 }] },
+                                                    onClick: { args: { 1: "./ff_dataMap", 3: { "setOneOf": 0 } } },
                                                     $_maps: {
                                                         'className/hidden': false,
                                                         disabled: false
@@ -41161,7 +41175,7 @@ const FFormSchema = {
                                                         {
                                                             "$_ref": "^/parts/Button",
                                                             "children": ["x"],
-                                                            onClick: { $: '^/fn/arrayItemOps', args: ["./", 'del'] },
+                                                            onClick: { $: '^/fn/api', args: ["arrayItemOps", "./", 'del'] },
                                                             $_maps: {
                                                                 'className/hidden': false,
                                                                 disabled: false
@@ -41191,7 +41205,7 @@ const FFormSchema = {
                                                     $_fields: [{
                                                             "$_ref": "^/parts/Button",
                                                             "children": ["x"],
-                                                            onClick: { $: '^/fn/arrayItemOps', args: ["./", 'del'] },
+                                                            onClick: { $: '^/fn/api', args: ["arrayItemOps", "./", 'del'] },
                                                             $_maps: {
                                                                 'className/hidden': false,
                                                                 disabled: false
@@ -41218,7 +41232,7 @@ const FFormSchema = {
                                                 {
                                                     items: { type: "string" },
                                                     ff_data: { fData: { enum: paramsEnum } },
-                                                    ff_placeholder: 'Select params. Add leading "!" to set param to "false".',
+                                                    ff_placeholder: 'leading "!" set param to false.',
                                                     ff_custom: {
                                                         $_ref: '^/sets/inlineTitle:^/sets/expand',
                                                     }
@@ -41234,15 +41248,6 @@ const FFormSchema = {
                                                         {
                                                             style: { marginRight: '1em' }
                                                         },
-                                                        // {
-                                                        //   "$_ref": "^/parts/ArrayAddButton",
-                                                        //   "children": ["+property"],
-                                                        //   "onClick": '^/_usr/addCustom',
-                                                        //   $_maps: {
-                                                        //     'className/hidden': false,
-                                                        //     disabled: false, //{$: '^/fn/equal', args: ['@/params/selectorMapped', '', '$_parse']}
-                                                        //   }
-                                                        // },
                                                         {
                                                             "$_ref": "^/parts/Button",
                                                             "children": ["disable"],

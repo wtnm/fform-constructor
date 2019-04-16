@@ -117,6 +117,7 @@ const mainLib = {
       // const num = objKeys(value).length;
       value = value.concat(schemaTemplate);
       this.api.set('./value@value', value, {replace: true});
+      this.api.set('./selector@value', (value.length - 1).toString());
     },
     delSchema: function () {
       let selector = this.api.get('./selector@value');
@@ -621,7 +622,7 @@ const mainSchema: JsonSchema = {
   properties: {
     selector: {
       type: 'string',
-      default: '0',
+      default: '',
       ff_presets: 'radio:inlineItems:inlineTitle:shrink',
       ff_dataMap: [{from: './@/value', to: '../@/selectorValue'}],
       ff_custom: {Main: {className: {wrap: true}}}

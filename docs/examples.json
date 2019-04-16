@@ -634,7 +634,7 @@
                     ]
                 },
                 "properties": {
-                    "schema": {
+                    "json": {
                         "type": "string",
                         "pattern": "json",
                         "title": "json",

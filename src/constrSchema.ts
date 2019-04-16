@@ -162,7 +162,7 @@ const FFormSchema: JsonSchema = {
                   {
                     "$_ref": "^/parts/ArrayAddButton",
                     "children": ["+field"],
-                    onClick: {args: ["./fields", 1, {"setOneOf": 0}]},
+                    onClick: {args: {1: "./fields", 3: {"setOneOf": 0}}},
                     style: {marginRight: '-1px'},
                     $_maps: {
                       'className/hidden': '!@/params/fieldsShown',
@@ -172,7 +172,7 @@ const FFormSchema: JsonSchema = {
                   {
                     "$_ref": "^/parts/ArrayAddButton",
                     "children": ["+object"],
-                    onClick: {args: ["./fields", 1, {"setOneOf": 1}]},
+                    onClick: {args: {1: "./fields", 3: {"setOneOf": 1}}},
                     $_maps: {
                       'className/hidden': '!@/params/fieldsShown',
                       disabled: false
@@ -243,7 +243,7 @@ const FFormSchema: JsonSchema = {
             {
               "$_ref": "^/parts/ArrayAddButton",
               "children": ["+field"],
-              onClick: {args: ["./layout/fields", 1, {"setOneOf": 0}]},
+              onClick: {args: {1: "./layout/fields", 3: {"setOneOf": 0}}},// ["./layout/fields", 1, {"setOneOf": 0}]},
               style: {marginRight: '-1px'},
               $_maps: {
                 'className/hidden': '@/params/fieldsAddHidden',
@@ -253,7 +253,7 @@ const FFormSchema: JsonSchema = {
             {
               "$_ref": "^/parts/ArrayAddButton",
               "children": ["+object"],
-              onClick: {args: ["./layout/fields", 1, {"setOneOf": 1}]},
+              onClick: {args: {1: "./layout/fields", 3: {"setOneOf": 1}}},//["./layout/fields", 1, {"setOneOf": 1}]},
               $_maps: {
                 'className/hidden': '@/params/fieldsAddHidden',
                 disabled: false
@@ -353,7 +353,7 @@ const FFormSchema: JsonSchema = {
                           {
                             "$_ref": "^/parts/ArrayAddButton",
                             "children": ["+definition"],
-                            onClick: {args: ["./definitions", 1, {"setOneOf": 0}]},
+                            onClick: {args: {1: "./definitions", 3: {"setOneOf": 0}}},//["./definitions", 1, {"setOneOf": 0}]},
                             $_maps: {
                               'className/hidden': false,
                               disabled: false
@@ -426,7 +426,7 @@ const FFormSchema: JsonSchema = {
                     numberProps: {
                       type: "object",
                       ff_presets: 'object:inlineLayout:noTitle',
-                      ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', {$_ref: '^/parts/expander'}],
+                      ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', {$_ref: '^/parts/Expander'}],
                       properties: {
                         multipleOf: {
                           title: 'Multiple of',
@@ -467,7 +467,7 @@ const FFormSchema: JsonSchema = {
                       ff_presets: 'object:noTitle',
                       ff_layout: [{
                         className: {inline: true},
-                        $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', {$_ref: '^/parts/expander'}]
+                        $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', {$_ref: '^/parts/Expander'}]
                       }],
                       // ff_params: {hidden: true},
                       properties: {
@@ -675,7 +675,7 @@ const FFormSchema: JsonSchema = {
                         {
                           "$_ref": "^/parts/ArrayAddButton",
                           "children": ["+validator"],
-                          onClick: {args: ["./ff_validators", 1, {"setOneOf": 0}]},
+                          onClick: {args: {1: "./ff_validators", 3: {"setOneOf": 0}}},
                           style: {marginRight: '-1px'},
                           $_maps: {
                             'className/hidden': false,
@@ -685,7 +685,7 @@ const FFormSchema: JsonSchema = {
                         {
                           "$_ref": "^/parts/ArrayAddButton",
                           "children": ["+dataMap"],
-                          onClick: {args: ["./ff_dataMap", 1, {"setOneOf": 0}]},
+                          onClick: {args: {1: "./ff_dataMap", 3: {"setOneOf": 0}}},
                           $_maps: {
                             'className/hidden': false,
                             disabled: false
@@ -738,7 +738,7 @@ const FFormSchema: JsonSchema = {
                             {
                               "$_ref": "^/parts/Button",
                               "children": ["x"],
-                              onClick: {$: '^/fn/arrayItemOps', args: ["./", 'del']},
+                              onClick: {$: '^/fn/api', args: ["arrayItemOps", "./", 'del']},
                               $_maps: {
                                 'className/hidden': false,
                                 disabled: false
@@ -767,7 +767,7 @@ const FFormSchema: JsonSchema = {
                           $_fields: [{
                             "$_ref": "^/parts/Button",
                             "children": ["x"],
-                            onClick: {$: '^/fn/arrayItemOps', args: ["./", 'del']},
+                            onClick: {$: '^/fn/api', args: ["arrayItemOps", "./", 'del']},
                             $_maps: {
                               'className/hidden': false,
                               disabled: false
@@ -795,7 +795,7 @@ const FFormSchema: JsonSchema = {
                         {
                           items: {type: "string"},
                           ff_data: {fData: {enum: paramsEnum}},
-                          ff_placeholder: 'Select params. Add leading "!" to set param to "false".',
+                          ff_placeholder: 'leading "!" set param to false.',
                           ff_custom: {
                             $_ref: '^/sets/inlineTitle:^/sets/expand',
                           }
@@ -811,15 +811,6 @@ const FFormSchema: JsonSchema = {
                           {
                             style: {marginRight: '1em'}
                           },
-                          // {
-                          //   "$_ref": "^/parts/ArrayAddButton",
-                          //   "children": ["+property"],
-                          //   "onClick": '^/_usr/addCustom',
-                          //   $_maps: {
-                          //     'className/hidden': false,
-                          //     disabled: false, //{$: '^/fn/equal', args: ['@/params/selectorMapped', '', '$_parse']}
-                          //   }
-                          // },
                           {
                             "$_ref": "^/parts/Button",
                             "children": ["disable"],
