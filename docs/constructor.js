@@ -48628,7 +48628,7 @@ const viewerSchema = {
     ff_data: { selector: { value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',] } },
     ff_dataMap: [{ from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${0}'] }],
     ff_layout: {
-        style: { marginLeft: '1em' },
+        style: { marginLeft: '1em', display: 'block' },
         $_fields: [{
                 className: { inline: false }, $_fields: [
                     {
