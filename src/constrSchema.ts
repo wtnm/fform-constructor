@@ -49,7 +49,7 @@ const FFormSchema: JsonSchema = {
     combineArray: {
       type: "array",
       ff_presets: 'array:noTitle',
-      ff_dataMap: [{from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', '']}],
+      ff_dataMap: [{from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', '']}],
       ff_layout: ['^/_parts/emptyArray'],
       items: {
         oneOf:
@@ -191,9 +191,9 @@ const FFormSchema: JsonSchema = {
                   {
                     _$widget: '^/_widgets/ReactJson',
                     name: null,
-                    onAdd: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, {path: './value'}]},
-                    onEdit: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, {path: './value'}]},
-                    onDelete: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, {path: './value'}]},
+                    onAdd: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, {path: './value'}]},
+                    onEdit: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, {path: './value'}]},
+                    onDelete: {$: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, {path: './value'}]},
                     $_maps: {
                       src: '@/json'
                     }
@@ -210,7 +210,7 @@ const FFormSchema: JsonSchema = {
           type: "string",
           ff_placeholder: 'Enter JSON value...',
           ff_presets: 'string:expand:inlineTitle',
-          ff_validators: [{$: '^/_validators/testJSON', args: ['${value}', '../@/json']}],
+          ff_validators: [{$: '^/_validators/testJSON', args: ['${0}', '../@/json']}],
         },
       }
     },
@@ -479,8 +479,8 @@ const FFormSchema: JsonSchema = {
                           // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'field'}},
                           ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
                           ff_dataMap: [
-                            {from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'field']},
-                            {from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${value}', 'field']}, 1, 0]}
+                            {from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field']},
+                            {from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${0}', 'field']}, 1, 0]}
 
                           ]
                         },
@@ -549,8 +549,8 @@ const FFormSchema: JsonSchema = {
                           // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'object'}},
                           ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
                           ff_dataMap: [
-                            {from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'field']},
-                            {from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${value}', 'field']}, 1, 0]}
+                            {from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field']},
+                            {from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${0}', 'field']}, 1, 0]}
                           ]
                         },
                         additionalPropertiesField: {
@@ -748,7 +748,7 @@ const FFormSchema: JsonSchema = {
                         },
                         items: [
                           {type: 'string', ff_placeholder: 'Validator...', ff_presets: 'string:noArrayControls'},
-                          {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${value}"'}}]}
+                          {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${0}"'}}]}
                         ],
                         minItems: 1,
                         additionalItems: {$ref: '#/definitions/arg'},
@@ -779,7 +779,7 @@ const FFormSchema: JsonSchema = {
                           {type: 'string', ff_placeholder: 'From path...', ff_presets: 'string:noArrayControls'},
                           {type: 'string', ff_placeholder: 'Destination path...', ff_presets: 'string:noArrayControls'},
                           {type: 'string', ff_placeholder: 'Function', ff_presets: 'string:noArrayControls'},
-                          {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${value}"'}}]}
+                          {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${0}"'}}]}
                         ],
                         minItems: 3,
                         additionalItems: {$ref: '#/definitions/arg'},

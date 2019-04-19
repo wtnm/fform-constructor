@@ -3604,9 +3604,10 @@ function schemaCompiler(elements = {}, schema) {
         return schema;
     let { ff_validators, ff_dataMap, ff_oneOfSelector } = schema, rest = __rest(schema, ["ff_validators", "ff_dataMap", "ff_oneOfSelector"]);
     const result = commonLib_1.isArray(schema) ? [] : { ff_compiled: true };
-    ff_validators && (result.ff_validators = commonLib_1.toArray(objectResolver(elements, ff_validators)).map(f => stateLib_1.normalizeFn(f)));
+    const nFnOpts = { noStrictArrayResult: true };
+    ff_validators && (result.ff_validators = commonLib_1.toArray(objectResolver(elements, ff_validators)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
     ff_dataMap && (result.ff_dataMap = objectResolver(elements, ff_dataMap));
-    ff_oneOfSelector && (result.ff_oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(ff_oneOfSelector)));
+    ff_oneOfSelector && (result.ff_oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(ff_oneOfSelector, nFnOpts)));
     //if (isFunction(result.ff_oneOfSelector)) result.ff_oneOfSelector = {$: result.ff_oneOfSelector};
     commonLib_1.objKeys(rest).forEach(key => {
         if (key.substr(0, 3) == 'ff_')
@@ -3640,7 +3641,7 @@ function testRef(refRes, $_ref, track) {
         throw new Error('Reference "' + $_ref + '" leads to undefined object\'s property in path: ' + stateLib_1.path2string(track));
     return true;
 }
-function objectDerefer(_objects, obj2deref, track = []) {
+function objectDerefer(_elements, obj2deref, track = []) {
     if (!commonLib_1.isMergeable(obj2deref))
         return obj2deref;
     let { $_ref = '' } = obj2deref, restObj = __rest(obj2deref, ["$_ref"]);
@@ -3652,20 +3653,20 @@ function objectDerefer(_objects, obj2deref, track = []) {
         let path = stateLib_1.string2path($_ref[i]);
         if (path[0] !== '^')
             throw new Error('Can reffer only to ^');
-        let refRes = commonLib_1.getIn({ '^': _objects }, path);
+        let refRes = commonLib_1.getIn({ '^': _elements }, path);
         testRef(refRes, $_ref[i], track.concat('@' + i));
         if (commonLib_1.isMergeable(refRes))
-            refRes = objectDerefer(_objects, refRes, track.concat('@' + i));
+            refRes = objectDerefer(_elements, refRes, track.concat('@' + i));
         objs2merge.push(refRes);
     }
     let result = commonLib_1.isArray(obj2deref) ? [] : {};
     for (let i = 0; i < objs2merge.length; i++)
         result = commonLib_1.merge(result, objs2merge[i]);
-    return commonLib_1.merge(result, stateLib_1.objMap(restObj, objectDerefer.bind(null, _objects), track));
+    return commonLib_1.merge(result, stateLib_1.objMap(restObj, objectDerefer.bind(null, _elements), track));
     //objKeys(restObj).forEach(key => result[key] = isMergeable(restObj[key]) ? objectDerefer(_objects, restObj[key]) : restObj[key]);
 }
 exports.objectDerefer = objectDerefer;
-function objectResolver(_objects, obj2resolve, track = []) {
+function objectResolver(_elements, obj2resolve, track = []) {
     const convRef = (refs, prefix = '') => commonLib_1.deArray(refs.split('|').map((ref, i) => {
         ref = ref.trim();
         if (isRef(ref))
@@ -3677,23 +3678,20 @@ function objectResolver(_objects, obj2resolve, track = []) {
         return refRes;
     }));
     const isRef = (val) => val.substr(0, 2) == '^/';
-    const _objs = { '^': _objects };
-    const result = objectDerefer(_objects, obj2resolve);
+    const _objs = { '^': _elements };
+    const result = objectDerefer(_elements, obj2resolve);
     const retResult = commonLib_1.isArray(result) ? [] : {};
     commonLib_1.objKeys(result).forEach((key) => {
-        //const resolvedValue = isString(result[key]) && result[key].substr(0, 2) == '^/' ? convRef(result[key]) : result[key];
-        let resolvedValue = result[key];
-        if (commonLib_1.isString(resolvedValue) && isRef(resolvedValue.trim())) {
-            resolvedValue = convRef(resolvedValue);
-            if (key !== '$' && key[0] !== '_' && (commonLib_1.isFunction(resolvedValue) || commonLib_1.isArray(resolvedValue) && resolvedValue.every(commonLib_1.isFunction)))
-                resolvedValue = { $: resolvedValue };
+        let value = result[key];
+        if (commonLib_1.isString(value) && isRef(value.trim())) {
+            value = convRef(value);
+            if (key !== '$' && key[0] !== '_' && (commonLib_1.isFunction(value) || commonLib_1.isArray(value) && value.every(commonLib_1.isFunction)))
+                value = { $: value };
         }
-        if (key[0] == '_')
-            retResult[key] = resolvedValue; //do only resolve for keys that begins with _ 
-        else if (commonLib_1.isMergeable(resolvedValue))
-            retResult[key] = objectResolver(_objects, resolvedValue, track.concat(key));
+        if (key[0] !== '_' && commonLib_1.isMergeable(value))
+            retResult[key] = objectResolver(_elements, value, track.concat(key));
         else
-            retResult[key] = resolvedValue;
+            retResult[key] = value;
     });
     return retResult;
 }
@@ -4379,7 +4377,7 @@ class FField extends FRefsGeneric {
         if (commonLib_1.isFunction(val))
             val = { $: val };
         if (stateLib_1.isMapFn(val)) {
-            const map = val.norm ? val : stateLib_1.normalizeFn(val, self.wrapFns);
+            const map = val.norm ? val : stateLib_1.normalizeFn(val, { wrapFn: self.wrapFns });
             const fn = stateLib_1.processFn.bind(self, map);
             fn._map = map;
             return fn;
@@ -5007,7 +5005,7 @@ let elementsBase = {
     extend(elements, opts) {
         return commonLib_1.merge.all(this, elements, opts);
     },
-    types: ['string', 'integer', 'number', 'object', 'array', 'boolean', 'null'],
+    // types: ['string', 'integer', 'number', 'object', 'array', 'boolean', 'null'],
     widgets: {
         Section: FSection,
         Generic: GenericWidget,
@@ -5111,7 +5109,7 @@ let elementsBase = {
             $_ref: '^/sets/nBase',
             Main: {
                 type: 'number',
-                onChange: { $: '^/fn/eventValue|parseNumber|setValue', args: ['${value}', true, 0] },
+                onChange: { $: '^/fn/eventValue|parseNumber|setValue', args: ['${0}', true, 0] },
                 $_maps: {
                     value: { $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['@value', null] }, '', '@value'] },
                 }
@@ -5239,7 +5237,7 @@ let elementsBase = {
                                 '@/fData/enum',
                                 '@/fData/enumExten',
                                 { $_reactRef: { '$_reactRef': { '0': { 'ref': true } } } },
-                                { onChange: { args: [] } },
+                                { onChange: { args: ['${0}'] } },
                                 {},
                                 true
                             ],
@@ -5252,7 +5250,7 @@ let elementsBase = {
         },
         checkboxes: { $_ref: '^/sets/radio', Main: { $_maps: { children: { '0': { args: { '3': { type: 'checkbox', onChange: { $: '^/fn/eventCheckboxes|setValue|updCached' } }, '5': '[]' } } } } } },
         radioNull: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: '^/fn/eventValue|radioClear|updCached' } } } } } } },
-        radioEmpty: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: { $: '^/fn/eventValue|radioClear|updCached', args: ['${value}', ''] } } } } } } } },
+        radioEmpty: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: { $: '^/fn/eventValue|radioClear|updCached', args: ['${0}', ''] } } } } } } } },
         hidden: {
             Builder: {
                 className: { hidden: true },
@@ -5391,7 +5389,7 @@ let elementsBase = {
                             {
                                 _$widget: 'input',
                                 type: 'radio',
-                                onChange: { $: '^/fn/eventValue|setValue|updCached', args: ['${value}', { path: './@/selector/value' }] },
+                                onChange: { $: '^/fn/eventValue|setValue|updCached', args: ['${0}', { path: './@/selector/value' }] },
                                 onBlur: '^/sets/nBase/Main/onBlur',
                                 onFocus: '^/sets/nBase/Main/onFocus',
                             },
@@ -5467,7 +5465,7 @@ let elementsBase = {
             _$widget: '^/widgets/ItemMenu',
             _$cx: '^/_$cx',
             buttons: ['first', 'last', 'up', 'down', 'del'],
-            onClick: { $: '^/fn/api', args: ['arrayItemOps', './', '${value}'] },
+            onClick: { $: '^/fn/api', args: ['arrayItemOps', './', '${0}'] },
             buttonsProps: {
                 first: { disabledCheck: 'canUp' },
                 last: { disabledCheck: 'canDown' },
@@ -5777,7 +5775,7 @@ const additionalItemsSchema = commonLib_1.memoize(function (items) {
         oneOf: items,
         ff_oneOfSelector: normalizeFn(function () {
             return string2path(this.path).pop() % items.length;
-        })
+        }, { noStrictArrayResult: true })
     };
 });
 function getSchemaPart(schema, path, getOneOf, fullOneOf) {
@@ -5937,7 +5935,7 @@ function makeStateBranch(schema, getNSetOneOf, path = [], value) {
     if (commonLib_2.isUndefined(currentOneOf)) {
         const ff_oneOfSelector = schemaPartsOneOf[currentOneOf || 0].ff_oneOfSelector;
         if (ff_oneOfSelector) {
-            let setOneOf = processFn.call({ path: path2string(path) }, ff_oneOfSelector, value, false);
+            let setOneOf = processFn.call({ path: path2string(path) }, ff_oneOfSelector, value);
             if (commonLib_2.isArray(setOneOf))
                 setOneOf = setOneOf[0];
             currentOneOf = setOneOf;
@@ -6117,7 +6115,7 @@ function makeValidation(state, dispatch, action) {
             ff_validators.forEach((validator) => {
                 const updates = [];
                 field.updates = updates;
-                let result = processFn.call(field, validator, validatedValue, false);
+                let result = processFn.call(field, validator, validatedValue);
                 if (result && result.then && typeof result.then === 'function') { //Promise
                     result.validatedValue = validatedValue;
                     result.path = track;
@@ -6363,7 +6361,7 @@ function updateCurrentPROC(state, UPDATABLE, value, replace, track = [], setOneO
         if (oneOfSelector) {
             //const field = makeSynthField(UPDATABLE.api, path2string(track));
             const ff_oneOfSelector = parts[currentOneOf].ff_oneOfSelector;
-            setOneOf = processFn.call({ path: path2string(track) }, ff_oneOfSelector, value, false);
+            setOneOf = processFn.call({ path: path2string(track) }, ff_oneOfSelector, value);
             if (commonLib_2.isArray(setOneOf))
                 setOneOf = setOneOf[0];
         }
@@ -6979,11 +6977,13 @@ function normalizeArgs(args, wrapFn) {
     return { dataRequest, args, norm: true };
 }
 exports.normalizeArgs = normalizeArgs;
-function normalizeFn(fn, wrapFn, dontAddValue) {
-    let nFn = !commonLib_2.isObject(fn) ? { $: fn } : fn;
-    nFn = Object.assign({}, nFn, normalizeArgs(nFn.args, wrapFn));
-    if (!nFn.args.length && !dontAddValue)
-        nFn.args = ['${value}'];
+function normalizeFn(fn, opts = {}) {
+    const { wrapFn } = opts, restOpts = __rest(opts, ["wrapFn"]);
+    let nFn = !commonLib_2.isObject(fn) ? Object.assign({ $: fn }, restOpts) : Object.assign({}, fn, restOpts);
+    if (nFn.args)
+        Object.assign(nFn, normalizeArgs(nFn.args, opts.wrapFn));
+    else
+        nFn.args = ['${0}'];
     return nFn;
 }
 exports.normalizeFn = normalizeFn;
@@ -7006,19 +7006,28 @@ function processProp(nextData, arg) {
     }
 }
 exports.processProp = processProp;
-function processFn(map, value, strictArrayResult = true) {
-    const processArg = (arg) => {
-        if (isNPath(arg))
-            return processProp(nextData, arg);
-        if (isMapFn(arg))
-            return !arg._map ? processFn.call(this, arg, value, strictArrayResult) : arg(value, strictArrayResult);
-        if (arg == '${value}')
-            return value;
-        return arg;
+function processFn(map, ...rest) {
+    const processArg = (args) => {
+        const resArgs = [];
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i];
+            if (isNPath(arg))
+                resArgs.push(processProp(nextData, arg));
+            else if (isMapFn(arg))
+                resArgs.push(!arg._map ? processFn.call(this, arg, ...rest) : arg(...rest));
+            else if (arg == '${...}')
+                resArgs.push(...rest);
+            else if (arg == '${0}')
+                resArgs.push(rest[0]);
+            else
+                resArgs.push(arg);
+        }
+        return resArgs;
     };
     const nextData = map.dataRequest ? this.getData() : null;
-    const res = commonLib_1.toArray(map.$).reduce((args, fn) => commonLib_2.isFunction(fn) ? (strictArrayResult ? testArray : commonLib_1.toArray)(fn.apply(this, args)) : args, (map.args || []).map(processArg));
-    return strictArrayResult ? testArray(res)[0] : commonLib_1.deArray(res);
+    const prArgs = processArg(map.args);
+    const res = commonLib_1.toArray(map.$).reduce((args, fn) => commonLib_2.isFunction(fn) ? (map.noStrictArrayResult ? commonLib_1.toArray : testArray)(fn.apply(this, args)) : args, prArgs);
+    return map.noStrictArrayResult ? commonLib_1.deArray(res) : testArray(res)[0];
 }
 exports.processFn = processFn;
 
@@ -40502,7 +40511,7 @@ const FFormSchema = {
         combineArray: {
             type: "array",
             ff_presets: 'array:noTitle',
-            ff_dataMap: [{ from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', ''] }],
+            ff_dataMap: [{ from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', ''] }],
             ff_layout: ['^/_parts/emptyArray'],
             items: {
                 oneOf: [{ $ref: '#/definitions/fieldTop' }]
@@ -40641,9 +40650,9 @@ const FFormSchema = {
                                     {
                                         _$widget: '^/_widgets/ReactJson',
                                         name: null,
-                                        onAdd: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, { path: './value' }] },
-                                        onEdit: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, { path: './value' }] },
-                                        onDelete: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${value}', null, null, { path: './value' }] },
+                                        onAdd: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, { path: './value' }] },
+                                        onEdit: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, { path: './value' }] },
+                                        onDelete: { $: '^/_usr/reactJsonParse|jsonStringify|^/fn/setValue', args: ['${0}', null, null, { path: './value' }] },
                                         $_maps: {
                                             src: '@/json'
                                         }
@@ -40660,7 +40669,7 @@ const FFormSchema = {
                     type: "string",
                     ff_placeholder: 'Enter JSON value...',
                     ff_presets: 'string:expand:inlineTitle',
-                    ff_validators: [{ $: '^/_validators/testJSON', args: ['${value}', '../@/json'] }],
+                    ff_validators: [{ $: '^/_validators/testJSON', args: ['${0}', '../@/json'] }],
                 },
             }
         },
@@ -40929,8 +40938,8 @@ const FFormSchema = {
                                                     // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'field'}},
                                                     ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
                                                     ff_dataMap: [
-                                                        { from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'field'] },
-                                                        { from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${value}', 'field'] }, 1, 0] }
+                                                        { from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field'] },
+                                                        { from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${0}', 'field'] }, 1, 0] }
                                                     ]
                                                 },
                                                 additionalItemsField: {
@@ -40996,8 +41005,8 @@ const FFormSchema = {
                                                     // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'object'}},
                                                     ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
                                                     ff_dataMap: [
-                                                        { from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', 'field'] },
-                                                        { from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${value}', 'field'] }, 1, 0] }
+                                                        { from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field'] },
+                                                        { from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${0}', 'field'] }, 1, 0] }
                                                     ]
                                                 },
                                                 additionalPropertiesField: {
@@ -41186,7 +41195,7 @@ const FFormSchema = {
                                                 },
                                                 items: [
                                                     { type: 'string', ff_placeholder: 'Validator...', ff_presets: 'string:noArrayControls' },
-                                                    { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${value}"' } }] }
+                                                    { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${0}"' } }] }
                                                 ],
                                                 minItems: 1,
                                                 additionalItems: { $ref: '#/definitions/arg' },
@@ -41216,7 +41225,7 @@ const FFormSchema = {
                                                     { type: 'string', ff_placeholder: 'From path...', ff_presets: 'string:noArrayControls' },
                                                     { type: 'string', ff_placeholder: 'Destination path...', ff_presets: 'string:noArrayControls' },
                                                     { type: 'string', ff_placeholder: 'Function', ff_presets: 'string:noArrayControls' },
-                                                    { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${value}"' } }] }
+                                                    { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${0}"' } }] }
                                                 ],
                                                 minItems: 3,
                                                 additionalItems: { $ref: '#/definitions/arg' },

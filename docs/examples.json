@@ -191,7 +191,7 @@
                                     }
                                 },
                                 {
-                                    "$_ref": "^/parts/expander"
+                                    "$_ref": "^/parts/Expander"
                                 }
                             ]
                         },
@@ -395,13 +395,11 @@
                                             "+string"
                                         ],
                                         "onClick": {
-                                            "args": [
-                                                "./",
-                                                1,
-                                                {
+                                            "args": {
+                                                "3": {
                                                     "setOneOf": 0
                                                 }
-                                            ]
+                                            }
                                         }
                                     },
                                     {
@@ -410,13 +408,11 @@
                                             "+number"
                                         ],
                                         "onClick": {
-                                            "args": [
-                                                "./",
-                                                1,
-                                                {
+                                            "args": {
+                                                "3": {
                                                     "setOneOf": 1
                                                 }
-                                            ]
+                                            }
                                         }
                                     },
                                     {
@@ -425,13 +421,11 @@
                                             "+boolean"
                                         ],
                                         "onClick": {
-                                            "args": [
-                                                "./",
-                                                1,
-                                                {
+                                            "args": {
+                                                "3": {
                                                     "setOneOf": 2
                                                 }
-                                            ]
+                                            }
                                         }
                                     },
                                     {
@@ -574,7 +568,7 @@
                                 "to": "../hide/@params/hidden",
                                 "$": "^/fn/equal",
                                 "args": [
-                                    "${value}",
+                                    "${0}",
                                     "hide"
                                 ]
                             }
@@ -648,7 +642,9 @@
                         "ff_validators": [
                             {
                                 "$": "^/validators/sync",
-                                "args": []
+                                "args": [
+                                    "${0}"
+                                ]
                             }
                         ],
                         "ff_placeholder": "Enter \"sync\" to pass validation..."
@@ -660,7 +656,9 @@
                         "ff_validators": [
                             {
                                 "$": "^/validators/async",
-                                "args": []
+                                "args": [
+                                    "${0}"
+                                ]
                             }
                         ],
                         "ff_placeholder": "Enter \"async\" to pass validation..."
@@ -927,7 +925,7 @@
                         "$": "^/fn/api",
                         "args": [
                             "showOnly",
-                            "${value}"
+                            "${0}"
                         ]
                     }
                 ],
@@ -979,7 +977,7 @@
                                     }
                                 },
                                 {
-                                    "$_ref": "^/parts/expander"
+                                    "$_ref": "^/parts/Expander"
                                 },
                                 {
                                     "$_ref": "^/parts/Button",
@@ -1046,7 +1044,9 @@
                                 "ff_validators": [
                                     {
                                         "$": "^/validators/sync",
-                                        "args": []
+                                        "args": [
+                                            "${0}"
+                                        ]
                                     }
                                 ],
                                 "ff_placeholder": "Enter \"sync\" to pass validation..."
@@ -1089,7 +1089,9 @@
                                 "ff_validators": [
                                     {
                                         "$": "^/validators/async",
-                                        "args": []
+                                        "args": [
+                                            "${0}"
+                                        ]
                                     }
                                 ],
                                 "ff_placeholder": "Enter \"async\" to pass validation..."

@@ -288,7 +288,7 @@ const viewerSchema: JsonSchema = {
 
   type: 'object',
   ff_data: {selector: {value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',]}},
-  ff_dataMap: [{from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${value}']}],
+  ff_dataMap: [{from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${0}']}],
   ff_layout: {
     style: {marginLeft: '1em'},
     $_fields: [{
@@ -324,7 +324,7 @@ const viewerSchema: JsonSchema = {
           _$cx: '^/_$cx',
           type: 'textarea',
           className: {height: true, 'wrapper-margin': true},
-          onChange: {$: '^/fn/eventValue|^/fn/setValue', args: ['${value}', {path: './@value2schema', execute: true}]},
+          onChange: {$: '^/fn/eventValue|^/fn/setValue', args: ['${0}', {path: './@value2schema', execute: true}]},
           $_maps: {
             'className/hidden': {$: '^/fn/not', args: '@/params/fromValue'},
             value: '@value2schema',
@@ -636,7 +636,7 @@ const mainSchema: JsonSchema = {
       ff_dataMap: [
         {from: './@/value', to: '../selector/@/fData/enum', $: '^/_usr/schemaNames', replace: false},
         {from: '../selector@value', to: './@/selectorValue'},
-        {from: './@/selectorValue', to: './@params/hidden', $: '^/fn/equal|^/fn/not', args: ['${value}', '']},
+        {from: './@/selectorValue', to: './@params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', '']},
         {from: './@/value,selectorValue', to: '../viewer@value', $: '^/_usr/setViewerValue', args: ['@value', '@selectorValue']}
 
       ],
@@ -655,7 +655,7 @@ const mainSchema: JsonSchema = {
       type: 'object',
       ff_managed: true,
       ff_presets: 'base',
-      ff_dataMap: [{from: './@num', to: './@params/hidden', $: '^/fn/equal', args: ['${value}', '']}],
+      ff_dataMap: [{from: './@num', to: './@params/hidden', $: '^/fn/equal', args: ['${0}', '']}],
       ff_custom: {
         Main: {
           _$widget: ConstrView,
