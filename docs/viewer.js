@@ -4097,9 +4097,13 @@ exports.formReducer = api_1.formReducer;
 class FForm extends react_1.Component {
     constructor(props, context) {
         super(props, context);
+        this._methods = { onSubmit: null, onChange: null, onStateChange: null };
+        this.wrapFns = bindProcessorToThis;
         const self = this;
         let { core: coreParams } = props;
         self.api = coreParams instanceof api_1.FFormStateAPI ? coreParams : self._getCoreFromParams(coreParams, context);
+        Object.defineProperty(self, "elements", { get: () => self.api.props.elements });
+        Object.defineProperty(self, "valid", { get: () => self.api.get('/@/status/valid') });
         self.parent = props.parent;
         // self.focus = self.focus.bind(self);
         const nextProps = Object.assign({}, props);
@@ -4109,16 +4113,23 @@ class FForm extends react_1.Component {
             if (!commonLib_1.isUndefined(nextProps[k]))
                 nextProps[k] = (v) => commonLib_1.isUndefined(v) ? props[k] : v;
         });
+        self._updateMethods(props);
         self._updateValues(nextProps);
-        // self.api.reset({status: 'untouched'});
         if (!props.noValidation)
             self.api.validate(true);
         self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
         self._setRef = self._setRef.bind(self);
         self._submit = self._submit.bind(self);
         self._getPath = self._getPath.bind(self);
-        Object.defineProperty(self, "elements", { get: () => self.api.props.elements });
-        Object.defineProperty(self, "valid", { get: () => self.api.get('/@/status/valid') });
+    }
+    _updateMethods(nextProps, prevProps = {}) {
+        const self = this;
+        const newMethods = {};
+        commonLib_1.objKeys(self._methods).forEach(key => {
+            if (prevProps[key] !== nextProps[key])
+                newMethods[key] = nextProps[key];
+        });
+        Object.assign(self._methods, self.wrapFns(api_1.objectResolver(self.elements, newMethods), { noStrictArrayResult: true }));
     }
     _setRef(FField) {
         this._root = FField;
@@ -4144,12 +4155,12 @@ class FForm extends react_1.Component {
         if (self._savedState == state)
             return;
         self._savedState = state;
-        if (self.props.onStateChange)
-            self.props.onStateChange(state, self);
+        if (self._methods.onStateChange)
+            self._methods.onStateChange(state, self);
         if (state[stateLib_1.SymData].current !== self._savedValue) {
             self._savedValue = state[stateLib_1.SymData].current;
-            if (self.props.onChange)
-                self.props.onChange(self._savedValue, self);
+            if (self._methods.onChange)
+                self._methods.onChange(self._savedValue, self);
         }
         if (self._root)
             self._root.setState({ branch: state });
@@ -4158,9 +4169,9 @@ class FForm extends react_1.Component {
         const self = this;
         const setPending = (val) => self.api.set([], val, { [stateLib_1.SymData]: ['status', 'pending'] });
         self.api.set([], 0, { [stateLib_1.SymData]: ['status', 'untouched'], execute: true, macros: 'switch' });
-        if (self.props.onSubmit) {
+        if (self._methods.onSubmit) {
             self.api.setMessages(null, { execute: true });
-            let result = self.props.onSubmit(event, self._savedValue, self);
+            let result = self._methods.onSubmit(event, self._savedValue, self);
             if (result && result.then && typeof result.then === 'function') { //Promise
                 setPending(1);
                 result.then((val) => {
@@ -4192,6 +4203,7 @@ class FForm extends react_1.Component {
             self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
             FFrormApiUpdate = true;
         }
+        self._updateMethods(nextProps, self.props);
         self._updateValues(nextProps, self.props);
         return FFrormApiUpdate || !commonLib_1.isEqual(self.props, nextProps, { skipKeys: ['core', 'state', 'value', 'inital', 'extData', 'fieldCache', 'flatten', 'noValidate', 'parent', 'onSubmit', 'onChange', 'onStateChange'] });
     }
@@ -4274,6 +4286,7 @@ class FField extends FRefsGeneric {
         this._maps = {};
         this._forceUpd = false;
         this.get = null;
+        this.wrapFns = bindProcessorToThis;
         const self = this;
         Object.defineProperty(self, "path", { get: () => self.props.getPath() });
         Object.defineProperty(self, "pFForm", { get: () => self.props.pFForm });
@@ -4284,7 +4297,6 @@ class FField extends FRefsGeneric {
         self.state = { branch: self.pFForm.getBranch(self.path) };
         self.$branch = self.state.branch;
         self._updateStateApi(props.pFForm.api);
-        self.wrapFns = self.wrapFns.bind(self);
     }
     getRef(path) {
         path = stateLib_1.normalizePath(path);
@@ -4371,23 +4383,6 @@ class FField extends FRefsGeneric {
             return true;
         }
         return;
-    }
-    wrapFns(val) {
-        const self = this;
-        if (commonLib_1.isFunction(val))
-            val = { $: val };
-        if (stateLib_1.isMapFn(val)) {
-            const map = val.norm ? val : stateLib_1.normalizeFn(val, { wrapFn: self.wrapFns });
-            const fn = stateLib_1.processFn.bind(self, map);
-            fn._map = map;
-            return fn;
-        }
-        else if (commonLib_1.isMergeable(val)) {
-            const result = commonLib_1.isArray(val) ? [] : {};
-            commonLib_1.objKeys(val).forEach(key => result[key] = key[0] != '_' ? self.wrapFns(val[key]) : val[key]); //!~ignore.indexOf(key) &&
-            return result;
-        }
-        return val;
     }
     _build() {
         const self = this;
@@ -4875,6 +4870,24 @@ function CheckboxNull(props) {
 ///////////////////////////////
 //     Functions
 ///////////////////////////////
+function bindProcessorToThis(val, opts = {}) {
+    const self = this;
+    const bindedFn = bindProcessorToThis.bind(self);
+    if (commonLib_1.isFunction(val))
+        val = { $: val };
+    if (stateLib_1.isMapFn(val)) {
+        const map = val.norm ? val : stateLib_1.normalizeFn(val, Object.assign({}, opts, { wrapFn: bindedFn }));
+        const fn = stateLib_1.processFn.bind(self, map);
+        fn._map = map;
+        return fn;
+    }
+    else if (commonLib_1.isMergeable(val)) {
+        const result = commonLib_1.isArray(val) ? [] : {};
+        commonLib_1.objKeys(val).forEach(key => result[key] = key[0] != '_' ? bindedFn(val[key], opts) : val[key]); //!~ignore.indexOf(key) &&
+        return result;
+    }
+    return val;
+}
 function passCx(Widget) {
     return Widget instanceof GenericWidget;
 }
@@ -5156,7 +5169,7 @@ let elementsBase = {
             Main: {
                 _$useTag: '^/widgets/CheckboxNull',
                 $_reactRef: { tagRef: true },
-                onChange: { $: '^/fn/setValue|updCached' },
+                onChange: { $: '^/fn/setValue|updCached', args: ['${0}'] },
             },
         },
         booleanNullLeft: {
@@ -5249,29 +5262,23 @@ let elementsBase = {
             }
         },
         checkboxes: { $_ref: '^/sets/radio', Main: { $_maps: { children: { '0': { args: { '3': { type: 'checkbox', onChange: { $: '^/fn/eventCheckboxes|setValue|updCached' } }, '5': '[]' } } } } } },
-        radioNull: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: '^/fn/eventValue|radioClear|updCached' } } } } } } },
-        radioEmpty: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: { $: '^/fn/eventValue|radioClear|updCached', args: ['${0}', ''] } } } } } } } },
-        hidden: {
-            Builder: {
-                className: { hidden: true },
-                $_maps: { 'className/hidden': false }
-            }
-        },
-        autowidth: {
+        $radioNull: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: '^/fn/eventValue|radioClear|updCached' } } } } } } },
+        $radioEmpty: { Main: { $_maps: { children: { '0': { args: { '3': { onClick: { $: '^/fn/eventValue|radioClear|updCached', args: ['${0}', ''] } } } } } } } },
+        $autowidth: {
             Autowidth: { $_ref: '^/parts/Autowidth' },
             Wrapper: { className: { shrink: true } },
         },
-        noArrayControls: { Wrapper: { $_maps: { 'arrayItem': false } } },
-        noArrayButtons: { Title: { $_ref: '^/sets/nBase/Title' } },
-        inlineItems: { Main: { className: { 'inline': true } } },
-        inlineTitle: { Wrapper: { className: { 'inline': true } } },
-        inlineLayout: { Main: { LayoutDefaultClass: { 'inline': true } } },
-        inlineArrayControls: { Wrapper: { ArrayItemBody: { className: { 'inline': true } } } },
-        arrayControls3but: { Wrapper: { ArrayItemMenu: { buttons: ['up', 'down', 'del'], } } },
-        noTitle: { Title: false },
-        shrink: { Wrapper: { className: { 'shrink': true } } },
-        expand: { Wrapper: { className: { 'expand': true } } },
-        bnnDual: { Main: { children: { 0: { dual: true } } } }
+        $noArrayControls: { Wrapper: { $_maps: { 'arrayItem': false } } },
+        $noArrayButtons: { Title: { $_ref: '^/sets/nBase/Title' } },
+        $inlineItems: { Main: { className: { 'inline': true } } },
+        $inlineTitle: { Wrapper: { className: { 'inline': true } } },
+        $inlineLayout: { Main: { LayoutDefaultClass: { 'inline': true } } },
+        $inlineArrayControls: { Wrapper: { ArrayItemBody: { className: { 'inline': true } } } },
+        $arrayControls3but: { Wrapper: { ArrayItemMenu: { buttons: ['up', 'down', 'del'], } } },
+        $noTitle: { Title: false },
+        $shrink: { Wrapper: { className: { 'shrink': true } } },
+        $expand: { Wrapper: { className: { 'expand': true } } },
+        $password: { Main: { type: 'password' } }
     },
     fn: {
         api(fn, ...args) { this.api[fn](...args); },
@@ -5291,14 +5298,6 @@ let elementsBase = {
             this.api.setValue(value, opts);
             return args;
         },
-        // arrayAdd(path: any, value: number = 1, opts: any = {}, ...args: any[]) {
-        //   this.api.arrayAdd(path, value, opts);
-        //   return args;
-        // },
-        // arrayItemOps(path: any, key: any, opts: any = {}, ...args: any[]) {
-        //   this.api.arrayItemOps(path, key, opts);
-        //   return args;
-        // },
         focus(value, ...args) {
             this.api.set('/@/active', this.path, { noValidation: true });
             return args;
@@ -6536,7 +6535,7 @@ function updatePROC(state, UPDATABLE, item) {
                 let elemPath = path.concat(i);
                 commonLib_1.push2array(maps2disable, commonLib_1.getIn(state, elemPath, SymDataMapTree, SymData) || []);
                 ['invalid', 'dirty', 'untouched', 'pending'].forEach(key => {
-                    let statusValue = getUpdValue([update, state], path, SymData, 'status', key);
+                    let statusValue = getUpdValue([update, state], elemPath, SymData, 'status', key);
                     if (statusValue)
                         state = Macros.setStatus(state, schema, UPDATABLE, makeNUpdate(path, ['status', key], -1));
                 });
@@ -6983,7 +6982,7 @@ function normalizeFn(fn, opts = {}) {
     if (nFn.args)
         Object.assign(nFn, normalizeArgs(nFn.args, opts.wrapFn));
     else
-        nFn.args = ['${0}'];
+        nFn.args = ['${...}'];
     return nFn;
 }
 exports.normalizeFn = normalizeFn;
@@ -40477,7 +40476,7 @@ const FFormSchema = {
         },
         tristate: {
             type: ["null", "boolean"],
-            ff_presets: 'booleanNullLeft:inlineTitle:shrink',
+            ff_presets: 'booleanNullLeft:$inlineTitle:$shrink',
             ff_custom: { Main: { className: { 'radio-container': true } } },
         },
         arg: {
@@ -40499,18 +40498,18 @@ const FFormSchema = {
         reactSelectStatic: {
             type: 'array',
             ff_managed: true,
-            ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsStatic:^/_usrSets/rsMulti:inlineArrayControls:arrayControls3but',
+            ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsStatic:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
             ff_placeholder: 'Select values,,,'
         },
         reactSelectArray: {
             type: 'array',
             ff_managed: true,
-            ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:inlineArrayControls:arrayControls3but',
+            ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
             ff_placeholder: 'Enter values,,,'
         },
         combineArray: {
             type: "array",
-            ff_presets: 'array:noTitle',
+            ff_presets: 'array:$noTitle',
             ff_dataMap: [{ from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', ''] }],
             ff_layout: ['^/_parts/emptyArray'],
             items: {
@@ -40568,7 +40567,7 @@ const FFormSchema = {
                         fieldsEnabled: {
                             type: 'boolean',
                             title: '$_fields',
-                            ff_presets: 'booleanLeft:shrink',
+                            ff_presets: 'booleanLeft:$shrink',
                             ff_custom: { Main: { className: { 'radio-container': true } } },
                             ff_dataMap: [
                                 { from: './@/value', to: '../@/params/fieldsShown' },
@@ -40577,8 +40576,7 @@ const FFormSchema = {
                         },
                         fields: {
                             type: 'array',
-                            ff_presets: 'array:noTitle',
-                            //ff_custom: {Main: {LayoutDefaultClass: {block: true}}},
+                            ff_presets: 'array:$noTitle',
                             items: {
                                 ff_oneOfSelector: '^/_usr/oneOfField',
                                 oneOf: [
@@ -40602,7 +40600,7 @@ const FFormSchema = {
         },
         jsonEditor: {
             type: "object",
-            ff_presets: 'object:noArrayControls',
+            ff_presets: 'object:$noArrayControls',
             // ff_custom: {Wrapper: {className: {'object-prop': true}}},
             ff_data: { moveOpts: [], json: {} },
             ff_params: { hideTopLine: false },
@@ -40668,7 +40666,7 @@ const FFormSchema = {
                 value: {
                     type: "string",
                     ff_placeholder: 'Enter JSON value...',
-                    ff_presets: 'string:expand:inlineTitle',
+                    ff_presets: 'string:$expand:$inlineTitle',
                     ff_validators: [{ $: '^/_validators/testJSON', args: ['${0}', '../@/json'] }],
                 },
             }
@@ -40681,7 +40679,7 @@ const FFormSchema = {
         },
         field: {
             type: "object",
-            ff_presets: 'object:noArrayControls',
+            ff_presets: 'object:$noArrayControls',
             ff_custom: {
                 Wrapper: {
                     onClick: '^/_usr/selectField',
@@ -40748,7 +40746,7 @@ const FFormSchema = {
                     type: 'array',
                     ff_data: { fData: { enum: ['property', 'item'] } },
                     default: ['property'],
-                    ff_presets: 'checkboxes:inlineItems:inlineTitle:shrink',
+                    ff_presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
                     ff_managed: true,
                     items: { type: 'string' },
                     ff_dataMap: [{ from: '../../../@/params/propOrItemShown', to: './@/params/hidden', $: '^/_dataMaps/mapPropOrItem' }]
@@ -40763,7 +40761,7 @@ const FFormSchema = {
                 refEnabled: {
                     type: 'boolean',
                     title: '$ref',
-                    ff_presets: 'booleanLeft:shrink',
+                    ff_presets: 'booleanLeft:$shrink',
                     ff_custom: { Main: { className: { 'radio-container': true } } },
                     ff_dataMap: [
                         { from: './@/value', to: '../ref/@/params/hidden', $: '^/fn/not' },
@@ -40773,14 +40771,14 @@ const FFormSchema = {
                 ref: {
                     type: 'string',
                     ff_placeholder: '',
-                    ff_presets: 'string:inlineTitle'
+                    ff_presets: 'string:$inlineTitle'
                 },
                 type: {
                     allOf: [{ $ref: '#/definitions/reactSelectStatic' },
                         {
                             //type: "array",
                             //'default': [],
-                            //ff_presets: 'checkboxes:inlineItems:inlineTitle:shrink',
+                            //ff_presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
                             //ff_managed: true,
                             ff_data: { fData: { enum: stateLib_1.types } },
                             items: { "type": "string", enum: stateLib_1.types },
@@ -40805,7 +40803,7 @@ const FFormSchema = {
                                     properties: {
                                         commonProps: {
                                             type: "object",
-                                            ff_presets: 'object:noTitle',
+                                            ff_presets: 'object:$noTitle',
                                             ff_layout: [{
                                                     className: { inline: true },
                                                     $_fields: ['title', 'description', 'defaultUnescaped', 'default',
@@ -40824,31 +40822,31 @@ const FFormSchema = {
                                                     type: "string",
                                                     title: 'Title',
                                                     ff_placeholder: 'Title...',
-                                                    ff_presets: 'string:noTitle',
+                                                    ff_presets: 'string:$noTitle',
                                                 },
                                                 description: {
                                                     type: "string",
                                                     title: 'Description',
                                                     ff_placeholder: 'Description...',
-                                                    ff_presets: 'string:noTitle:expand'
+                                                    ff_presets: 'string:$noTitle:$expand'
                                                 },
                                                 // defaultUnescaped: {
                                                 //   type: 'boolean',
                                                 //   title: 'Default',
-                                                //   ff_presets: 'booleanLeft:shrink',
+                                                //   ff_presets: 'booleanLeft:$shrink',
                                                 //   ff_custom: {Main: {className: {'radio-container': true, unescaped: true}, style: {marginRight: '-1.1em'}}},
                                                 // },
                                                 'default': {
                                                     type: "string",
                                                     title: 'Default',
                                                     //ff_placeholder: 'Enter default...',
-                                                    ff_presets: 'string:inlineTitle',
+                                                    ff_presets: 'string:$inlineTitle',
                                                     ff_validators: ['^/_validators/testJSON'],
                                                 },
                                                 definitions: {
                                                     title: 'Definitions',
                                                     "type": "array",
-                                                    ff_presets: 'array:noTitle',
+                                                    ff_presets: 'array:$noTitle',
                                                     items: {
                                                         $ref: '#/definitions/fieldTop'
                                                     }
@@ -40857,34 +40855,34 @@ const FFormSchema = {
                                         },
                                         stringProps: {
                                             type: "object",
-                                            ff_presets: 'object:inlineLayout:noTitle',
+                                            ff_presets: 'object:$inlineLayout:$noTitle',
                                             ff_layout: ['minLength', 'maxLength', 'format', 'pattern'],
                                             properties: {
                                                 minLength: {
                                                     title: 'Length: min',
                                                     type: ['null', 'integer'],
                                                     minimum: 0,
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth'
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth'
                                                 },
                                                 maxLength: {
                                                     title: 'max',
                                                     type: ['null', 'integer'],
                                                     minimum: 0,
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth'
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth'
                                                 },
-                                                pattern: { title: 'Pattern', type: "string", ff_presets: 'string:inlineTitle:expand', },
+                                                pattern: { title: 'Pattern', type: "string", ff_presets: 'string:$inlineTitle:$expand', },
                                                 format: {
                                                     title: 'Format',
                                                     type: "string",
                                                     'enum': ['', 'date-time', 'date', 'time', 'email', 'ipv4', 'ipv6', 'uri', 'color', 'hostname', 'phone', 'utc-millisec', 'alpha', 'alphanumeric'],
                                                     ff_enumExten: { '': { label: 'select format...' } },
-                                                    ff_presets: 'select:inlineTitle'
+                                                    ff_presets: 'select:$inlineTitle'
                                                 }
                                             }
                                         },
                                         numberProps: {
                                             type: "object",
-                                            ff_presets: 'object:inlineLayout:noTitle',
+                                            ff_presets: 'object:$inlineLayout:$noTitle',
                                             ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', { $_ref: '^/parts/Expander' }],
                                             properties: {
                                                 multipleOf: {
@@ -40892,12 +40890,12 @@ const FFormSchema = {
                                                     type: ["null", "number"],
                                                     minimum: 0,
                                                     exclusiveMinimum: true,
-                                                    ff_presets: 'numberNull:inlineTitle:autowidth'
+                                                    ff_presets: 'numberNull:$inlineTitle:$autowidth'
                                                 },
                                                 maximum: {
                                                     title: 'max',
                                                     type: ["null", "number"],
-                                                    ff_presets: 'numberNull:inlineTitle:autowidth'
+                                                    ff_presets: 'numberNull:$inlineTitle:$autowidth'
                                                 },
                                                 exclusiveMaximum: {
                                                     allOf: [
@@ -40908,7 +40906,7 @@ const FFormSchema = {
                                                 minimum: {
                                                     title: 'min',
                                                     type: ["null", "number"],
-                                                    ff_presets: 'numberNull:inlineTitle:autowidth'
+                                                    ff_presets: 'numberNull:$inlineTitle:$autowidth'
                                                 },
                                                 exclusiveMinimum: {
                                                     allOf: [
@@ -40923,7 +40921,7 @@ const FFormSchema = {
                                         },
                                         arrayProps: {
                                             type: "object",
-                                            ff_presets: 'object:noTitle',
+                                            ff_presets: 'object:$noTitle',
                                             ff_layout: [{
                                                     className: { inline: true },
                                                     $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', { $_ref: '^/parts/Expander' }]
@@ -40936,7 +40934,7 @@ const FFormSchema = {
                                                     'default': '',
                                                     ff_data: { fData: { 'enum': ['false', 'true', 'field'] } },
                                                     // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'field'}},
-                                                    ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
+                                                    ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
                                                     ff_dataMap: [
                                                         { from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field'] },
                                                         { from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${0}', 'field'] }, 1, 0] }
@@ -40951,12 +40949,12 @@ const FFormSchema = {
                                                 minItems: {
                                                     title: 'min',
                                                     type: ['null', 'integer'],
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth',
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth',
                                                 },
                                                 maxItems: {
                                                     title: 'max',
                                                     type: ['null', 'integer'],
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth',
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth',
                                                 },
                                                 uniqueItems: {
                                                     allOf: [
@@ -40968,7 +40966,7 @@ const FFormSchema = {
                                         },
                                         objectProps: {
                                             type: "object",
-                                            ff_presets: 'object:noTitle',
+                                            ff_presets: 'object:$noTitle',
                                             ff_layout: [{
                                                     className: { inline: true },
                                                     $_fields: ['additionalProperties', 'minProperties', 'maxProperties', 'required']
@@ -40982,7 +40980,7 @@ const FFormSchema = {
                                                     allOf: [{ $ref: '#/definitions/reactSelectArray' },
                                                         {
                                                             ff_custom: {
-                                                                $_ref: '^/sets/inlineTitle:^/sets/expand',
+                                                                $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                                                             }
                                                         }],
                                                     items: { type: 'string' }
@@ -40990,12 +40988,12 @@ const FFormSchema = {
                                                 minProperties: {
                                                     title: 'min',
                                                     type: ['null', 'integer'],
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth',
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth',
                                                 },
                                                 maxProperties: {
                                                     title: 'max',
                                                     type: ['null', 'integer'],
-                                                    ff_presets: 'integerNull:inlineTitle:autowidth',
+                                                    ff_presets: 'integerNull:$inlineTitle:$autowidth',
                                                 },
                                                 additionalProperties: {
                                                     title: 'Props: additional',
@@ -41003,7 +41001,7 @@ const FFormSchema = {
                                                     'default': '',
                                                     ff_data: { fData: { 'enum': ['false', 'true', 'field'] } },
                                                     // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'object'}},
-                                                    ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
+                                                    ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
                                                     ff_dataMap: [
                                                         { from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field'] },
                                                         { from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{ $: '^/fn/equal', args: ['${0}', 'field'] }, 1, 0] }
@@ -41019,7 +41017,7 @@ const FFormSchema = {
                                         },
                                         combine: {
                                             type: 'object',
-                                            ff_presets: 'object:noTitle',
+                                            ff_presets: 'object:$noTitle',
                                             ff_dataMap: [{ from: './selector@value', to: '/@/selectorValue' }],
                                             ff_layout: [{
                                                     className: { inline: true },
@@ -41050,7 +41048,7 @@ const FFormSchema = {
                                                 selector: {
                                                     type: 'string',
                                                     'enum': ['dependencies', 'patternProperties', 'allOf', 'oneOf', 'anyOf', 'not'],
-                                                    ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
+                                                    ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
                                                 },
                                                 allOf: {
                                                     allOf: [{ $ref: '#/definitions/combineArray' }, { ff_dataMap: { 0: { args: { 1: 'allOf' } } } }]
@@ -41082,7 +41080,7 @@ const FFormSchema = {
                                                                     { $ref: '#/definitions/fieldTop' },
                                                                     {
                                                                         type: 'object',
-                                                                        ff_presets: 'object:inlineLayout:inlineArrayControls:arrayControls3but',
+                                                                        ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
                                                                         properties: {
                                                                             mame: {
                                                                                 type: 'string',
@@ -41093,7 +41091,7 @@ const FFormSchema = {
                                                                                 allOf: [{ $ref: '#/definitions/reactSelectArray' },
                                                                                     {
                                                                                         ff_custom: {
-                                                                                            $_ref: '^/sets/expand',
+                                                                                            $_ref: '^/sets/$expand',
                                                                                         }
                                                                                     }]
                                                                             }
@@ -41148,7 +41146,7 @@ const FFormSchema = {
                                             title: 'ff_presets',
                                             items: { type: 'string' },
                                             ff_placeholder: 'Select sets...',
-                                            ff_presets: '^/_usrSets/reactSelect:noTitle:expand',
+                                            ff_presets: '^/_usrSets/reactSelect:$noTitle:$expand',
                                             ff_custom: {
                                                 Main: {
                                                     isMulti: true,
@@ -41159,7 +41157,7 @@ const FFormSchema = {
                                                 },
                                             },
                                             ff_managed: true,
-                                            //ff_custom: {$_ref: '^/_usrSets/presetSelect:^/sets/noTitle:^/sets/expand'},
+                                            //ff_custom: {$_ref: '^/_usrSets/presetSelect:^/sets/$noTitle:^/sets/$expand'},
                                             ff_dataMap: [
                                                 //['./@/value', '../custom/@/value', presetValuesHandler]
                                                 { from: '../../../type/@/value', to: './@/fieldTypes' }
@@ -41168,17 +41166,17 @@ const FFormSchema = {
                                         ff_managed: {
                                             type: 'boolean',
                                             title: 'Self managed',
-                                            ff_presets: 'booleanLeft:shrink',
+                                            ff_presets: 'booleanLeft:$shrink',
                                             ff_custom: { Main: { className: { 'radio-container': true } } },
                                         },
                                         ff_validators: {
                                             type: 'array',
                                             title: 'Validators',
-                                            ff_presets: 'array:noTitle',
+                                            ff_presets: 'array:$noTitle',
                                             items: {
                                                 'default': [''],
                                                 type: "array",
-                                                ff_presets: 'array:inlineLayout:noArrayButtons:noTitle:noArrayControls',
+                                                ff_presets: 'array:$inlineLayout:$noArrayButtons:$noTitle:$noArrayControls',
                                                 ff_layout: {
                                                     className: { 'wrap': true }, $_fields: [
                                                         {
@@ -41194,7 +41192,7 @@ const FFormSchema = {
                                                     ]
                                                 },
                                                 items: [
-                                                    { type: 'string', ff_placeholder: 'Validator...', ff_presets: 'string:noArrayControls' },
+                                                    { type: 'string', ff_placeholder: 'Validator...', ff_presets: 'string:$noArrayControls' },
                                                     { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${0}"' } }] }
                                                 ],
                                                 minItems: 1,
@@ -41204,11 +41202,11 @@ const FFormSchema = {
                                         ff_dataMap: {
                                             type: 'array',
                                             title: 'Data Maps',
-                                            ff_presets: 'array:noTitle',
+                                            ff_presets: 'array:$noTitle',
                                             items: {
                                                 'default': ['', '', ''],
                                                 type: "array",
-                                                ff_presets: 'array:inlineLayout:noArrayButtons:noArrayControls',
+                                                ff_presets: 'array:$inlineLayout:$noArrayButtons:$noArrayControls',
                                                 ff_layout: {
                                                     className: { 'wrap': true },
                                                     $_fields: [{
@@ -41222,9 +41220,9 @@ const FFormSchema = {
                                                         }, { $_ref: '^/sets/object/Title' }]
                                                 },
                                                 items: [
-                                                    { type: 'string', ff_placeholder: 'From path...', ff_presets: 'string:noArrayControls' },
-                                                    { type: 'string', ff_placeholder: 'Destination path...', ff_presets: 'string:noArrayControls' },
-                                                    { type: 'string', ff_placeholder: 'Function', ff_presets: 'string:noArrayControls' },
+                                                    { type: 'string', ff_placeholder: 'From path...', ff_presets: 'string:$noArrayControls' },
+                                                    { type: 'string', ff_placeholder: 'Destination path...', ff_presets: 'string:$noArrayControls' },
+                                                    { type: 'string', ff_placeholder: 'Function', ff_presets: 'string:$noArrayControls' },
                                                     { allOf: [{ $ref: '#/definitions/arg' }, { default: { value: '"${0}"' } }] }
                                                 ],
                                                 minItems: 3,
@@ -41234,7 +41232,7 @@ const FFormSchema = {
                                         ff_placeholder: {
                                             type: 'string',
                                             title: 'placeholder',
-                                            ff_presets: 'string:inlineTitle:expand',
+                                            ff_presets: 'string:$inlineTitle:$expand',
                                         },
                                         ff_params: {
                                             allOf: [{ $ref: '#/definitions/reactSelectArray' },
@@ -41243,13 +41241,13 @@ const FFormSchema = {
                                                     ff_data: { fData: { enum: paramsEnum } },
                                                     ff_placeholder: 'leading "!" set param to false.',
                                                     ff_custom: {
-                                                        $_ref: '^/sets/inlineTitle:^/sets/expand',
+                                                        $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                                                     }
                                                 }],
                                         },
                                         ff_custom: {
                                             type: "object",
-                                            ff_presets: 'object:noTitle',
+                                            ff_presets: 'object:$noTitle',
                                             ff_layout: [{
                                                     className: { inline: true },
                                                     $_fields: [
@@ -41273,7 +41271,7 @@ const FFormSchema = {
                                                 selector: {
                                                     type: 'string',
                                                     title: 'Customization',
-                                                    ff_presets: 'radio:radioEmpty:inlineItems:inlineTitle:shrink',
+                                                    ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
                                                     ff_data: { fData: { enumExten: [] } },
                                                     ff_dataMap: [
                                                         { from: './@/value', to: '../valueArray/@/value', $: '^/_dataMaps/valueArraySel' },
@@ -41292,7 +41290,7 @@ const FFormSchema = {
                                                 },
                                                 valueArray: {
                                                     type: 'array',
-                                                    ff_presets: 'array:noArrayControls:noTitle',
+                                                    ff_presets: 'array:$noArrayControls:$noTitle',
                                                     items: {
                                                         allOf: [
                                                             { $ref: '#/definitions/jsonEditor' },
@@ -41898,15 +41896,14 @@ class Viewer extends React.PureComponent {
         let propsVals = constrUtils_1.formObj2JSON(formProps.rest || { value: '' });
         if (!commonLib_1.isObject(propsVals))
             propsVals = {};
-        commonLib_1.objKeys(propsVals).forEach(k => {
-            if (commonLib_1.isObject(propsVals[k]) && propsVals[k].$) {
-                let $;
-                eval('$=' + propsVals[k].$);
-                propsVals[k] = $;
-            }
-            else if (commonLib_1.isString(propsVals[k]) && propsVals[k].substr(0, 2) == '^/')
-                propsVals[k] = commonLib_1.getIn(elements, stateLib_1.string2path(propsVals[k].substr(2)));
-        });
+        // objKeys(propsVals).forEach(k => {
+        //   if (isObject(propsVals[k]) && propsVals[k].$) {
+        //     let $;
+        //     eval('$=' + propsVals[k].$);
+        //     propsVals[k] = $;
+        //   } else if (isString(propsVals[k]) && propsVals[k].substr(0, 2) == '^/')
+        //     propsVals[k] = getIn(elements, string2path(propsVals[k].substr(2)))
+        // });
         let core = schema ? new fform_1.FFormStateAPI({ schema, elements, name: 'form', JSONValidator }) : null;
         let cssCode = commonLib_1.getIn(css, 'code');
         return core ? (React.createElement("div", null,

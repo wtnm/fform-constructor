@@ -100,14 +100,14 @@ class Viewer extends React.PureComponent<any, any> {
     const JSONValidator = getIn(formProps, 'jsonValidation') ? JSONV : undefined;
     let propsVals = formObj2JSON(formProps.rest || {value: ''});
     if (!isObject(propsVals)) propsVals = {};
-    objKeys(propsVals).forEach(k => {
-      if (isObject(propsVals[k]) && propsVals[k].$) {
-        let $;
-        eval('$=' + propsVals[k].$);
-        propsVals[k] = $;
-      } else if (isString(propsVals[k]) && propsVals[k].substr(0, 2) == '^/')
-        propsVals[k] = getIn(elements, string2path(propsVals[k].substr(2)))
-    });
+    // objKeys(propsVals).forEach(k => {
+    //   if (isObject(propsVals[k]) && propsVals[k].$) {
+    //     let $;
+    //     eval('$=' + propsVals[k].$);
+    //     propsVals[k] = $;
+    //   } else if (isString(propsVals[k]) && propsVals[k].substr(0, 2) == '^/')
+    //     propsVals[k] = getIn(elements, string2path(propsVals[k].substr(2)))
+    // });
     let core = schema ? new FFormStateAPI({schema, elements, name: 'form', JSONValidator}) : null;
     let cssCode = getIn(css, 'code');
 

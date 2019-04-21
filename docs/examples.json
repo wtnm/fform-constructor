@@ -34,12 +34,8 @@
                     "password": {
                         "type": "string",
                         "title": "password",
-                        "ff_placeholder": "Enter password...",
-                        "ff_custom": {
-                            "Main": {
-                                "type": "password"
-                            }
-                        }
+                        "ff_presets": "string:$password",
+                        "ff_placeholder": "Enter password..."
                     }
                 }
             },
@@ -214,17 +210,17 @@
                     "string": {
                         "type": "string",
                         "title": "string",
-                        "ff_presets": "string:inlineTitle"
+                        "ff_presets": "string:$inlineTitle"
                     },
                     "number": {
                         "type": "number",
                         "title": "number",
-                        "ff_presets": "number:inlineTitle"
+                        "ff_presets": "number:$inlineTitle"
                     },
                     "radio": {
                         "type": "string",
                         "title": "radio",
-                        "ff_presets": "radio:inlineItems:inlineTitle",
+                        "ff_presets": "radio:$inlineItems:$inlineTitle",
                         "enum": [
                             "option 1",
                             "option 2",
@@ -234,7 +230,7 @@
                     "checkboxes": {
                         "type": "array",
                         "title": "checkboxes",
-                        "ff_presets": "checkboxes:inlineItems:inlineTitle",
+                        "ff_presets": "checkboxes:$inlineItems:$inlineTitle",
                         "ff_managed": true,
                         "ff_data": {
                             "fData": {
@@ -274,7 +270,7 @@
                     "multiselect": {
                         "type": "array",
                         "title": "Multiselect",
-                        "ff_presets": "multiselect:inlineTitle",
+                        "ff_presets": "multiselect:$inlineTitle",
                         "ff_managed": true,
                         "ff_data": {
                             "fData": {
@@ -370,18 +366,18 @@
                 "items": [
                     {
                         "type": "string",
-                        "ff_presets": "string:noArrayControls"
+                        "ff_presets": "string:$noArrayControls"
                     },
                     {
                         "type": "string",
                         "default": "some default",
-                        "ff_presets": "string:noArrayControls"
+                        "ff_presets": "string:$noArrayControls"
                     },
                     {
                         "type": "array",
                         "maxItems": 4,
                         "title": "Array of values",
-                        "ff_presets": "array:noArrayControls",
+                        "ff_presets": "array:$noArrayControls",
                         "ff_custom": {
                             "Title": {
                                 "style": {
@@ -483,7 +479,7 @@
                                 {
                                     "type": "string",
                                     "default": "default",
-                                    "ff_presets": "string:inlineTitle:inlineArrayControls"
+                                    "ff_presets": "string:$inlineTitle:$inlineArrayControls"
                                 },
                                 {
                                     "type": [
@@ -491,12 +487,12 @@
                                         "null"
                                     ],
                                     "default": null,
-                                    "ff_presets": "numberNull:inlineTitle:inlineArrayControls"
+                                    "ff_presets": "numberNull:$inlineTitle:$inlineArrayControls"
                                 },
                                 {
                                     "type": "boolean",
                                     "default": false,
-                                    "ff_presets": "boolean:inlineTitle:inlineArrayControls"
+                                    "ff_presets": "boolean:$inlineTitle:$inlineArrayControls"
                                 }
                             ]
                         }
@@ -546,7 +542,7 @@
                         "type": "string",
                         "title": "string",
                         "default": "hide",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_dataMap": [
                             {
                                 "from": "./@value",
@@ -561,7 +557,7 @@
                         "type": "string",
                         "title": "mapped",
                         "default": "hide",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_dataMap": [
                             {
                                 "from": "./@value",
@@ -577,7 +573,7 @@
                     "hide": {
                         "type": "string",
                         "title": "hide",
-                        "ff_presets": "string:inlineTitle"
+                        "ff_presets": "string:$inlineTitle"
                     }
                 }
             }
@@ -632,13 +628,13 @@
                         "type": "string",
                         "pattern": "json",
                         "title": "json",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_placeholder": "Enter \"json\" to pass validation..."
                     },
                     "sync": {
                         "type": "string",
                         "title": "sync",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_validators": [
                             {
                                 "$": "^/validators/sync",
@@ -652,7 +648,7 @@
                     "async": {
                         "type": "string",
                         "title": "async",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_validators": [
                             {
                                 "$": "^/validators/async",
@@ -666,13 +662,13 @@
                     "submitError": {
                         "type": "string",
                         "title": "submit error",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_placeholder": "Enter \"submit\" to pass validation..."
                     },
                     "submitWarn": {
                         "type": "string",
                         "title": "submit warn",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_placeholder": "Enter \"warn\" to remove warning..."
                     }
                 }
@@ -685,7 +681,7 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "  validators: {\n    sync: function (v) {\n      return v === 'sync' ? '' : 'sync validation not passed'\n    },\n    async: function (v) {\n      return new Promise((resolve, reject) => {\n        setTimeout(() => resolve(v === 'async' ? '' : 'async validation not passed'), 1000)\n      })\n    }\n  }"
+            "code": "  validators: {\n    sync: function (v) {\n      return v === 'sync' ? '' : 'sync validation not passed'\n    },\n    async: function (v) {\n      return new Promise((resolve, reject) => {\n        setTimeout(() => resolve(v === 'async' ? '' : 'async validation not passed'), 1000)\n      })\n    }\n  },\nfn:{\n_submit: function (event, value, fform) {\n  event.preventDefault();\n  var valid = fform.valid;\n  return new Promise((resolve, rejects) => {\n    setTimeout(() => {\n      var res = {};\n      var warn = {};\n      if (value.submitError !== 'submit') res['submitError'] = 'submit validation not passed';\n      if (value.submitWarn !== 'warn') warn['submitWarn'] = 'submit warning';\n      fform.api.setMessages(null, {priority: 1});\n      fform.api.setMessages(warn, {priority: 1});\n      if (valid && !Object.keys(res).length) alert('Validation passed');\n      resolve(res);\n    }, 10)\n  })\n}\n}"
         },
         "css": {
             "links": [
@@ -698,7 +694,7 @@
         "props": {
             "jsonValidation": true,
             "rest": {
-                "value": "{\"onSubmit\":{\"$\":\"function (event, value, fform) {   event.preventDefault();   var valid = fform.valid;   return new Promise((resolve, rejects) => {     setTimeout(() => {       var res = {};       var warn = {};       if (value.submitError !== 'submit') res['submitError'] = 'submit validation not passed';       if (value.submitWarn !== 'warn') warn['submitWarn'] = 'submit warning';       fform.api.setMessages(null, {priority: 1});       fform.api.setMessages(warn, {priority: 1});       if (valid && !Object.keys(res).length) alert('Validation passed');       resolve(res);     }, 10)   }) }\"}}"
+                "value": "{\"onSubmit\": \"^/fn/_submit\"}"
             }
         },
         "name": "validation"
@@ -718,7 +714,7 @@
                     "formatNum": {
                         "type": "string",
                         "title": "formated",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_dataMap": [
                             {
                                 "from": "./@value",
@@ -746,7 +742,7 @@
                     "parsed": {
                         "type": "string",
                         "title": "parsed",
-                        "ff_presets": "string:inlineTitle",
+                        "ff_presets": "string:$inlineTitle",
                         "ff_dataMap": [
                             {
                                 "from": "./@/value",
@@ -794,7 +790,7 @@
                     "someField": {
                         "type": "string",
                         "title": "someField",
-                        "ff_presets": "string:inlineTitle"
+                        "ff_presets": "string:$inlineTitle"
                     }
                 },
                 "ff_layout": {
@@ -860,7 +856,7 @@
                     "reactSelect": {
                         "type": "string",
                         "title": "react-select",
-                        "ff_presets": "reactSelect:inlineTitle",
+                        "ff_presets": "reactSelect:$inlineTitle",
                         "ff_placeholder": "select option...",
                         "enum": [
                             "option 1",
@@ -871,7 +867,7 @@
                     "reactSelectMulti": {
                         "type": "array",
                         "title": "react-select multi",
-                        "ff_presets": "reactSelect:inlineTitle",
+                        "ff_presets": "reactSelect:$inlineTitle",
                         "ff_managed": true,
                         "ff_placeholder": "select multi options...",
                         "ff_custom": {
@@ -1040,7 +1036,7 @@
                                 "type": "string",
                                 "title": "sync",
                                 "default": "sync",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_validators": [
                                     {
                                         "$": "^/validators/sync",
@@ -1056,7 +1052,7 @@
                                 "pattern": "json",
                                 "title": "json",
                                 "default": "json",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_placeholder": "Enter \"json\" to pass validation..."
                             }
                         }
@@ -1085,7 +1081,7 @@
                                 "type": "string",
                                 "title": "async",
                                 "default": "async",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_validators": [
                                     {
                                         "$": "^/validators/async",
@@ -1099,7 +1095,7 @@
                             "submitError": {
                                 "type": "string",
                                 "title": "submit error",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_placeholder": "Enter \"submit\" to pass validation..."
                             }
                         }
@@ -1127,13 +1123,13 @@
                             "submitError2": {
                                 "type": "string",
                                 "title": "submit error 2",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_placeholder": "Enter \"submit\" to pass validation..."
                             },
                             "submitWarn": {
                                 "type": "string",
                                 "title": "submit warn",
-                                "ff_presets": "string:inlineTitle",
+                                "ff_presets": "string:$inlineTitle",
                                 "ff_placeholder": "Enter \"warn\" to remove warning..."
                             }
                         }

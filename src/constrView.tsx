@@ -281,7 +281,7 @@ const viewerSchema: JsonSchema = {
     reactSelectArray: {
       type: 'array',
       ff_managed: true,
-      ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:inlineArrayControls:arrayControls3but',
+      ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
       ff_placeholder: 'Enter values,,,'
     },
   },
@@ -353,17 +353,17 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'object',
-            ff_presets: 'object:inlineLayout:inlineArrayControls:arrayControls3but',
+            ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
             properties: {
               path: {
                 title: 'path',
                 type: 'string',
-                ff_presets: 'string:inlineTitle'
+                ff_presets: 'string:$inlineTitle'
               },
               link: {
                 title: 'link',
                 type: 'string',
-                ff_presets: 'string:inlineTitle',
+                ff_presets: 'string:$inlineTitle',
                 ff_validators: ['^/_validators/testLink'],
               }
             }
@@ -398,7 +398,7 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'object',
-            ff_presets: 'object:inlineLayout:inlineArrayControls:arrayControls3but',
+            ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
             properties: {
               import: {
                 allOf: [{$ref: '#/definitions/reactSelectArray'},
@@ -406,14 +406,14 @@ const viewerSchema: JsonSchema = {
                     title: 'import',
                     items: {type: 'string'},
                     ff_custom: {
-                      $_ref: '^/sets/inlineTitle:^/sets/expand',
+                      $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                     }
                   }],
               },
               from: {
                 title: 'from',
                 type: 'string',
-                ff_presets: 'string:inlineTitle',
+                ff_presets: 'string:$inlineTitle',
                 ff_validators: ['^/_validators/testLink'],
               }
             }
@@ -435,13 +435,13 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'string',
-            ff_presets: 'string:inlineArrayControls:arrayControls3but',
+            ff_presets: 'string:$inlineArrayControls:$arrayControls3but',
             ff_validators: ['^/_validators/testLink'],
           }
         },
         cxBind: {
           type: 'string',
-          ff_presets: 'string:inlineTitle',
+          ff_presets: 'string:$inlineTitle',
           title: 'Bind cx to:',
           ff_validators: ['^/_validators/testLink'],
         },
@@ -458,7 +458,7 @@ const viewerSchema: JsonSchema = {
       properties: {
         jsonValidation: {
           type: "boolean",
-          ff_presets: 'booleanLeft:inlineTitle:shrink',
+          ff_presets: 'booleanLeft:$inlineTitle:$shrink',
           ff_custom: {Main: {className: {'radio-container': true}, children: {'1': {style: {width: '100%', textAlign: 'center'}}}}},
           title: 'JSON schema Validation'
         },
@@ -623,7 +623,7 @@ const mainSchema: JsonSchema = {
     selector: {
       type: 'string',
       default: '',
-      ff_presets: 'radio:inlineItems:inlineTitle:shrink',
+      ff_presets: 'radio:$inlineItems:$inlineTitle:$shrink',
       ff_dataMap: [{from: './@/value', to: '../@/selectorValue'}],
       ff_custom: {Main: {className: {wrap: true}}}
     },
