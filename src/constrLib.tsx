@@ -83,7 +83,13 @@ let constrElements = {
     ReactCreatable: Creatable,
     ReactJson: ReactJson,
   },
+  parts: {
+    Button: {
+      className: {shrink: true},
+    },
+  },
   _parts: {
+
     expandButton: {
       $_ref: '^/parts/Button',
       children: [],

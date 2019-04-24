@@ -2401,7 +2401,7 @@ class FFormStateAPI extends FFormStateManager {
                 stateLib_1.normalizeUpdate({ path: path, value: true }, self.getState()).forEach(i => self._validation = stateLib_1.setIfNotDeeper(self._validation || {}, true, i.path));
             return self._setExecution(null, opts);
         };
-        this.get = (...pathes) => stateLib_1.getFromState(this.getState(), ...pathes);
+        this.get = (...paths) => stateLib_1.getFromState(this.getState(), ...paths);
         this.set = (path, value, opts = {}) => {
             if (path === null)
                 return this._setExecution([null], opts);
@@ -2848,10 +2848,10 @@ function makeSlice(...pathValues) {
     return setIn({}, value, path);
 }
 exports.makeSlice = makeSlice;
-function hasIn(state, ...pathes) {
-    if (pathes.length > 0) {
-        for (let i = 0; i < pathes.length; i++) {
-            let path = isArray(pathes[i]) ? pathes[i] : [pathes[i]];
+function hasIn(state, ...paths) {
+    if (paths.length > 0) {
+        for (let i = 0; i < paths.length; i++) {
+            let path = isArray(paths[i]) ? paths[i] : [paths[i]];
             for (let j = 0; j < path.length; j++) {
                 if (isUndefined(path[j]))
                     continue;
@@ -2869,12 +2869,12 @@ function hasIn(state, ...pathes) {
     return true;
 }
 exports.hasIn = hasIn;
-function setIn(state, value, ...pathes) {
+function setIn(state, value, ...paths) {
     let result = state;
     let key;
-    if (pathes.length > 0) {
-        for (let i = 0; i < pathes.length; i++) {
-            let path = isArray(pathes[i]) ? pathes[i] : [pathes[i]];
+    if (paths.length > 0) {
+        for (let i = 0; i < paths.length; i++) {
+            let path = isArray(paths[i]) ? paths[i] : [paths[i]];
             for (let j = 0; j < path.length; j++) {
                 if (isUndefined(path[j]))
                     continue;
@@ -2945,10 +2945,10 @@ function getIn(state, ...paths) {
 }
 exports.getIn = getIn;
 ;
-function getCreateIn(state, value, ...pathes) {
-    if (!hasIn(state, ...pathes))
-        setIn(state, value, ...pathes);
-    return getIn(state, ...pathes);
+function getCreateIn(state, value, ...paths) {
+    if (!hasIn(state, ...paths))
+        setIn(state, value, ...paths);
+    return getIn(state, ...paths);
 }
 exports.getCreateIn = getCreateIn;
 //////////////////////////////
@@ -3118,9 +3118,11 @@ class FForm extends react_1.Component {
         if (!props.noValidation)
             self.api.validate(true);
         self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
-        self._setRef = self._setRef.bind(self);
+        self._setRootRef = self._setRootRef.bind(self);
+        self._setFormRef = self._setFormRef.bind(self);
         self._submit = self._submit.bind(self);
         self._getPath = self._getPath.bind(self);
+        self.reset = self.reset.bind(self);
     }
     _updateMethods(nextProps, prevProps = {}) {
         const self = this;
@@ -3131,8 +3133,11 @@ class FForm extends react_1.Component {
         });
         Object.assign(self._methods, self.wrapFns(api_1.objectResolver(self.elements, newMethods), { noStrictArrayResult: true }));
     }
-    _setRef(FField) {
+    _setRootRef(FField) {
         this._root = FField;
+    }
+    _setFormRef(form) {
+        this._form = form;
     }
     _updateValues(nextProps, prevProps = {}) {
         const { state, value, inital, extData, noValidation, touched } = nextProps;
@@ -3232,12 +3237,20 @@ class FForm extends react_1.Component {
     getBranch(path) {
         return this.api.get(path);
     }
+    reset(event) {
+        if (event)
+            event.preventDefault();
+        this.api.reset();
+    }
+    submit() {
+        this._form.dispatchEvent(new Event('submit'));
+    }
     render() {
         const self = this;
         let _a = self.props, { core, state, value, inital, extData, fieldCache, touched, parent, onSubmit, onChange, onStateChange, _$useTag: UseTag = 'form' } = _a, rest = __rest(_a, ["core", "state", "value", "inital", "extData", "fieldCache", "touched", "parent", "onSubmit", "onChange", "onStateChange", "_$useTag"]);
         FForm.params.forEach(k => delete rest[k]);
-        return (react_1.createElement(UseTag, Object.assign({}, rest, { onSubmit: self._submit }),
-            react_1.createElement(FField, { ref: self._setRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: self._getPath, FFormApi: self.api })));
+        return (react_1.createElement(UseTag, Object.assign({ ref: self._setFormRef }, rest, { onSubmit: self._submit, onReset: self.reset }),
+            react_1.createElement(FField, { ref: self._setRootRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: self._getPath, FFormApi: self.api })));
     }
 }
 FForm.params = ['readonly', 'disabled', 'viewer', 'liveValidate', 'liveUpdate'];
@@ -3367,8 +3380,8 @@ class FField extends FRefsGeneric {
                 self._cachedTimeout = setTimeout(self._updateCachedValue.bind(self), fieldCache);
                 const data = self.getData();
                 const mappedData = self._mappedData;
-                self.get = (...pathes) => {
-                    let path = stateLib_1.normalizePath(pathes, self.path);
+                self.get = (...paths) => {
+                    let path = stateLib_1.normalizePath(paths, self.path);
                     if (commonLib_1.isEqual(path, stateLib_1.normalizePath('./@value', self.path)))
                         return data.value;
                     return self.stateApi.get(path);
@@ -4431,8 +4444,9 @@ let elementsBase = {
         },
         Reset: {
             $_ref: '^/parts/Button',
+            type: 'reset',
             children: ['Reset'],
-            onClick: { $: '^/fn/api', args: ['reset'] },
+            //onClick: {$: '^/fn/api', args: ['reset']},
             $_maps: {
                 disabled: '@/status/pristine',
             }
@@ -5004,8 +5018,8 @@ function getArrayItemData(schemaPart, index, length) {
     result.canDel = index >= Math.min(arrayStartIndex, length - 1);
     return result;
 }
-function isSelfManaged(state, ...pathes) {
-    return commonLib_1.hasIn(state, ...pathes, SymData, 'value');
+function isSelfManaged(state, ...paths) {
+    return commonLib_1.hasIn(state, ...paths, SymData, 'value');
 }
 exports.isSelfManaged = isSelfManaged;
 function isSchemaSelfManaged(schemaPart, type) {
@@ -5442,12 +5456,12 @@ function updateNormalizationPROC(state, UPDATABLE, item) {
     });
     return state;
 }
-function setUPDATABLE(UPDATABLE, update, replace, ...pathes) {
+function setUPDATABLE(UPDATABLE, update, replace, ...paths) {
     object2PathValues(replace).forEach(path => {
         let replaceValue = path.pop();
-        commonLib_1.setIn(UPDATABLE, commonLib_1.getIn(update, path), 'update', ...pathes, path);
+        commonLib_1.setIn(UPDATABLE, commonLib_1.getIn(update, path), 'update', ...paths, path);
         if (replaceValue)
-            commonLib_1.setIn(UPDATABLE, replaceValue, 'replace', ...pathes, path);
+            commonLib_1.setIn(UPDATABLE, replaceValue, 'replace', ...paths, path);
     });
     return UPDATABLE;
 }
@@ -5743,14 +5757,14 @@ function getFromUPD(state, UPDATABLE) {
         return getFromState(state, ...tPath);
     };
 }
-function getUpdValue(states, ...pathes) {
+function getUpdValue(states, ...paths) {
     for (let i = 0; i < states.length; i++) {
-        if (commonLib_1.hasIn(states[i], ...pathes))
-            return commonLib_1.getIn(states[i], ...pathes);
+        if (commonLib_1.hasIn(states[i], ...paths))
+            return commonLib_1.getIn(states[i], ...paths);
     }
 }
-function getFromState(state, ...pathes) {
-    return commonLib_1.getIn(state, ...pathes.map(path => normalizePath(path)));
+function getFromState(state, ...paths) {
+    return commonLib_1.getIn(state, ...paths.map(path => normalizePath(path)));
 }
 exports.getFromState = getFromState;
 const makeNUpdate = (path, keyPath, value, replace, rest = {}) => { return Object.assign({ path, [SymData]: keyPath, value, replace }, rest); };
@@ -5779,16 +5793,16 @@ function normalizeUpdate(update, state) {
     const result = [];
     let pathArray = path2string(path).split(';');
     pathArray.forEach(path => {
-        let pathes = normalizePath(path, base);
+        let paths = normalizePath(path, base);
         let keyPathes = [];
-        let a = pathes.indexOf(SymData);
+        let a = paths.indexOf(SymData);
         if (~a) {
-            keyPathes = pathes.slice(a + 1);
-            pathes = pathes.slice(0, a);
+            keyPathes = paths.slice(a + 1);
+            paths = paths.slice(0, a);
         }
-        pathes = multiplyPath(pathes, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
+        paths = multiplyPath(paths, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
         keyPathes = multiplyPath(keyPathes);
-        commonLib_1.objKeys(pathes).forEach(p => commonLib_1.objKeys(keyPathes).forEach(k => result.push(makeNUpdate(pathes[p], keyPathes[k], value, replace, rest))));
+        commonLib_1.objKeys(paths).forEach(p => commonLib_1.objKeys(keyPathes).forEach(k => result.push(makeNUpdate(paths[p], keyPathes[k], value, replace, rest))));
     });
     return result;
 }
@@ -5865,10 +5879,10 @@ function resolvePath(path, base) {
     }
     return result;
 }
-function setIfNotDeeper(state, value, ...pathes) {
+function setIfNotDeeper(state, value, ...paths) {
     if (state === value)
         return state;
-    const path = flattenPath(pathes);
+    const path = flattenPath(paths);
     let result = state;
     for (let i = 0; i < path.length - 1; i++) {
         if (result[path[i]] === value)
@@ -7372,7 +7386,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "fieldset {\n  margin-bottom: 0; }\n\nbutton, .radio-container > span {\n  background: #fff;\n  color: #737373;\n  border: 1px solid #ccc;\n  border-radius: .2em;\n  padding: 0.3em 0.8em;\n  align-items: center; }\n  button[disabled], .radio-container > span[disabled] {\n    background: #fff;\n    color: #bfbfbf;\n    cursor: not-allowed; }\n  button:hover, .radio-container > span:hover {\n    background: #fafafa;\n    color: #000; }\n  button:checked, .radio-container > span:checked {\n    background: #367ac3;\n    color: #fff; }\n\nbutton {\n  margin-top: 0.4em;\n  margin-bottom: 0.4em; }\n\n.wrapper > button, .layout > button, .body > button, .flex > button {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content; }\n\n.wrapper, .layout, .body, .array-item, .radio, .flex {\n  display: flex;\n  flex-flow: column;\n  flex: 1 1 auto;\n  align-items: stretch; }\n\n.wrapper {\n  padding: 0.4em 0.4em; }\n\n.wrapper-margin {\n  margin: 0.4em 0.4em; }\n\n.center {\n  align-items: center; }\n\n.required:after {\n  content: \" *\"; }\n\n.hidden, .button-viewer {\n  display: none; }\n\n.inline {\n  flex-direction: row; }\n\n.wrap {\n  flex-wrap: wrap; }\n\n.shrink {\n  flex-grow: 0; }\n\n.expand {\n  flex-grow: 10; }\n\n.title {\n  margin-right: 0.4em;\n  margin-top: 0.4em; }\n\n.boolean-left-container {\n  margin-top: 0.4em; }\n\n.field-properties, .ff-layout {\n  position: relative;\n  margin-top: -0.4em;\n  padding: 0.2em 0.4em 0.4em 0.4em;\n  background: rgba(240, 240, 240, 0.7);\n  border: 1px solid #ccc;\n  border-top: 0; }\n\n.field-properties {\n  border-bottom: 0;\n  padding-bottom: 0; }\n\n.ff-layout {\n  padding-top: 0;\n  margin-top: -0.4em;\n  margin-bottom: 0.4em; }\n\n.object-wrapper {\n  padding: 0 0 0.28em 0; }\n\n.object-prop {\n  margin-top: -0.4em;\n  margin-bottom: -0.4em; }\n\n.object-arg {\n  padding-bottom: 0; }\n\n.no-padding {\n  padding: 0; }\n\n.no-margin {\n  margin: 0; }\n\n.object-bg {\n  background-color: rgba(0, 255, 0, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-bg {\n  background-color: rgba(0, 100, 255, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-selected {\n  background-color: rgba(0, 100, 255, 0.3); }\n\n.grayed + span {\n  background-color: whitesmoke; }\n\n.disabled + span {\n  background-color: #ededed;\n  color: #b8b8b8; }\n  .disabled + span:hover {\n    background: #ededed;\n    color: #262626; }\n\n.selected {\n  background: #367ac3;\n  color: #fff; }\n  .selected:hover {\n    background: #3475bb;\n    color: #fff; }\n\n.radio {\n  align-items: center; }\n\n.radio-container > span {\n  border: 0;\n  border-radius: 0;\n  display: inline-block;\n  margin: 0; }\n\n.radio-container > input {\n  display: none; }\n\n.radio-container > input + span {\n  cursor: pointer; }\n\n.radio-container > input:checked + span {\n  background: #367ac3;\n  color: #fff; }\n\n.radio-container > input:indeterminate + span.title {\n  background-color: whitesmoke;\n  color: #999999; }\n\n.radio-container {\n  display: inline-block;\n  border: 1px solid #ccc;\n  margin-right: -1px;\n  border-radius: 0;\n  padding: 0; }\n\n.radio .radio-container:first-child, .radio .radio-container:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.radio .radio-container:last-child, .radio .radio-container:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin: 0; }\n\n.unescaped > input:checked + span {\n  background: #fff;\n  color: #737373; }\n  .unescaped > input:checked + span:after {\n    content: \" (unescaped)\"; }\n\n.height {\n  height: 65vh; }\n\n.no-side-padding {\n  padding-left: 0;\n  padding-right: 0; }\n\n.close {\n  display: flex;\n  flex-direction: row-reverse;\n  cursor: pointer;\n  padding: 0.2em;\n  margin-right: 0.4em; }\n\n.item-menu > button {\n  margin-right: -1px; }\n\n.item-menu:first-child, .item-menu:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.item-menu:last-child, .item-menu:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin-right: 0; }\n\n.bold {\n  font-weight: bold; }\n\n.priority_0 {\n  color: #e60900; }\n\n.priority_1 {\n  color: #ec9c00; }\n\n.block {\n  display: block; }\n", "", {"version":3,"sources":["C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/styles.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/tacit/_defs.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/radio.scss"],"names":[],"mappings":"AAMA;EACE,iBAAgB,EAAA;;AAGlB;EACE,iBCoBU;EDnBV,eAAwB;EACxB,uBCmBS;EDlBT,oBAAmB;EACnB,qBAAoB;EACpB,oBAAmB,EAAA;EANrB;IASI,iBCYQ;IDXR,eAAuB;IACvB,oBAAmB,EAAA;EAXvB;IAeI,oBAA6B;IAC7B,YCIQ,EAAA;EDpBZ;IAoBI,oBCGU;IDFV,YCAQ,EAAA;;ADIZ;EACE,kBAjCiB;EAkCjB,qBAlCiB,EAAA;;AAuCnB;EACE,4BAAmB;EAAnB,yBAAmB;EAAnB,oBAAmB,EAAA;;AAGrB;EACE,cAAa;EACb,kBAAiB;EACjB,eAAc;EACd,qBAAoB,EAAA;;AAGtB;EACE,qBAlDiB,EAAA;;AAqDnB;EACE,oBAtDiB,EAAA;;AAyDnB;EACE,oBAAmB,EAAA;;AAGrB;EACE,cAAa,EAAA;;AAGf;EACE,cAAa,EAAA;;AAGf;EACE,oBAAmB,EAAA;;AAGrB;EACE,gBAAe,EAAA;;AAGjB;EACE,aAAY,EAAA;;AAGd;EACE,cAAa,EAAA;;AAGf;EAIE,oBAzFiB;EA0FjB,kBA3FiB,EAAA;;AA8FnB;EACE,kBA/FiB,EAAA;;AAkGnB;EACE,mBAAkB;EAClB,mBApGiB;EAsGjB,iCArGiB;EAsGjB,qCAAqC;EACrC,uBC3ES;ED4ET,cAAa,EAAA;;AAGf;EACE,iBAAgB;EAChB,kBAAiB,EAAA;;AAGnB;EACE,eAAc;EACd,mBAnHiB;EAoHjB,qBApHiB,EAAA;;AAwHnB;EACE,sBAA+B,EAAA;;AAGjC;EACE,mBA7HiB;EA8HjB,sBA9HiB,EAAA;;AAiInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,WAAU,EAAA;;AAGZ;EACE,UAAS,EAAA;;AAIX;EACE,uCAAsC;EACtC,qBA/IiB,EAAA;;AAkJnB;EACE,yCAAwC;EACxC,qBApJiB,EAAA;;AAuJnB;EACE,yCAAwC,EAAA;;AAI1C;EACE,6BAAmC,EAAA;;AAGrC;EACE,0BAAmC;EACnC,eAAuB,EAAA;EAFzB;IAKI,oBAA6B;IAC7B,eAA0B,EAAA;;AAI9B;EACE,oBC9IY;ED+IZ,YCjJU,EAAA;ED+IZ;IAKI,oBAA4B;IAC5B,YCrJQ,EAAA;;AC9BZ;EACE,oBAAmB,EAAA;;AAGrB;EACE,UAAS;EACT,iBAAgB;EAChB,sBAAqB;EACrB,UAAS,EAAA;;AAGX;EACE,cAAa,EAAA;;AAGf;EACE,gBAAe,EAAA;;AAGjB;EACE,oBDYY;ECXZ,YDSU,EAAA;;ACNZ;EACE,6BAAmC;EACnC,eAAwB,EAAA;;AAI1B;EACE,sBAAqB;EACrB,uBDDS;ECET,mBAAkB;EAClB,iBAAgB;EAChB,WAAU,EAAA;;AAGZ;EAEI,+BFvCiB,EAAA;;AEqCrB;EAMI,+BAAgD;EAChD,UAAS,EAAA;;AFuJb;EACE,iBCvKU;EDwKV,eAAwB,EAAA;EAF1B;IAKI,wBAAuB,EAAA;;AAI3B;EACE,aAAY,EAAA;;AAGd;EACE,gBAAe;EACf,iBAAgB,EAAA;;AAGlB;EACE,cAAa;EACb,4BAA2B;EAC3B,gBAAe;EACf,eAAc;EACd,oBAxNiB,EAAA;;AA4NnB;EACE,mBAAkB,EAAA;;AAGpB;EAEI,+BApOiB,EAAA;;AAkOrB;EAMI,+BAAgD;EAChD,gBAAe,EAAA;;AAInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,eAAc,EAAA;;AAGhB;EACE,eAAc,EAAA;;AAGhB;EACE,eACF,EAAA","file":"styles.scss","sourcesContent":["@import 'tacit/defs';\r\n\r\n$border-radius: 0.4em;\r\n$margin-base: 0.4em;\r\n$margin-side: 0.4em;\r\n\r\nfieldset {\r\n  margin-bottom: 0;\r\n}\r\n\r\nbutton, .radio-container > span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n  border: 1px solid $gray;\r\n  border-radius: .2em;\r\n  padding: 0.3em 0.8em;\r\n  align-items: center;\r\n\r\n  &[disabled] {\r\n    background: $white;\r\n    color: darken($gray, 5);\r\n    cursor: not-allowed;\r\n  }\r\n\r\n  &:hover {\r\n    background: darken($white, 2);\r\n    color: $black;\r\n  }\r\n\r\n  &:checked {\r\n    background: $blue;\r\n    color: $white;\r\n  }\r\n}\r\n\r\nbutton {\r\n  margin-top: $margin-base;\r\n  margin-bottom: $margin-base;\r\n  //height: min-content;\r\n}\r\n\r\n\r\n.wrapper > button, .layout > button, .body > button, .flex > button {\r\n  height: fit-content;\r\n}\r\n\r\n.wrapper, .layout, .body, .array-item, .radio, .flex {\r\n  display: flex;\r\n  flex-flow: column;\r\n  flex: 1 1 auto;\r\n  align-items: stretch;\r\n}\r\n\r\n.wrapper {\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.wrapper-margin {\r\n  margin: $margin-base $margin-side;\r\n}\r\n\r\n.center {\r\n  align-items: center;\r\n}\r\n\r\n.required:after {\r\n  content: \" *\";\r\n}\r\n\r\n.hidden, .button-viewer {\r\n  display: none;\r\n}\r\n\r\n.inline {\r\n  flex-direction: row;\r\n}\r\n\r\n.wrap {\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.shrink {\r\n  flex-grow: 0;\r\n}\r\n\r\n.expand {\r\n  flex-grow: 10;\r\n}\r\n\r\n.title {\r\n  //display: flex;\r\n  //align-items: center;\r\n  //flex-grow: 0;\r\n  margin-right: $margin-side;\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.boolean-left-container {\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.field-properties, .ff-layout {\r\n  position: relative;\r\n  margin-top: -$margin-base;\r\n  //margin-bottom: $margin-base;\r\n  padding: $margin-base/2 $margin-side $margin-base $margin-side;\r\n  background: rgba(240, 240, 240, 0.70);\r\n  border: 1px solid $gray;\r\n  border-top: 0;\r\n}\r\n\r\n.field-properties {\r\n  border-bottom: 0;\r\n  padding-bottom: 0;\r\n}\r\n\r\n.ff-layout {\r\n  padding-top: 0;\r\n  margin-top: -$margin-base;\r\n  margin-bottom: $margin-base;\r\n\r\n}\r\n\r\n.object-wrapper {\r\n  padding: 0 0 $margin-base*0.7 0;\r\n}\r\n\r\n.object-prop {\r\n  margin-top: -$margin-base;\r\n  margin-bottom: -$margin-base;\r\n}\r\n\r\n.object-arg {\r\n  padding-bottom: 0;\r\n}\r\n\r\n.no-padding {\r\n  padding: 0;\r\n}\r\n\r\n.no-margin {\r\n  margin: 0;\r\n}\r\n\r\n\r\n.object-bg {\r\n  background-color: rgba(0, 255, 0, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-bg {\r\n  background-color: rgba(0, 100, 255, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-selected {\r\n  background-color: rgba(0, 100, 255, 0.3);\r\n}\r\n\r\n\r\n.grayed + span {\r\n  background-color: darken($white, 4);\r\n}\r\n\r\n.disabled + span {\r\n  background-color: darken($white, 7);\r\n  color: darken($gray, 8);\r\n\r\n  &:hover {\r\n    background: darken($white, 7);\r\n    color: lighten($black, 15);\r\n  }\r\n}\r\n\r\n.selected {\r\n  background: $blue;\r\n  color: $white;\r\n\r\n  &:hover {\r\n    background: darken($blue, 2);\r\n    color: $white;\r\n  }\r\n}\r\n\r\n//.FGroup-cls {\r\n// background-color: rgba(4, 197, 10, 0.15);\r\n//  \r\n//}\r\n//\r\n//.object-xtend-array {\r\n//  padding: 0.0em $margin-side 0.0em $margin-side;\r\n//  background-color: rgba(0, 120, 201, 0.15);\r\n//}\r\n\r\n\r\n@import './radio';\r\n\r\n.unescaped > input:checked + span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n\r\n  &:after {\r\n    content: \" (unescaped)\";\r\n  }\r\n}\r\n\r\n.height {\r\n  height: 65vh;;\r\n}\r\n\r\n.no-side-padding {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n\r\n.close {\r\n  display: flex;\r\n  flex-direction: row-reverse;\r\n  cursor: pointer;\r\n  padding: 0.2em;\r\n  margin-right: $margin-side;\r\n\r\n}\r\n\r\n.item-menu > button {\r\n  margin-right: -1px;\r\n}\r\n\r\n.item-menu {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin-right: 0;\r\n  }\r\n}\r\n\r\n.bold {\r\n  font-weight: bold;\r\n}\r\n\r\n.priority_0 {\r\n  color: #e60900;\r\n}\r\n\r\n.priority_1 {\r\n  color: #ec9c00;\r\n}\r\n\r\n.block {\r\n  display: block\r\n}","// The MIT License (MIT)\n//\n// Copyright (c) 2015-2017 Yegor Bugayenko\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included\n// in all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n// SOFTWARE.\n\n// sizes\n$em: 14px;\n\n// fonts\n$sans-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;\n$monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;\n\n// colors\n$black: #000;\n$white: #fff;\n$gray: #ccc;\n$blue: #367ac3;\n$red: #db423c;\n$green: #3fa75f;\n$orange: #ffa203;\n\n// responsive\n$mobile-width: 767px;\n\n%sans-serif {\n  font-family: $sans-serif;\n  font-size: $em;\n  font-stretch: normal;\n  font-style: normal;\n  font-weight: 300;\n  line-height: 1.65em;\n}","\r\n.radio {\r\n  align-items: center;\r\n}\r\n\r\n.radio-container > span {\r\n  border: 0;\r\n  border-radius: 0;\r\n  display: inline-block;\r\n  margin: 0;\r\n}\r\n\r\n.radio-container > input {\r\n  display: none;\r\n}\r\n\r\n.radio-container > input + span {\r\n  cursor: pointer;\r\n}\r\n\r\n.radio-container > input:checked + span {\r\n  background: $blue;\r\n  color: $white;\r\n}\r\n\r\n.radio-container > input:indeterminate + span.title {\r\n  background-color: darken($white, 4);\r\n  color: darken($gray, 20);\r\n  //color: $white;\r\n}\r\n\r\n.radio-container {\r\n  display: inline-block;\r\n  border: 1px solid $gray;\r\n  margin-right: -1px;\r\n  border-radius: 0;\r\n  padding: 0;\r\n}\r\n\r\n.radio .radio-container {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin: 0;\r\n  }\r\n}"],"sourceRoot":""}]);
+exports.push([module.i, "fieldset {\n  margin-bottom: 0; }\n\nbutton, .radio-container > span {\n  background: #fff;\n  color: #737373;\n  border: 1px solid #ccc;\n  border-radius: .2em;\n  padding: 0.3em 0.8em;\n  align-items: center;\n  flex-grow: 1; }\n  button[disabled], .radio-container > span[disabled] {\n    background: #fff;\n    color: #bfbfbf;\n    cursor: not-allowed; }\n  button:hover, .radio-container > span:hover {\n    background: #fafafa;\n    color: #000; }\n  button:checked, .radio-container > span:checked {\n    background: #367ac3;\n    color: #fff; }\n\nbutton {\n  margin-top: 0.4em;\n  margin-bottom: 0.4em; }\n\n.wrapper > button, .layout > button, .body > button, .flex > button {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content; }\n\n.wrapper, .layout, .body, .array-item, .radio, .flex {\n  display: flex;\n  flex-flow: column;\n  flex: 1 1 auto;\n  align-items: stretch; }\n\n.wrapper {\n  padding: 0.4em 0.4em; }\n\n.wrapper-margin {\n  margin: 0.4em 0.4em; }\n\n.center {\n  align-items: center; }\n\n.required:after {\n  content: \" *\"; }\n\n.hidden, .button-viewer {\n  display: none; }\n\n.inline {\n  flex-direction: row; }\n\n.wrap {\n  flex-wrap: wrap; }\n\n.shrink {\n  flex-grow: 0; }\n\n.expand {\n  flex-grow: 10; }\n\n.title {\n  margin-right: 0.4em;\n  margin-top: 0.4em; }\n\n.boolean-left-container {\n  margin-top: 0.4em; }\n\n.field-properties, .ff-layout {\n  position: relative;\n  margin-top: -0.4em;\n  padding: 0.2em 0.4em 0.4em 0.4em;\n  background: rgba(240, 240, 240, 0.7);\n  border: 1px solid #ccc;\n  border-top: 0; }\n\n.field-properties {\n  border-bottom: 0;\n  padding-bottom: 0; }\n\n.ff-layout {\n  padding-top: 0;\n  margin-top: -0.4em;\n  margin-bottom: 0.4em; }\n\n.object-wrapper {\n  padding: 0 0 0.28em 0; }\n\n.object-prop {\n  margin-top: -0.4em;\n  margin-bottom: -0.4em; }\n\n.object-arg {\n  padding-bottom: 0; }\n\n.no-padding {\n  padding: 0; }\n\n.no-margin {\n  margin: 0; }\n\n.object-bg {\n  background-color: rgba(0, 255, 0, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-bg {\n  background-color: rgba(0, 100, 255, 0.2);\n  padding: 0.4em 0.4em; }\n\n.field-selected {\n  background-color: rgba(0, 100, 255, 0.3); }\n\n.grayed + span {\n  background-color: whitesmoke; }\n\n.disabled + span {\n  background-color: #ededed;\n  color: #b8b8b8; }\n  .disabled + span:hover {\n    background: #ededed;\n    color: #262626; }\n\n.selected {\n  background: #367ac3;\n  color: #fff; }\n  .selected:hover {\n    background: #3475bb;\n    color: #fff; }\n\n.radio {\n  align-items: center; }\n\n.radio-container > span {\n  border: 0;\n  border-radius: 0;\n  display: inline-block;\n  margin: 0; }\n\n.radio-container > input {\n  display: none; }\n\n.radio-container > input + span {\n  cursor: pointer; }\n\n.radio-container > input:checked + span {\n  background: #367ac3;\n  color: #fff; }\n\n.radio-container > input:indeterminate + span.title {\n  background-color: whitesmoke;\n  color: #999999; }\n\n.radio-container {\n  display: inline-block;\n  border: 1px solid #ccc;\n  margin-right: -1px;\n  border-radius: 0;\n  padding: 0; }\n\n.radio .radio-container:first-child, .radio .radio-container:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.radio .radio-container:last-child, .radio .radio-container:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin: 0; }\n\n.unescaped > input:checked + span {\n  background: #fff;\n  color: #737373; }\n  .unescaped > input:checked + span:after {\n    content: \" (unescaped)\"; }\n\n.height {\n  height: 65vh; }\n\n.no-side-padding {\n  padding-left: 0;\n  padding-right: 0; }\n\n.close {\n  display: flex;\n  flex-direction: row-reverse;\n  cursor: pointer;\n  padding: 0.2em;\n  margin-right: 0.4em; }\n\n.item-menu > button {\n  margin-right: -1px; }\n\n.item-menu:first-child, .item-menu:first-child > span {\n  border-radius: 0.4em 0 0 0.4em; }\n\n.item-menu:last-child, .item-menu:last-child > span {\n  border-radius: 0 0.4em 0.4em 0;\n  margin-right: 0; }\n\n.bold {\n  font-weight: bold; }\n\n.priority_0 {\n  color: #e60900; }\n\n.priority_1 {\n  color: #ec9c00; }\n\n.block {\n  display: block; }\n", "", {"version":3,"sources":["C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/styles.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/tacit/_defs.scss","C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/C:/workspace/nodejs/fform-constructor/src/radio.scss"],"names":[],"mappings":"AAMA;EACE,iBAAgB,EAAA;;AAGlB;EACE,iBCoBU;EDnBV,eAAwB;EACxB,uBCmBS;EDlBT,oBAAmB;EACnB,qBAAoB;EACpB,oBAAmB;EACnB,aAAY,EAAA;EAPd;IAUI,iBCWQ;IDVR,eAAuB;IACvB,oBAAmB,EAAA;EAZvB;IAgBI,oBAA6B;IAC7B,YCGQ,EAAA;EDpBZ;IAqBI,oBCEU;IDDV,YCDQ,EAAA;;ADKZ;EACE,kBAlCiB;EAmCjB,qBAnCiB,EAAA;;AAwCnB;EACE,4BAAmB;EAAnB,yBAAmB;EAAnB,oBAAmB,EAAA;;AAGrB;EACE,cAAa;EACb,kBAAiB;EACjB,eAAc;EACd,qBAAoB,EAAA;;AAGtB;EACE,qBAnDiB,EAAA;;AAsDnB;EACE,oBAvDiB,EAAA;;AA0DnB;EACE,oBAAmB,EAAA;;AAGrB;EACE,cAAa,EAAA;;AAGf;EACE,cAAa,EAAA;;AAGf;EACE,oBAAmB,EAAA;;AAGrB;EACE,gBAAe,EAAA;;AAGjB;EACE,aAAY,EAAA;;AAGd;EACE,cAAa,EAAA;;AAGf;EAIE,oBA1FiB;EA2FjB,kBA5FiB,EAAA;;AA+FnB;EACE,kBAhGiB,EAAA;;AAmGnB;EACE,mBAAkB;EAClB,mBArGiB;EAuGjB,iCAtGiB;EAuGjB,qCAAqC;EACrC,uBC5ES;ED6ET,cAAa,EAAA;;AAGf;EACE,iBAAgB;EAChB,kBAAiB,EAAA;;AAGnB;EACE,eAAc;EACd,mBApHiB;EAqHjB,qBArHiB,EAAA;;AAyHnB;EACE,sBAA+B,EAAA;;AAGjC;EACE,mBA9HiB;EA+HjB,sBA/HiB,EAAA;;AAkInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,WAAU,EAAA;;AAGZ;EACE,UAAS,EAAA;;AAIX;EACE,uCAAsC;EACtC,qBAhJiB,EAAA;;AAmJnB;EACE,yCAAwC;EACxC,qBArJiB,EAAA;;AAwJnB;EACE,yCAAwC,EAAA;;AAI1C;EACE,6BAAmC,EAAA;;AAGrC;EACE,0BAAmC;EACnC,eAAuB,EAAA;EAFzB;IAKI,oBAA6B;IAC7B,eAA0B,EAAA;;AAI9B;EACE,oBC/IY;EDgJZ,YClJU,EAAA;EDgJZ;IAKI,oBAA4B;IAC5B,YCtJQ,EAAA;;AC9BZ;EACE,oBAAmB,EAAA;;AAGrB;EACE,UAAS;EACT,iBAAgB;EAChB,sBAAqB;EACrB,UAAS,EAAA;;AAGX;EACE,cAAa,EAAA;;AAGf;EACE,gBAAe,EAAA;;AAGjB;EACE,oBDYY;ECXZ,YDSU,EAAA;;ACNZ;EACE,6BAAmC;EACnC,eAAwB,EAAA;;AAI1B;EACE,sBAAqB;EACrB,uBDDS;ECET,mBAAkB;EAClB,iBAAgB;EAChB,WAAU,EAAA;;AAGZ;EAEI,+BFvCiB,EAAA;;AEqCrB;EAMI,+BAAgD;EAChD,UAAS,EAAA;;AFwJb;EACE,iBCxKU;EDyKV,eAAwB,EAAA;EAF1B;IAKI,wBAAuB,EAAA;;AAI3B;EACE,aAAY,EAAA;;AAGd;EACE,gBAAe;EACf,iBAAgB,EAAA;;AAGlB;EACE,cAAa;EACb,4BAA2B;EAC3B,gBAAe;EACf,eAAc;EACd,oBAzNiB,EAAA;;AA6NnB;EACE,mBAAkB,EAAA;;AAGpB;EAEI,+BArOiB,EAAA;;AAmOrB;EAMI,+BAAgD;EAChD,gBAAe,EAAA;;AAInB;EACE,kBAAiB,EAAA;;AAGnB;EACE,eAAc,EAAA;;AAGhB;EACE,eAAc,EAAA;;AAGhB;EACE,eACF,EAAA","file":"styles.scss","sourcesContent":["@import 'tacit/defs';\r\n\r\n$border-radius: 0.4em;\r\n$margin-base: 0.4em;\r\n$margin-side: 0.4em;\r\n\r\nfieldset {\r\n  margin-bottom: 0;\r\n}\r\n\r\nbutton, .radio-container > span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n  border: 1px solid $gray;\r\n  border-radius: .2em;\r\n  padding: 0.3em 0.8em;\r\n  align-items: center;\r\n  flex-grow: 1;\r\n\r\n  &[disabled] {\r\n    background: $white;\r\n    color: darken($gray, 5);\r\n    cursor: not-allowed;\r\n  }\r\n\r\n  &:hover {\r\n    background: darken($white, 2);\r\n    color: $black;\r\n  }\r\n\r\n  &:checked {\r\n    background: $blue;\r\n    color: $white;\r\n  }\r\n}\r\n\r\nbutton {\r\n  margin-top: $margin-base;\r\n  margin-bottom: $margin-base;\r\n  //height: min-content;\r\n}\r\n\r\n\r\n.wrapper > button, .layout > button, .body > button, .flex > button {\r\n  height: fit-content;\r\n}\r\n\r\n.wrapper, .layout, .body, .array-item, .radio, .flex {\r\n  display: flex;\r\n  flex-flow: column;\r\n  flex: 1 1 auto;\r\n  align-items: stretch;\r\n}\r\n\r\n.wrapper {\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.wrapper-margin {\r\n  margin: $margin-base $margin-side;\r\n}\r\n\r\n.center {\r\n  align-items: center;\r\n}\r\n\r\n.required:after {\r\n  content: \" *\";\r\n}\r\n\r\n.hidden, .button-viewer {\r\n  display: none;\r\n}\r\n\r\n.inline {\r\n  flex-direction: row;\r\n}\r\n\r\n.wrap {\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.shrink {\r\n  flex-grow: 0;\r\n}\r\n\r\n.expand {\r\n  flex-grow: 10;\r\n}\r\n\r\n.title {\r\n  //display: flex;\r\n  //align-items: center;\r\n  //flex-grow: 0;\r\n  margin-right: $margin-side;\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.boolean-left-container {\r\n  margin-top: $margin-base;\r\n}\r\n\r\n.field-properties, .ff-layout {\r\n  position: relative;\r\n  margin-top: -$margin-base;\r\n  //margin-bottom: $margin-base;\r\n  padding: $margin-base/2 $margin-side $margin-base $margin-side;\r\n  background: rgba(240, 240, 240, 0.70);\r\n  border: 1px solid $gray;\r\n  border-top: 0;\r\n}\r\n\r\n.field-properties {\r\n  border-bottom: 0;\r\n  padding-bottom: 0;\r\n}\r\n\r\n.ff-layout {\r\n  padding-top: 0;\r\n  margin-top: -$margin-base;\r\n  margin-bottom: $margin-base;\r\n\r\n}\r\n\r\n.object-wrapper {\r\n  padding: 0 0 $margin-base*0.7 0;\r\n}\r\n\r\n.object-prop {\r\n  margin-top: -$margin-base;\r\n  margin-bottom: -$margin-base;\r\n}\r\n\r\n.object-arg {\r\n  padding-bottom: 0;\r\n}\r\n\r\n.no-padding {\r\n  padding: 0;\r\n}\r\n\r\n.no-margin {\r\n  margin: 0;\r\n}\r\n\r\n\r\n.object-bg {\r\n  background-color: rgba(0, 255, 0, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-bg {\r\n  background-color: rgba(0, 100, 255, 0.2);\r\n  padding: $margin-base $margin-side;\r\n}\r\n\r\n.field-selected {\r\n  background-color: rgba(0, 100, 255, 0.3);\r\n}\r\n\r\n\r\n.grayed + span {\r\n  background-color: darken($white, 4);\r\n}\r\n\r\n.disabled + span {\r\n  background-color: darken($white, 7);\r\n  color: darken($gray, 8);\r\n\r\n  &:hover {\r\n    background: darken($white, 7);\r\n    color: lighten($black, 15);\r\n  }\r\n}\r\n\r\n.selected {\r\n  background: $blue;\r\n  color: $white;\r\n\r\n  &:hover {\r\n    background: darken($blue, 2);\r\n    color: $white;\r\n  }\r\n}\r\n\r\n//.FGroup-cls {\r\n// background-color: rgba(4, 197, 10, 0.15);\r\n//  \r\n//}\r\n//\r\n//.object-xtend-array {\r\n//  padding: 0.0em $margin-side 0.0em $margin-side;\r\n//  background-color: rgba(0, 120, 201, 0.15);\r\n//}\r\n\r\n\r\n@import './radio';\r\n\r\n.unescaped > input:checked + span {\r\n  background: $white;\r\n  color: darken($gray, 35);\r\n\r\n  &:after {\r\n    content: \" (unescaped)\";\r\n  }\r\n}\r\n\r\n.height {\r\n  height: 65vh;;\r\n}\r\n\r\n.no-side-padding {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n\r\n.close {\r\n  display: flex;\r\n  flex-direction: row-reverse;\r\n  cursor: pointer;\r\n  padding: 0.2em;\r\n  margin-right: $margin-side;\r\n\r\n}\r\n\r\n.item-menu > button {\r\n  margin-right: -1px;\r\n}\r\n\r\n.item-menu {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin-right: 0;\r\n  }\r\n}\r\n\r\n.bold {\r\n  font-weight: bold;\r\n}\r\n\r\n.priority_0 {\r\n  color: #e60900;\r\n}\r\n\r\n.priority_1 {\r\n  color: #ec9c00;\r\n}\r\n\r\n.block {\r\n  display: block\r\n}","// The MIT License (MIT)\n//\n// Copyright (c) 2015-2017 Yegor Bugayenko\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included\n// in all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n// SOFTWARE.\n\n// sizes\n$em: 14px;\n\n// fonts\n$sans-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;\n$monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;\n\n// colors\n$black: #000;\n$white: #fff;\n$gray: #ccc;\n$blue: #367ac3;\n$red: #db423c;\n$green: #3fa75f;\n$orange: #ffa203;\n\n// responsive\n$mobile-width: 767px;\n\n%sans-serif {\n  font-family: $sans-serif;\n  font-size: $em;\n  font-stretch: normal;\n  font-style: normal;\n  font-weight: 300;\n  line-height: 1.65em;\n}","\r\n.radio {\r\n  align-items: center;\r\n}\r\n\r\n.radio-container > span {\r\n  border: 0;\r\n  border-radius: 0;\r\n  display: inline-block;\r\n  margin: 0;\r\n}\r\n\r\n.radio-container > input {\r\n  display: none;\r\n}\r\n\r\n.radio-container > input + span {\r\n  cursor: pointer;\r\n}\r\n\r\n.radio-container > input:checked + span {\r\n  background: $blue;\r\n  color: $white;\r\n}\r\n\r\n.radio-container > input:indeterminate + span.title {\r\n  background-color: darken($white, 4);\r\n  color: darken($gray, 20);\r\n  //color: $white;\r\n}\r\n\r\n.radio-container {\r\n  display: inline-block;\r\n  border: 1px solid $gray;\r\n  margin-right: -1px;\r\n  border-radius: 0;\r\n  padding: 0;\r\n}\r\n\r\n.radio .radio-container {\r\n  &:first-child, &:first-child > span {\r\n    border-radius: $border-radius 0 0 $border-radius;\r\n  }\r\n\r\n  &:last-child, &:last-child > span {\r\n    border-radius: 0 $border-radius $border-radius 0;\r\n    margin: 0;\r\n  }\r\n}"],"sourceRoot":""}]);
 
 // exports
 
@@ -46776,6 +46790,11 @@ let constrElements = {
         ReactSelect: react_select_1.default,
         ReactCreatable: Creatable_1.default,
         ReactJson: react_json_view_1.default,
+    },
+    parts: {
+        Button: {
+            className: { shrink: true },
+        },
     },
     _parts: {
         expandButton: {

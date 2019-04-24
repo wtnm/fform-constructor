@@ -3401,7 +3401,7 @@ class FFormStateAPI extends FFormStateManager {
                 stateLib_1.normalizeUpdate({ path: path, value: true }, self.getState()).forEach(i => self._validation = stateLib_1.setIfNotDeeper(self._validation || {}, true, i.path));
             return self._setExecution(null, opts);
         };
-        this.get = (...pathes) => stateLib_1.getFromState(this.getState(), ...pathes);
+        this.get = (...paths) => stateLib_1.getFromState(this.getState(), ...paths);
         this.set = (path, value, opts = {}) => {
             if (path === null)
                 return this._setExecution([null], opts);
@@ -3848,10 +3848,10 @@ function makeSlice(...pathValues) {
     return setIn({}, value, path);
 }
 exports.makeSlice = makeSlice;
-function hasIn(state, ...pathes) {
-    if (pathes.length > 0) {
-        for (let i = 0; i < pathes.length; i++) {
-            let path = isArray(pathes[i]) ? pathes[i] : [pathes[i]];
+function hasIn(state, ...paths) {
+    if (paths.length > 0) {
+        for (let i = 0; i < paths.length; i++) {
+            let path = isArray(paths[i]) ? paths[i] : [paths[i]];
             for (let j = 0; j < path.length; j++) {
                 if (isUndefined(path[j]))
                     continue;
@@ -3869,12 +3869,12 @@ function hasIn(state, ...pathes) {
     return true;
 }
 exports.hasIn = hasIn;
-function setIn(state, value, ...pathes) {
+function setIn(state, value, ...paths) {
     let result = state;
     let key;
-    if (pathes.length > 0) {
-        for (let i = 0; i < pathes.length; i++) {
-            let path = isArray(pathes[i]) ? pathes[i] : [pathes[i]];
+    if (paths.length > 0) {
+        for (let i = 0; i < paths.length; i++) {
+            let path = isArray(paths[i]) ? paths[i] : [paths[i]];
             for (let j = 0; j < path.length; j++) {
                 if (isUndefined(path[j]))
                     continue;
@@ -3945,10 +3945,10 @@ function getIn(state, ...paths) {
 }
 exports.getIn = getIn;
 ;
-function getCreateIn(state, value, ...pathes) {
-    if (!hasIn(state, ...pathes))
-        setIn(state, value, ...pathes);
-    return getIn(state, ...pathes);
+function getCreateIn(state, value, ...paths) {
+    if (!hasIn(state, ...paths))
+        setIn(state, value, ...paths);
+    return getIn(state, ...paths);
 }
 exports.getCreateIn = getCreateIn;
 //////////////////////////////
@@ -4118,9 +4118,11 @@ class FForm extends react_1.Component {
         if (!props.noValidation)
             self.api.validate(true);
         self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
-        self._setRef = self._setRef.bind(self);
+        self._setRootRef = self._setRootRef.bind(self);
+        self._setFormRef = self._setFormRef.bind(self);
         self._submit = self._submit.bind(self);
         self._getPath = self._getPath.bind(self);
+        self.reset = self.reset.bind(self);
     }
     _updateMethods(nextProps, prevProps = {}) {
         const self = this;
@@ -4131,8 +4133,11 @@ class FForm extends react_1.Component {
         });
         Object.assign(self._methods, self.wrapFns(api_1.objectResolver(self.elements, newMethods), { noStrictArrayResult: true }));
     }
-    _setRef(FField) {
+    _setRootRef(FField) {
         this._root = FField;
+    }
+    _setFormRef(form) {
+        this._form = form;
     }
     _updateValues(nextProps, prevProps = {}) {
         const { state, value, inital, extData, noValidation, touched } = nextProps;
@@ -4232,12 +4237,20 @@ class FForm extends react_1.Component {
     getBranch(path) {
         return this.api.get(path);
     }
+    reset(event) {
+        if (event)
+            event.preventDefault();
+        this.api.reset();
+    }
+    submit() {
+        this._form.dispatchEvent(new Event('submit'));
+    }
     render() {
         const self = this;
         let _a = self.props, { core, state, value, inital, extData, fieldCache, touched, parent, onSubmit, onChange, onStateChange, _$useTag: UseTag = 'form' } = _a, rest = __rest(_a, ["core", "state", "value", "inital", "extData", "fieldCache", "touched", "parent", "onSubmit", "onChange", "onStateChange", "_$useTag"]);
         FForm.params.forEach(k => delete rest[k]);
-        return (react_1.createElement(UseTag, Object.assign({}, rest, { onSubmit: self._submit }),
-            react_1.createElement(FField, { ref: self._setRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: self._getPath, FFormApi: self.api })));
+        return (react_1.createElement(UseTag, Object.assign({ ref: self._setFormRef }, rest, { onSubmit: self._submit, onReset: self.reset }),
+            react_1.createElement(FField, { ref: self._setRootRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: self._getPath, FFormApi: self.api })));
     }
 }
 FForm.params = ['readonly', 'disabled', 'viewer', 'liveValidate', 'liveUpdate'];
@@ -4367,8 +4380,8 @@ class FField extends FRefsGeneric {
                 self._cachedTimeout = setTimeout(self._updateCachedValue.bind(self), fieldCache);
                 const data = self.getData();
                 const mappedData = self._mappedData;
-                self.get = (...pathes) => {
-                    let path = stateLib_1.normalizePath(pathes, self.path);
+                self.get = (...paths) => {
+                    let path = stateLib_1.normalizePath(paths, self.path);
                     if (commonLib_1.isEqual(path, stateLib_1.normalizePath('./@value', self.path)))
                         return data.value;
                     return self.stateApi.get(path);
@@ -5431,8 +5444,9 @@ let elementsBase = {
         },
         Reset: {
             $_ref: '^/parts/Button',
+            type: 'reset',
             children: ['Reset'],
-            onClick: { $: '^/fn/api', args: ['reset'] },
+            //onClick: {$: '^/fn/api', args: ['reset']},
             $_maps: {
                 disabled: '@/status/pristine',
             }
@@ -6004,8 +6018,8 @@ function getArrayItemData(schemaPart, index, length) {
     result.canDel = index >= Math.min(arrayStartIndex, length - 1);
     return result;
 }
-function isSelfManaged(state, ...pathes) {
-    return commonLib_1.hasIn(state, ...pathes, SymData, 'value');
+function isSelfManaged(state, ...paths) {
+    return commonLib_1.hasIn(state, ...paths, SymData, 'value');
 }
 exports.isSelfManaged = isSelfManaged;
 function isSchemaSelfManaged(schemaPart, type) {
@@ -6442,12 +6456,12 @@ function updateNormalizationPROC(state, UPDATABLE, item) {
     });
     return state;
 }
-function setUPDATABLE(UPDATABLE, update, replace, ...pathes) {
+function setUPDATABLE(UPDATABLE, update, replace, ...paths) {
     object2PathValues(replace).forEach(path => {
         let replaceValue = path.pop();
-        commonLib_1.setIn(UPDATABLE, commonLib_1.getIn(update, path), 'update', ...pathes, path);
+        commonLib_1.setIn(UPDATABLE, commonLib_1.getIn(update, path), 'update', ...paths, path);
         if (replaceValue)
-            commonLib_1.setIn(UPDATABLE, replaceValue, 'replace', ...pathes, path);
+            commonLib_1.setIn(UPDATABLE, replaceValue, 'replace', ...paths, path);
     });
     return UPDATABLE;
 }
@@ -6743,14 +6757,14 @@ function getFromUPD(state, UPDATABLE) {
         return getFromState(state, ...tPath);
     };
 }
-function getUpdValue(states, ...pathes) {
+function getUpdValue(states, ...paths) {
     for (let i = 0; i < states.length; i++) {
-        if (commonLib_1.hasIn(states[i], ...pathes))
-            return commonLib_1.getIn(states[i], ...pathes);
+        if (commonLib_1.hasIn(states[i], ...paths))
+            return commonLib_1.getIn(states[i], ...paths);
     }
 }
-function getFromState(state, ...pathes) {
-    return commonLib_1.getIn(state, ...pathes.map(path => normalizePath(path)));
+function getFromState(state, ...paths) {
+    return commonLib_1.getIn(state, ...paths.map(path => normalizePath(path)));
 }
 exports.getFromState = getFromState;
 const makeNUpdate = (path, keyPath, value, replace, rest = {}) => { return Object.assign({ path, [SymData]: keyPath, value, replace }, rest); };
@@ -6779,16 +6793,16 @@ function normalizeUpdate(update, state) {
     const result = [];
     let pathArray = path2string(path).split(';');
     pathArray.forEach(path => {
-        let pathes = normalizePath(path, base);
+        let paths = normalizePath(path, base);
         let keyPathes = [];
-        let a = pathes.indexOf(SymData);
+        let a = paths.indexOf(SymData);
         if (~a) {
-            keyPathes = pathes.slice(a + 1);
-            pathes = pathes.slice(0, a);
+            keyPathes = paths.slice(a + 1);
+            paths = paths.slice(0, a);
         }
-        pathes = multiplyPath(pathes, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
+        paths = multiplyPath(paths, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
         keyPathes = multiplyPath(keyPathes);
-        commonLib_1.objKeys(pathes).forEach(p => commonLib_1.objKeys(keyPathes).forEach(k => result.push(makeNUpdate(pathes[p], keyPathes[k], value, replace, rest))));
+        commonLib_1.objKeys(paths).forEach(p => commonLib_1.objKeys(keyPathes).forEach(k => result.push(makeNUpdate(paths[p], keyPathes[k], value, replace, rest))));
     });
     return result;
 }
@@ -6865,10 +6879,10 @@ function resolvePath(path, base) {
     }
     return result;
 }
-function setIfNotDeeper(state, value, ...pathes) {
+function setIfNotDeeper(state, value, ...paths) {
     if (state === value)
         return state;
-    const path = flattenPath(pathes);
+    const path = flattenPath(paths);
     let result = state;
     for (let i = 0; i < path.length - 1; i++) {
         if (result[path[i]] === value)

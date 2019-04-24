@@ -8,6 +8,7 @@ button, .radio-container > span {
     border: 1px solid #ccc;
     border-radius: .2em;
     padding: 0.3em 0.8em;
+    flex-grow: 1;
 }
 
 button:disabled {
