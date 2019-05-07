@@ -2,7 +2,6 @@
 
 
 import {types as jsonTypes} from 'fform/src/stateLib';
-import * as React from "react";
 
 const paramsEnum = ['autofocus', 'liveUpdate', 'liveValidate', 'readonly', 'disabled', 'hidden', 'norender', 'viewer'];
 
@@ -11,46 +10,46 @@ const FFormSchema: JsonSchema = {
   definitions: {
     tristateNoPadding: {
       allOf: [{$ref: '#/definitions/tristate'},
-        {ff_custom: {Wrapper: {className: {'no-side-padding': true}}},}
+        {_custom: {Wrapper: {className: {'no-side-padding': true}}},}
       ]
     },
     tristate: {
       type: ["null", "boolean"],
-      ff_presets: 'booleanNullLeft:$inlineTitle:$shrink',
-      ff_custom: {Main: {className: {'radio-container': true}}},
+      _presets: 'booleanNullLeft:$inlineTitle:$shrink',
+      _custom: {Main: {className: {'radio-container': true}}},
     },
     arg: {
       allOf: [
         {$ref: '#/definitions/jsonEditor'},
         {
-          ff_layout: {
+          _layout: {
             className: {'field-bg': true},
             $_fields: {0: {$_fields: {0: {$_fields: {5: {buttons: ['del'], style: {marginLeft: '-0.5em'}}}}}}}
           },
-          ff_custom: {Wrapper: {className: {'object-arg': true}}},
+          _custom: {Wrapper: {className: {'object-arg': true}}},
           properties: {
-            //name: {ff_params: {norender: true}},
-            value: {ff_custom: {Wrapper: {style: {marginLeft: '-0.9em'}}}}
+            //name: {_params: {norender: true}},
+            value: {_custom: {Wrapper: {style: {marginLeft: '-0.9em'}}}}
           }
         }]
     },
     reactSelectStatic: {
       type: 'array',
-      ff_managed: true,
-      ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsStatic:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
-      ff_placeholder: 'Select values,,,'
+      _simple: true,
+      _presets: '^/_usrSets/reactSelect:^/_usrSets/rsStatic:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
+      _placeholder: 'Select values,,,'
     },
     reactSelectArray: {
       type: 'array',
-      ff_managed: true,
-      ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
-      ff_placeholder: 'Enter values,,,'
+      _simple: true,
+      _presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
+      _placeholder: 'Enter values,,,'
     },
     combineArray: {
       type: "array",
-      ff_presets: 'array:$noTitle',
-      ff_dataMap: [{from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', '']}],
-      ff_layout: ['^/_parts/emptyArray'],
+      _presets: 'array:$noTitle',
+      _stateMaps: [{from: '../selector/@/value', to: './@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', '']}],
+      _layout: ['^/_parts/emptyArray'],
       items: {
         oneOf:
           [{$ref: '#/definitions/fieldTop'}]
@@ -60,9 +59,9 @@ const FFormSchema: JsonSchema = {
       allOf: [{$ref: '#/definitions/field'},
         {
           properties: {
-            propOrItem: {ff_params: {norender: true}},
+            propOrItem: {_params: {norender: true}},
           },
-          ff_params: {showMoveOut: false},
+          _params: {showMoveOut: false},
         }
       ]
     },
@@ -70,16 +69,16 @@ const FFormSchema: JsonSchema = {
       allOf: [
         {$ref: '#/definitions/layout'},
         {
-          ff_params: {hideExternal: true},
-          ff_dataMap: [
-            {from: '../type@value', to: './@/params/propOrItemShown', $: '^/_dataMaps/showPropOrItem'},
+          _params: {hideExternal: true},
+          _stateMaps: [
+            {from: '../type@value', to: './@/params/propOrItemShown', $: '^/stateMaps/showPropOrItem'},
             {from: '../@params/expanded', to: './@/params/hideTopLine', $: '^/fn/not'}
           ],
           properties: {
-            fieldsEnabled: {ff_params: {norender: true}, default: true},
+            fieldsEnabled: {_params: {norender: true}, default: true},
             value: {title: 'Layout:'}
           },
-          ff_layout: {
+          _layout: {
             $_fields: {
               0: {
                 className: {'ff-layout': true},
@@ -99,17 +98,17 @@ const FFormSchema: JsonSchema = {
     layout: {
       allOf: [{$ref: '#/definitions/jsonEditor'},
         {
-          ff_params: {hideExternal: false},
-          ff_dataMap: [{from: '../../@/params/propOrItemShown', to: './@/params/propOrItemShown'}],
+          _params: {hideExternal: false},
+          _stateMaps: [{from: '../../@/params/propOrItemShown', to: './@/params/propOrItemShown'}],
           properties: {
-            // type: {ff_params: {norender: true}, default: 'object'},
-            // name: {ff_params: {norender: true}},
+            // type: {_params: {norender: true}, default: 'object'},
+            // name: {_params: {norender: true}},
             fieldsEnabled: {
               type: 'boolean',
               title: '$_fields',
-              ff_presets: 'booleanLeft:$shrink',
-              ff_custom: {Main: {className: {'radio-container': true}}},
-              ff_dataMap: [
+              _presets: 'booleanLeft:$shrink',
+              _custom: {Main: {className: {'radio-container': true}}},
+              _stateMaps: [
                 {from: './@/value', to: '../@/params/fieldsShown'},
                 {from: './@/value', to: '../fields/@/params/hidden', $: '^/fn/not'}
 
@@ -117,20 +116,20 @@ const FFormSchema: JsonSchema = {
             },
             fields: {
               type: 'array',
-              ff_presets: 'array:$noTitle',
+              _presets: 'array:$noTitle',
               items: {
-                ff_oneOfSelector: '^/_usr/oneOfField',
+                _oneOfSelector: '^/_usr/oneOfField',
                 oneOf: [
                   {
                     allOf: [{$ref: '#/definitions/field'}, {
-                      ff_layout: {className: {'field-bg': true}},
-                      ff_params: {showMoveOut: true},
+                      _layout: {className: {'field-bg': true}},
+                      _params: {showMoveOut: true},
                     }]
                   },
                   {
                     allOf: [{$ref: '#/definitions/layout'},
                       {
-                        ff_layout: {className: {'object-bg': true}},
+                        _layout: {className: {'object-bg': true}},
                       }]
                   }
                 ]
@@ -142,11 +141,11 @@ const FFormSchema: JsonSchema = {
     },
     jsonEditor: {
       type: "object",
-      ff_presets: 'object:$noArrayControls',
-      // ff_custom: {Wrapper: {className: {'object-prop': true}}},
-      ff_data: {moveOpts: [], json: {}},
-      ff_params: {hideTopLine: false},
-      ff_layout: {
+      _presets: 'object:$noArrayControls',
+      // _custom: {Wrapper: {className: {'object-prop': true}}},
+      _data: {moveOpts: [], json: {}},
+      _params: {hideTopLine: false},
+      _layout: {
         $_fields: [
           {
             $_maps: {'className/hidden': '@/params/hideTopLine'},
@@ -207,29 +206,29 @@ const FFormSchema: JsonSchema = {
       properties: {
         value: {
           type: "string",
-          ff_placeholder: 'Enter JSON value...',
-          ff_presets: 'string:$expand:$inlineTitle',
-          ff_validators: [{$: '^/_validators/testJSON', args: ['${0}', '../@/json']}],
+          _placeholder: 'Enter JSON value...',
+          _presets: 'string:$expand:$inlineTitle',
+          _validators: [{$: '^/_validators/testJSON', args: ['${0}', '../@/json']}],
         },
       }
     },
     objectTop: {
       allOf: [
         {$ref: '#/definitions/object'},
-        {ff_custom: {Wrapper: {className: {'object-prop': false}}}}]
+        {_custom: {Wrapper: {className: {'object-prop': false}}}}]
     },
     field: {
       type: "object",
-      ff_presets: 'object:$noArrayControls',
-      ff_custom: {
+      _presets: 'object:$noArrayControls',
+      _custom: {
         Wrapper: {
           onClick: '^/_usr/selectField',
           $_maps: {'className/field-selected': '@/params/fieldSelected'}
         }
       },
-      ff_layout: {
+      _layout: {
         className: {layout: true, block: true},
-        // ff_params: {showMoveOut: false},
+        // _params: {showMoveOut: false},
         $_fields: [{
           className: {inline: true, layout: true},
           $_fields: [
@@ -280,31 +279,31 @@ const FFormSchema: JsonSchema = {
           ]
         }]
       },
-      ff_dataMap: [{from: './@/params/expanded', to: './fieldProps/@/params/hidden', $: '^/fn/not'}],
+      _stateMaps: [{from: './@/params/expanded', to: './fieldProps/@/params/hidden', $: '^/fn/not'}],
       // expanded:true
       properties: {
         propOrItem: {
           type: 'array',
-          ff_data: {fData: {enum: ['property', 'item']}},
+          _simple: true,
+          _enumExten: {'property': true, 'item': true},
           default: ['property'],
-          ff_presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
-          ff_managed: true,
+          _presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
           items: {type: 'string'},
-          ff_dataMap: [{from: '../../../@/params/propOrItemShown', to: './@/params/hidden', $: '^/_dataMaps/mapPropOrItem'}]
+          _stateMaps: [{from: '../../../@/params/propOrItemShown', to: './@/params/hidden', $: '^/stateMaps/mapPropOrItem'}]
         },
         name: {
           type: "string",
-          ff_presets: 'string',
-          ff_placeholder: 'Enter field name...',
-          ff_custom: {Main: {className: {bold: true}}}
-          // ff_params: {hidden: false},
+          _presets: 'string',
+          _placeholder: 'Enter field name...',
+          _custom: {Main: {className: {bold: true}}}
+          // _params: {hidden: false},
         },
         refEnabled: {
           type: 'boolean',
           title: '$ref',
-          ff_presets: 'booleanLeft:$shrink',
-          ff_custom: {Main: {className: {'radio-container': true}}},
-          ff_dataMap: [
+          _presets: 'booleanLeft:$shrink',
+          _custom: {Main: {className: {'radio-container': true}}},
+          _stateMaps: [
             {from: './@/value', to: '../ref/@/params/hidden', $: '^/fn/not'},
             {from: './@/value', to: '../type/@/params/hidden'}
           ],
@@ -312,41 +311,41 @@ const FFormSchema: JsonSchema = {
         },
         ref: {
           type: 'string',
-          ff_placeholder: '',
-          ff_presets: 'string:$inlineTitle'
+          _placeholder: '',
+          _presets: 'string:$inlineTitle'
         },
         type: {
           allOf: [{$ref: '#/definitions/reactSelectStatic'},
             {
               //type: "array",
               //'default': [],
-              //ff_presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
-              //ff_managed: true,
-              ff_data: {fData: {enum: jsonTypes}},
+              //_presets: 'checkboxes:$inlineItems:$inlineTitle:$shrink',
+              //_simple: true,
+              _enumExten: jsonTypes,
               items: {"type": "string", enum: jsonTypes},
-              ff_dataMap: [{from: './@/value', to: '../', $: '^/_dataMaps/fieldTypesSel'}],
-              ff_placeholder: 'Select type,,,'
+              _stateMaps: [{from: './@/value', to: '../', $: '^/stateMaps/fieldTypesSel'}],
+              _placeholder: 'Select type,,,'
             }
           ],
         },
         fieldProps: {
           type: 'object',
           oneOf: [
-            {ff_managed: true},
+            {_simple: true},
             {
               type: "object",
-              ff_managed: false,
-              ff_layout: {className: {'field-properties': true}},
+              _simple: false,
+              _layout: {className: {'field-properties': true}},
               properties: {
                 jsonProps: {
                   title: 'JSON Schema properties:',
                   type: "object",
-                  ff_dataMap: [{from: '../../type/@/value', to: './', $: '^/_dataMaps/jsonPropsSel'}],
+                  _stateMaps: [{from: '../../type/@/value', to: './', $: '^/stateMaps/jsonPropsSel'}],
                   properties: {
                     commonProps: {
                       type: "object",
-                      ff_presets: 'object:$noTitle',
-                      ff_layout: [{
+                      _presets: 'object:$noTitle',
+                      _layout: [{
                         className: {inline: true},
                         $_fields: ['title', 'description', 'defaultUnescaped', 'default',
                           {
@@ -363,32 +362,32 @@ const FFormSchema: JsonSchema = {
                         title: {
                           type: "string",
                           title: 'Title',
-                          ff_placeholder: 'Title...',
-                          ff_presets: 'string:$noTitle',
+                          _placeholder: 'Title...',
+                          _presets: 'string:$noTitle',
                         },
                         description: {
                           type: "string",
                           title: 'Description',
-                          ff_placeholder: 'Description...',
-                          ff_presets: 'string:$noTitle:$expand'
+                          _placeholder: 'Description...',
+                          _presets: 'string:$noTitle:$expand'
                         },
                         // defaultUnescaped: {
                         //   type: 'boolean',
                         //   title: 'Default',
-                        //   ff_presets: 'booleanLeft:$shrink',
-                        //   ff_custom: {Main: {className: {'radio-container': true, unescaped: true}, style: {marginRight: '-1.1em'}}},
+                        //   _presets: 'booleanLeft:$shrink',
+                        //   _custom: {Main: {className: {'radio-container': true, unescaped: true}, style: {marginRight: '-1.1em'}}},
                         // },
                         'default': {
                           type: "string",
                           title: 'Default',
-                          //ff_placeholder: 'Enter default...',
-                          ff_presets: 'string:$inlineTitle',
-                          ff_validators: ['^/_validators/testJSON'],
+                          //_placeholder: 'Enter default...',
+                          _presets: 'string:$inlineTitle',
+                          _validators: ['^/_validators/testJSON'],
                         },
                         definitions: {
                           title: 'Definitions',
                           "type": "array",
-                          ff_presets: 'array:$noTitle',
+                          _presets: 'array:$noTitle',
                           items: {
                             $ref: '#/definitions/fieldTop'
                           }
@@ -397,47 +396,47 @@ const FFormSchema: JsonSchema = {
                     },
                     stringProps: {
                       type: "object",
-                      ff_presets: 'object:$inlineLayout:$noTitle',
-                      ff_layout: ['minLength', 'maxLength', 'format', 'pattern'],
+                      _presets: 'object:$inlineLayout:$noTitle',
+                      _layout: ['minLength', 'maxLength', 'format', 'pattern'],
                       properties: {
                         minLength: {
                           title: 'Length: min',
                           type: ['null', 'integer'],
                           minimum: 0,
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth'
+                          _presets: 'integerNull:$inlineTitle:$autowidth'
                         },
                         maxLength: {
                           title: 'max',
                           type: ['null', 'integer'],
                           minimum: 0,
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth'
+                          _presets: 'integerNull:$inlineTitle:$autowidth'
                         },
-                        pattern: {title: 'Pattern', type: "string", ff_presets: 'string:$inlineTitle:$expand',},
+                        pattern: {title: 'Pattern', type: "string", _presets: 'string:$inlineTitle:$expand',},
                         format: {
                           title: 'Format',
                           type: "string",
                           'enum': ['', 'date-time', 'date', 'time', 'email', 'ipv4', 'ipv6', 'uri', 'color', 'hostname', 'phone', 'utc-millisec', 'alpha', 'alphanumeric'],
-                          ff_enumExten: {'': {label: 'select format...'}},
-                          ff_presets: 'select:$inlineTitle'
+                          _enumExten: {'': {label: 'select format...'}},
+                          _presets: 'select:$inlineTitle'
                         }
                       }
                     },
                     numberProps: {
                       type: "object",
-                      ff_presets: 'object:$inlineLayout:$noTitle',
-                      ff_layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', {$_ref: '^/parts/Expander'}],
+                      _presets: 'object:$inlineLayout:$noTitle',
+                      _layout: ['multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum', {$_ref: '^/parts/Expander'}],
                       properties: {
                         multipleOf: {
                           title: 'Multiple of',
                           type: ["null", "number"],
                           minimum: 0,
                           exclusiveMinimum: true,
-                          ff_presets: 'numberNull:$inlineTitle:$autowidth'
+                          _presets: 'numberNull:$inlineTitle:$autowidth'
                         },
                         maximum: {
                           title: 'max',
                           type: ["null", "number"],
-                          ff_presets: 'numberNull:$inlineTitle:$autowidth'
+                          _presets: 'numberNull:$inlineTitle:$autowidth'
                         },
                         exclusiveMaximum: {
                           allOf: [
@@ -448,14 +447,14 @@ const FFormSchema: JsonSchema = {
                         minimum: {
                           title: 'min',
                           type: ["null", "number"],
-                          ff_presets: 'numberNull:$inlineTitle:$autowidth'
+                          _presets: 'numberNull:$inlineTitle:$autowidth'
                         },
                         exclusiveMinimum: {
                           allOf: [
                             {$ref: '#/definitions/tristate'},
                             {
                               title: 'Exclusive min',
-                              ff_custom: {Main: {style: {marginRight: '1.0em'}}},
+                              _custom: {Main: {style: {marginRight: '1.0em'}}},
                             },
                           ]
                         },
@@ -463,21 +462,20 @@ const FFormSchema: JsonSchema = {
                     },
                     arrayProps: {
                       type: "object",
-                      ff_presets: 'object:$noTitle',
-                      ff_layout: [{
+                      _presets: 'object:$noTitle',
+                      _layout: [{
                         className: {inline: true},
                         $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', {$_ref: '^/parts/Expander'}]
                       }],
-                      // ff_params: {hidden: true},
+                      // _params: {hidden: true},
                       properties: {
                         additionalItems: {
                           title: 'Items: additional',
                           type: "string",
                           'default': '',
-                          ff_data: {fData: {'enum': ['false', 'true', 'field']}},
-                          // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'field'}},
-                          ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
-                          ff_dataMap: [
+                          _enumExten: {'false': true, 'true': true, 'field': true},
+                          _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
+                          _stateMaps: [
                             {from: './@value', to: '../additionalItemsField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field']},
                             {from: './@value', to: '../additionalItemsField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${0}', 'field']}, 1, 0]}
 
@@ -494,12 +492,12 @@ const FFormSchema: JsonSchema = {
                         minItems: {
                           title: 'min',
                           type: ['null', 'integer'],
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth',
+                          _presets: 'integerNull:$inlineTitle:$autowidth',
                         },
                         maxItems: {
                           title: 'max',
                           type: ['null', 'integer'],
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth',
+                          _presets: 'integerNull:$inlineTitle:$autowidth',
                         },
                         uniqueItems: {
                           allOf: [
@@ -511,20 +509,20 @@ const FFormSchema: JsonSchema = {
                     },
                     objectProps: {
                       type: "object",
-                      ff_presets: 'object:$noTitle',
-                      ff_layout: [{
+                      _presets: 'object:$noTitle',
+                      _layout: [{
                         className: {inline: true},
                         $_fields: ['additionalProperties', 'minProperties', 'maxProperties', 'required']
                       }],
-                      // ff_params: {hidden: true},
+                      // _params: {hidden: true},
                       properties: {
                         required: {
                           title: 'required',
                           type: "array",
-                          ff_managed: true,
+                          _simple: true,
                           allOf: [{$ref: '#/definitions/reactSelectArray'},
                             {
-                              ff_custom: {
+                              _custom: {
                                 $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                               }
                             }],
@@ -533,21 +531,20 @@ const FFormSchema: JsonSchema = {
                         minProperties: {
                           title: 'min',
                           type: ['null', 'integer'],
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth',
+                          _presets: 'integerNull:$inlineTitle:$autowidth',
                         },
                         maxProperties: {
                           title: 'max',
                           type: ['null', 'integer'],
-                          ff_presets: 'integerNull:$inlineTitle:$autowidth',
+                          _presets: 'integerNull:$inlineTitle:$autowidth',
                         },
                         additionalProperties: {
                           title: 'Props: additional',
                           type: "string",
                           'default': '',
-                          ff_data: {fData: {'enum': ['false', 'true', 'field']}},
-                          // ff_enumExten: {'0': {label: 'false'}, '1': {label: 'true'}, '2': {label: 'object'}},
-                          ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
-                          ff_dataMap: [
+                          _enumExten: {'false': true, 'true': true, 'field': true},
+                          _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
+                          _stateMaps: [
                             {from: './@value', to: '../additionalPropertiesField/@/params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', 'field']},
                             {from: './@value', to: '../additionalPropertiesField/@/oneOf', $: '^/fn/iif', args: [{$: '^/fn/equal', args: ['${0}', 'field']}, 1, 0]}
                           ]
@@ -564,9 +561,9 @@ const FFormSchema: JsonSchema = {
                     },
                     combine: {
                       type: 'object',
-                      ff_presets: 'object:$noTitle',
-                      ff_dataMap: [{from: './selector@value', to: '/@/selectorValue'}],
-                      ff_layout: [{
+                      _presets: 'object:$noTitle',
+                      _stateMaps: [{from: './selector@value', to: '/@/selectorValue'}],
+                      _layout: [{
                         className: {inline: true},
                         $_fields: [
                           'selector',
@@ -595,25 +592,25 @@ const FFormSchema: JsonSchema = {
                         selector: {
                           type: 'string',
                           'enum': ['dependencies', 'patternProperties', 'allOf', 'oneOf', 'anyOf', 'not'],
-                          ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
+                          _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
                         },
                         allOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {ff_dataMap: {0: {args: {1: 'allOf'}}}}]
+                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'allOf'}}}}]
                         },
                         oneOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {ff_dataMap: {0: {args: {1: 'oneOf'}}}}]
+                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'oneOf'}}}}]
                         },
                         anyOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {ff_dataMap: {0: {args: {1: 'anyOf'}}}}]
+                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'anyOf'}}}}]
                         },
                         not: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {ff_dataMap: {0: {args: {1: 'not'}}}, maxItems: 1}]
+                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'not'}}}, maxItems: 1}]
                         },
                         patternProperties: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {ff_dataMap: {0: {args: {1: 'patternProperties'}}}}]
+                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'patternProperties'}}}}]
                           // title: 'patternProperties',
                           // "type": "array",
-                          // ff_presets: 'array',
+                          // _presets: 'array',
                           // items: {
                           //   $ref: '#/definitions/fieldTop'
                           // }
@@ -621,24 +618,24 @@ const FFormSchema: JsonSchema = {
                         dependencies: {
                           allOf: [{$ref: '#/definitions/combineArray'},
                             {
-                              ff_dataMap: {0: {args: {1: 'dependencies'}}},
+                              _stateMaps: {0: {args: {1: 'dependencies'}}},
                               items: {
                                 oneOf: [
                                   {$ref: '#/definitions/fieldTop'},
                                   {
                                     type: 'object',
-                                    ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
+                                    _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
 
                                     properties: {
                                       mame: {
                                         type: 'string',
-                                        ff_presets: 'string',
-                                        ff_placeholder: 'Enter name...'
+                                        _presets: 'string',
+                                        _placeholder: 'Enter name...'
                                       },
                                       values: {
                                         allOf: [{$ref: '#/definitions/reactSelectArray'},
                                           {
-                                            ff_custom: {
+                                            _custom: {
                                               $_ref: '^/sets/$expand',
                                               //Main: {menuIsOpen: false}
                                             }
@@ -660,20 +657,20 @@ const FFormSchema: JsonSchema = {
                 ffProps: {
                   title: 'Extended properties:',
                   type: "object",
-                  ff_presets: 'object',
-                  ff_custom: {Wrapper: {style: {paddingBottom: '0em'}}},
-                  ff_layout: [
+                  _presets: 'object',
+                  _custom: {Wrapper: {style: {paddingBottom: '0em'}}},
+                  _layout: [
                     {
                       className: {layout: true, inline: true},
-                      $_fields: ['ff_placeholder', 'ff_params']
+                      $_fields: ['_placeholder', '_params']
                     },
                     {
                       className: {layout: true, inline: true},
-                      $_fields: ['ff_managed', 'ff_presets',
+                      $_fields: ['_simple', '_presets',
                         {
                           "$_ref": "^/parts/ArrayAddButton",
                           "children": ["+validator"],
-                          onClick: {args: {1: "./ff_validators", 3: {"setOneOf": 0}}},
+                          onClick: {args: {1: "./_validators", 3: {"setOneOf": 0}}},
                           style: {marginRight: '-1px'},
                           $_maps: {
                             'className/hidden': false,
@@ -683,7 +680,7 @@ const FFormSchema: JsonSchema = {
                         {
                           "$_ref": "^/parts/ArrayAddButton",
                           "children": ["+dataMap"],
-                          onClick: {args: {1: "./ff_dataMap", 3: {"setOneOf": 0}}},
+                          onClick: {args: {1: "./_stateMaps", 3: {"setOneOf": 0}}},
                           $_maps: {
                             'className/hidden': false,
                             disabled: false
@@ -694,13 +691,13 @@ const FFormSchema: JsonSchema = {
 
                   ],
                   properties: {
-                    ff_presets: {
+                    _presets: {
                       type: 'array',
-                      title: 'ff_presets',
+                      title: '_presets',
                       items: {type: 'string'},
-                      ff_placeholder: 'Select sets...',
-                      ff_presets: '^/_usrSets/reactSelect:$noTitle:$expand',
-                      ff_custom: {
+                      _placeholder: 'Select sets...',
+                      _presets: '^/_usrSets/reactSelect:$noTitle:$expand',
+                      _custom: {
                         Main: {
                           isMulti: true,
                           closeMenuOnSelect: false,
@@ -709,29 +706,29 @@ const FFormSchema: JsonSchema = {
                           },
                         },
                       },
-                      ff_managed: true,
-                      //ff_custom: {$_ref: '^/_usrSets/presetSelect:^/sets/$noTitle:^/sets/$expand'},
-                      ff_dataMap: [
+                      _simple: true,
+                      //_custom: {$_ref: '^/_usrSets/presetSelect:^/sets/$noTitle:^/sets/$expand'},
+                      _stateMaps: [
                         //['./@/value', '../custom/@/value', presetValuesHandler]
                         {from: '../../../type/@/value', to: './@/fieldTypes'}
                       ]
                     },
-                    ff_managed: {
+                    _simple: {
                       type: 'boolean',
                       title: 'Self managed',
-                      ff_presets: 'booleanLeft:$shrink',
-                      ff_custom: {Main: {className: {'radio-container': true}}},
+                      _presets: 'booleanLeft:$shrink',
+                      _custom: {Main: {className: {'radio-container': true}}},
                     },
 
-                    ff_validators: {
+                    _validators: {
                       type: 'array',
                       title: 'Validators',
-                      ff_presets: 'array:$noTitle',
+                      _presets: 'array:$noTitle',
                       items: {
                         'default': [''],
                         type: "array",
-                        ff_presets: 'array:$inlineLayout:$noArrayButtons:$noTitle:$noArrayControls',
-                        ff_layout: {
+                        _presets: 'array:$inlineLayout:$noArrayButtons:$noTitle:$noArrayControls',
+                        _layout: {
                           className: {'wrap': true}, $_fields: [
                             {
                               "$_ref": "^/parts/Button",
@@ -745,22 +742,22 @@ const FFormSchema: JsonSchema = {
                             {$_ref: '^/sets/object/Title'}]
                         },
                         items: [
-                          {type: 'string', ff_placeholder: 'Validator...', ff_presets: 'string:$noArrayControls'},
+                          {type: 'string', _placeholder: 'Validator...', _presets: 'string:$noArrayControls'},
                           {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${0}"'}}]}
                         ],
                         minItems: 1,
                         additionalItems: {$ref: '#/definitions/arg'},
                       }
                     },
-                    ff_dataMap: {
+                    _stateMaps: {
                       type: 'array',
                       title: 'Data Maps',
-                      ff_presets: 'array:$noTitle',
+                      _presets: 'array:$noTitle',
                       items: {
                         'default': ['', '', ''],
                         type: "array",
-                        ff_presets: 'array:$inlineLayout:$noArrayButtons:$noArrayControls',
-                        ff_layout: {
+                        _presets: 'array:$inlineLayout:$noArrayButtons:$noArrayControls',
+                        _layout: {
                           className: {'wrap': true},
                           $_fields: [{
                             "$_ref": "^/parts/Button",
@@ -774,35 +771,35 @@ const FFormSchema: JsonSchema = {
                         },
 
                         items: [
-                          {type: 'string', ff_placeholder: 'From path...', ff_presets: 'string:$noArrayControls'},
-                          {type: 'string', ff_placeholder: 'Destination path...', ff_presets: 'string:$noArrayControls'},
-                          {type: 'string', ff_placeholder: 'Function', ff_presets: 'string:$noArrayControls'},
+                          {type: 'string', _placeholder: 'From path...', _presets: 'string:$noArrayControls'},
+                          {type: 'string', _placeholder: 'Destination path...', _presets: 'string:$noArrayControls'},
+                          {type: 'string', _placeholder: 'Function', _presets: 'string:$noArrayControls'},
                           {allOf: [{$ref: '#/definitions/arg'}, {default: {value: '"${0}"'}}]}
                         ],
                         minItems: 3,
                         additionalItems: {$ref: '#/definitions/arg'},
                       }
                     },
-                    ff_placeholder: {
+                    _placeholder: {
                       type: 'string',
                       title: 'placeholder',
-                      ff_presets: 'string:$inlineTitle:$expand',
+                      _presets: 'string:$inlineTitle:$expand',
                     },
-                    ff_params: {
+                    _params: {
                       allOf: [{$ref: '#/definitions/reactSelectArray'},
                         {
                           items: {type: "string"},
-                          ff_data: {fData: {enum: paramsEnum}},
-                          ff_placeholder: 'leading "!" set param to false.',
-                          ff_custom: {
+                          _enumExten: paramsEnum,
+                          _placeholder: 'leading "!" set param to false.',
+                          _custom: {
                             $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                           }
                         }],
                     },
-                    ff_custom: {
+                    _custom: {
                       type: "object",
-                      ff_presets: 'object:$noTitle',
-                      ff_layout: [{
+                      _presets: 'object:$noTitle',
+                      _layout: [{
                         className: {inline: true},
                         $_fields: [
                           'selector',
@@ -825,10 +822,10 @@ const FFormSchema: JsonSchema = {
                         selector: {
                           type: 'string',
                           title: 'Customization',
-                          ff_presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
-                          ff_data: {fData: {enumExten: []}},
-                          ff_dataMap: [
-                            {from: './@/value', to: '../valueArray/@/value', $: '^/_dataMaps/valueArraySel'},
+                          _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
+                          _data: {fData: {enumExten: []}},
+                          _stateMaps: [
+                            {from: './@/value', to: '../valueArray/@/value', $: '^/stateMaps/valueArraySel'},
                             {from: './@/value', to: '../@/params/selectorMapped'},
                             {from: './@/fData/enumExten', to: '../@/params/enumExtenMapped'}
 
@@ -837,20 +834,20 @@ const FFormSchema: JsonSchema = {
                         selectorVals: {
                           type: 'array',
                           items: {type: 'string'},
-                          ff_params: {norender: true},
-                          ff_managed: true,
-                          ff_dataMap: [
-                            {from: '../../ff_presets/@/value,fieldTypes', to: './', $: '^/_dataMaps/customSelectors', args: ['@/value', '@/fieldTypes']},
+                          _params: {norender: true},
+                          _simple: true,
+                          _stateMaps: [
+                            {from: '../../_presets/@/value,fieldTypes', to: './', $: '^/stateMaps/customSelectors', args: ['@/value', '@/fieldTypes']},
                           ]
                         },
                         valueArray: {
                           type: 'array',
-                          ff_presets: 'array:$noArrayControls:$noTitle',
+                          _presets: 'array:$noArrayControls:$noTitle',
                           items: {
                             allOf: [
                               {$ref: '#/definitions/jsonEditor'},
                               {
-                                ff_dataMap: [{from: './@/json', to: '../../selector/@/fData/enumExten', $: '^/_dataMaps/jsonMap'}],
+                                _stateMaps: [{from: './@/json', to: '../../selector/@/fData/enumExten', $: '^/stateMaps/jsonMap'}],
                               }
                             ]
                           }
@@ -858,15 +855,15 @@ const FFormSchema: JsonSchema = {
 
                       },
                     },
-                    // ff_data: {
+                    // _data: {
                     //   type: 'array',
                     //   title: 'Data',
-                    //   ff_presets: 'array:$inlineTitle',
+                    //   _presets: 'array:$inlineTitle',
                     //   items: {
                     //     allOf: [
                     //       {$ref: '#/definitions/object'},
                     //       {
-                    //         ff_params: {hideExternal: false},
+                    //         _params: {hideExternal: false},
                     //       }
                     //     ]
                     //   }
@@ -878,11 +875,6 @@ const FFormSchema: JsonSchema = {
                     {$ref: '#/definitions/jsonEditor'},
                     {properties: {value: {title: 'Rest properties:'}}}
                   ]
-                  // type: 'string',
-                  // title: 'Rest properties:',
-                  // ff_presets: 'textarea',
-                  // ff_custom: {Wrapper: {className: {'object-wrapper': true}}},
-                  // ff_validators: ['^/_usr/addBrackets/|^/_validators/testJSON'],
                 }
               }
             }
@@ -902,7 +894,7 @@ const FFormSchema: JsonSchema = {
       {
         properties: {
           name: {
-            ff_placeholder: 'Enter form name...'
+            _placeholder: 'Enter form name...'
           }
         }
       }

@@ -222,7 +222,6 @@ const mainLib = {
       }
     }
   }
-
 };
 
 const editFormElements = elements.extend([styling, constrObj]);
@@ -280,16 +279,16 @@ const viewerSchema: JsonSchema = {
     jsonEditor: (constrSchema as any).definitions.jsonEditor,
     reactSelectArray: {
       type: 'array',
-      ff_managed: true,
-      ff_presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
-      ff_placeholder: 'Enter values,,,'
+      _simple: true,
+      _presets: '^/_usrSets/reactSelect:^/_usrSets/rsMulti:$inlineArrayControls:$arrayControls3but',
+      _placeholder: 'Enter values,,,'
     },
   },
 
   type: 'object',
-  ff_data: {selector: {value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',]}},
-  ff_dataMap: [{from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${0}']}],
-  ff_layout: {
+  _data: {selector: {value: 'schema', enum: ['form', 'schema', 'elements', 'css', 'props',]}},
+  _stateMaps: [{from: './@/selector/value', to: './@/selector/none', $: '^/fn/api', args: ['showOnly', '${0}']}],
+  _layout: {
     style: {marginLeft: '1em', display: 'block'},
     $_fields: [{
       className: {inline: false}, $_fields: [
@@ -312,11 +311,11 @@ const viewerSchema: JsonSchema = {
   properties: {
     schema: {
       type: 'object',
-      ff_data: {
+      _data: {
         value2schema: '', value2schemaError: ''
       },
 
-      ff_layout: [
+      _layout: [
         'links',
         'code',
         {
@@ -353,31 +352,31 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'object',
-            ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
+            _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
             properties: {
               path: {
                 title: 'path',
                 type: 'string',
-                ff_presets: 'string:$inlineTitle'
+                _presets: 'string:$inlineTitle'
               },
               link: {
                 title: 'link',
                 type: 'string',
-                ff_presets: 'string:$inlineTitle',
-                ff_validators: ['^/_validators/testLink'],
+                _presets: 'string:$inlineTitle',
+                _validators: ['^/_validators/testLink'],
               }
             }
           }
         },
         code: {
           type: 'object',
-          ff_managed: true,
-          ff_presets: 'textarea',
-          ff_dataMap: [
+          _simple: true,
+          _presets: 'textarea',
+          _stateMaps: [
             {from: '../@/params/fromValue', to: './@/params/hidden'}
 
           ],
-          ff_custom: {
+          _custom: {
             Main: {
               className: {height: true},
               onChange: {$: '^/fn/eventValue|^/_usr/jsonParse|^/fn/setValue'},
@@ -398,14 +397,14 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'object',
-            ff_presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
+            _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
             properties: {
               import: {
                 allOf: [{$ref: '#/definitions/reactSelectArray'},
                   {
                     title: 'import',
                     items: {type: 'string'},
-                    ff_custom: {
+                    _custom: {
                       $_ref: '^/sets/$inlineTitle:^/sets/$expand',
                     }
                   }],
@@ -413,8 +412,8 @@ const viewerSchema: JsonSchema = {
               from: {
                 title: 'from',
                 type: 'string',
-                ff_presets: 'string:$inlineTitle',
-                ff_validators: ['^/_validators/testLink'],
+                _presets: 'string:$inlineTitle',
+                _validators: ['^/_validators/testLink'],
               }
             }
           }
@@ -422,8 +421,8 @@ const viewerSchema: JsonSchema = {
         code: {
           type: 'string',
           title: 'Code',
-          ff_presets: 'textarea',
-          ff_custom: {Main: {className: {height: true}}}
+          _presets: 'textarea',
+          _custom: {Main: {className: {height: true}}}
         }
       }
     },
@@ -435,21 +434,21 @@ const viewerSchema: JsonSchema = {
           type: 'array',
           items: {
             type: 'string',
-            ff_presets: 'string:$inlineArrayControls:$arrayControls3but',
-            ff_validators: ['^/_validators/testLink'],
+            _presets: 'string:$inlineArrayControls:$arrayControls3but',
+            _validators: ['^/_validators/testLink'],
           }
         },
         cxBind: {
           type: 'string',
-          ff_presets: 'string:$inlineTitle',
+          _presets: 'string:$inlineTitle',
           title: 'Bind cx to:',
-          ff_validators: ['^/_validators/testLink'],
+          _validators: ['^/_validators/testLink'],
         },
         code: {
           type: 'string',
           title: 'Code',
-          ff_presets: 'textarea',
-          ff_custom: {Main: {className: {height: true}}}
+          _presets: 'textarea',
+          _custom: {Main: {className: {height: true}}}
         }
       }
     },
@@ -458,8 +457,8 @@ const viewerSchema: JsonSchema = {
       properties: {
         jsonValidation: {
           type: "boolean",
-          ff_presets: 'booleanLeft:$inlineTitle:$shrink',
-          ff_custom: {Main: {className: {'radio-container': true}, children: {'1': {style: {width: '100%', textAlign: 'center'}}}}},
+          _presets: 'booleanLeft:$inlineTitle:$shrink',
+          _custom: {Main: {className: {'radio-container': true}, children: {'1': {style: {width: '100%', textAlign: 'center'}}}}},
           title: 'JSON schema Validation'
         },
         rest: {
@@ -540,7 +539,7 @@ class ConstrView extends React.PureComponent<any, any> {
 
 const mainSchema: JsonSchema = {
   type: 'object',
-  ff_layout: [{
+  _layout: [{
     className: {inline: true}, $_fields: [
       {
         $_ref: '^/parts/Button',
@@ -623,25 +622,25 @@ const mainSchema: JsonSchema = {
     selector: {
       type: 'string',
       default: '',
-      ff_presets: 'radio:$inlineItems:$inlineTitle:$shrink',
-      ff_dataMap: [{from: './@/value', to: '../@/selectorValue'}],
-      ff_custom: {Main: {className: {wrap: true}}}
+      _presets: 'radio:$inlineItems:$inlineTitle:$shrink',
+      _stateMaps: [{from: './@/value', to: '../@/selectorValue'}],
+      _custom: {Main: {className: {wrap: true}}}
     },
 
     value: {
       type: ['array', 'object'],
       default: [],
       items: {type: 'object'},
-      ff_managed: true,
-      ff_dataMap: [
+      _simple: true,
+      _stateMaps: [
         {from: './@/value', to: '../selector/@/fData/enum', $: '^/_usr/schemaNames', replace: false},
         {from: '../selector@value', to: './@/selectorValue'},
         {from: './@/selectorValue', to: './@params/hidden', $: '^/fn/equal|^/fn/not', args: ['${0}', '']},
         {from: './@/value,selectorValue', to: '../viewer@value', $: '^/_usr/setViewerValue', args: ['@value', '@selectorValue']}
 
       ],
-      ff_presets: 'textarea',
-      ff_custom: {
+      _presets: 'textarea',
+      _custom: {
         Main: {
           style: {height: '80vh'},
           onChange: {$: '^/fn/eventValue|^/_usr/jsonParse|^/fn/setValue'},
@@ -653,10 +652,10 @@ const mainSchema: JsonSchema = {
     },
     viewer: {
       type: 'object',
-      ff_managed: true,
-      ff_presets: 'base',
-      ff_dataMap: [{from: './@num', to: './@params/hidden', $: '^/fn/equal', args: ['${0}', '']}],
-      ff_custom: {
+      _simple: true,
+      _presets: 'base',
+      _stateMaps: [{from: './@num', to: './@params/hidden', $: '^/fn/equal', args: ['${0}', '']}],
+      _custom: {
         Main: {
           _$widget: ConstrView,
           updSchema: '^/_usr/updSchema',
@@ -734,6 +733,7 @@ class MainView extends React.PureComponent<any, any> {
     self.core.set('/@/storageName', name);
     try {
       let data = getStorage(name);
+      
       if (data && testJSONdata(data)) self.core.setValue(data, {execute: true, replace: true})
     } catch (e) {
       self.openModal(['Failed to load data with error: ', <b key='bold'>{e.message}</b>, <br key='br'/>, '']);

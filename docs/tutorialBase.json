@@ -1,0 +1,393 @@
+[
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "_$widget": "button",
+                            "type": "submit",
+                            "children": [
+                                "Send"
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "phone number",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            },
+            "error": ""
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "formProps": {
+            "jsonValidation": false,
+            "props": []
+        },
+        "data": {
+            "schema": {
+                "links": [
+                    {
+                        "path": "#/definitions/imported",
+                        "link": "imported.json"
+                    }
+                ],
+                "code": {
+                    "type": "object",
+                    "_layout": {
+                        "$_fields": [
+                            "stringProp",
+                            "impObj"
+                        ]
+                    },
+                    "properties": {
+                        "stringProp": {
+                            "type": "string",
+                            "title": "string"
+                        },
+                        "impObj": {
+                            "$ref": "#/definitions/imported"
+                        }
+                    }
+                }
+            },
+            "elements": {
+                "links": [
+                    {
+                        "import": [],
+                        "from": "styles.json"
+                    },
+                    {
+                        "import": [
+                            "obj"
+                        ],
+                        "from": "objs.js"
+                    }
+                ],
+                "code": "fn:{one:()=>alert('one')}"
+            },
+            "css": {
+                "links": [
+                    "tacit.min.css",
+                    "style.css"
+                ],
+                "code": ".main{\n\n}"
+            }
+        },
+        "name": "login form"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "className": {
+                                "inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "_$widget": "button",
+                                    "type": "submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "_$widget": "button",
+                                    "type": "reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "layout usage"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_presets": [],
+                "_simple": false,
+                "_validators": [],
+                "_stateMaps": [],
+                "_placeholder": "",
+                "_params": [],
+                "_custom": {},
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "className": {
+                                "inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "$_ref": "^/parts/Submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "$_ref": "^/parts/Reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": [],
+                        "_simple": false,
+                        "_validators": [],
+                        "_stateMaps": [],
+                        "_placeholder": "",
+                        "_params": [],
+                        "_custom": {},
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "schema extending"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {}
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": ""
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": ""
+            }
+        },
+        "name": "component extending"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {}
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": ""
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": ""
+            }
+        },
+        "name": "data processors"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {}
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn: {\n      formatNum: function (val, ...args) {\n        var a = val.substr(3, 4);\n        var b = val.substr(7, 3);\n        return [val.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n      },\n      parseNum: function (val, ...args) {\n        return [val.replace(/\\D+/g, '').substr(0,10), ...args]\n      }\n}"
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": ""
+            }
+        },
+        "name": "validation"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {}
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": ""
+        },
+        "css": {
+            "links": [
+                "tacit.min.css",
+                "style.css"
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": ""
+            }
+        },
+        "name": "schema combinig"
+    }
+]

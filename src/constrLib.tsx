@@ -32,7 +32,7 @@ function splitSets(elements: any) {
 let constrElements = {
   sets: {
     base: {[SymTypes]: []},
-    nBase: {
+    simple: {
       [SymTypes]: [],
       Main: {
         onFocus: {$: '^/fn/focus|^/_usr/unSelectField'}
@@ -61,12 +61,10 @@ let constrElements = {
   },
   _usrSets: {
     reactSelect: {
-      $_ref: '^/sets/nBase',
+      $_ref: '^/sets/simple',
       Main: {
         _$useTag: '^/_widgets/ReactCreatable',
-        // placeholder: 'Enter new values,,,',
-        $_reactRef: {tagRef: true},
-        onChange: {$: '^/_usr/reactSelectParse|^/fn/setValue|updCached'},
+        onChange: {$: '^/_usr/reactSelectParse|^/fn/setValue|liveUpdate'},
         $_maps: {
           value: {$: '^/_usr/reactSelectValue', args: ['@/value']},
           options: {$: '^/_usr/reactSelectValue', args: ['@/fData/enum']},
@@ -236,7 +234,7 @@ let constrElements = {
       return [value.updated_src, ...args]
     }
   },
-  _dataMaps: {
+  stateMaps: {
     showPropOrItem: function (types: string[]) {
       return [!(types && types.length && !(~types.indexOf('array') && ~types.indexOf('object')))]
     },
@@ -267,7 +265,7 @@ let constrElements = {
       // const result: any = [];
       //const objects = getObjects();
       const elements = getElements();//this.api.props.elements;
-      let $_ref = '^/sets/nBase';
+      let $_ref = '^/sets/simple';
       // if (!preset.length) {
       //   if (fieldTypes.length == 1) $_ref = '^/sets/' + fieldTypes[0]
       // } else $_ref = preset.map((k: string) => '^/sets/' + k).join(':');

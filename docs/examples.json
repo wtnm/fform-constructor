@@ -4,24 +4,18 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "login",
                         "password",
                         {
                             "$_ref": "^/parts/Submit",
-                            "style": {
-                                "width": "100%"
-                            },
                             "children": [
                                 "Send"
                             ]
                         },
                         {
-                            "$_ref": "^/parts/Reset",
-                            "style": {
-                                "width": "100%"
-                            }
+                            "$_ref": "^/parts/Reset"
                         }
                     ]
                 },
@@ -29,13 +23,13 @@
                     "login": {
                         "type": "string",
                         "title": "login",
-                        "ff_placeholder": "Enter login..."
+                        "_placeholder": "Enter login..."
                     },
                     "password": {
                         "type": "string",
                         "title": "password",
-                        "ff_presets": "string:$password",
-                        "ff_placeholder": "Enter password..."
+                        "_presets": "string:$password",
+                        "_placeholder": "Enter password..."
                     }
                 }
             },
@@ -78,7 +72,7 @@
                 ],
                 "code": {
                     "type": "object",
-                    "ff_layout": {
+                    "_layout": {
                         "$_fields": [
                             "stringProp",
                             "impObj"
@@ -125,15 +119,15 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_data": {
+                "_data": {
                     "focusValue": "/array/2/1"
                 },
                 "textarea": {
                     "title": "Textarea",
                     "type": "string",
-                    "ff_presets": "textarea"
+                    "_presets": "textarea"
                 },
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         {
                             "className": {
@@ -210,17 +204,17 @@
                     "string": {
                         "type": "string",
                         "title": "string",
-                        "ff_presets": "string:$inlineTitle"
+                        "_presets": "string:$inlineTitle"
                     },
                     "number": {
                         "type": "number",
                         "title": "number",
-                        "ff_presets": "number:$inlineTitle"
+                        "_presets": "number:$inlineTitle"
                     },
                     "radio": {
                         "type": "string",
                         "title": "radio",
-                        "ff_presets": "radio:$inlineItems:$inlineTitle",
+                        "_presets": "radio:$inlineItems:$inlineTitle",
                         "enum": [
                             "option 1",
                             "option 2",
@@ -230,9 +224,9 @@
                     "checkboxes": {
                         "type": "array",
                         "title": "checkboxes",
-                        "ff_presets": "checkboxes:$inlineItems:$inlineTitle",
-                        "ff_managed": true,
-                        "ff_data": {
+                        "_presets": "checkboxes:$inlineItems:$inlineTitle",
+                        "_simple": true,
+                        "_data": {
                             "fData": {
                                 "enum": [
                                     "1",
@@ -255,7 +249,7 @@
                                 "canAdd": true
                             }
                         },
-                        "ff_enumExten": {
+                        "_enumExten": {
                             "1": {
                                 "label": "val 1"
                             },
@@ -270,9 +264,9 @@
                     "multiselect": {
                         "type": "array",
                         "title": "Multiselect",
-                        "ff_presets": "multiselect:$inlineTitle",
-                        "ff_managed": true,
-                        "ff_data": {
+                        "_presets": "multiselect:$inlineTitle",
+                        "_simple": true,
+                        "_data": {
                             "fData": {
                                 "enum": [
                                     "option 1",
@@ -284,7 +278,7 @@
                                 "canAdd": true
                             }
                         },
-                        "ff_layout": {
+                        "_layout": {
                             "$_fields": [
                                 "0"
                             ]
@@ -301,7 +295,7 @@
                     "textarea": {
                         "type": "string",
                         "title": "Textarea",
-                        "ff_presets": "textarea"
+                        "_presets": "textarea"
                     }
                 }
             }
@@ -348,7 +342,7 @@
                         "more text"
                     ]
                 ],
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         {
                             "className": {
@@ -366,19 +360,19 @@
                 "items": [
                     {
                         "type": "string",
-                        "ff_presets": "string:$noArrayControls"
+                        "_presets": "string:$noArrayControls"
                     },
                     {
                         "type": "string",
                         "default": "some default",
-                        "ff_presets": "string:$noArrayControls"
+                        "_presets": "string:$noArrayControls"
                     },
                     {
                         "type": "array",
                         "maxItems": 4,
                         "title": "Array of values",
-                        "ff_presets": "array:$noArrayControls",
-                        "ff_custom": {
+                        "_presets": "array:$noArrayControls",
+                        "_custom": {
                             "Title": {
                                 "style": {
                                     "width": "100%"
@@ -469,7 +463,7 @@
                                 }
                             }
                         },
-                        "ff_layout": {
+                        "_layout": {
                             "$_fields": [
                                 "0"
                             ]
@@ -479,7 +473,7 @@
                                 {
                                     "type": "string",
                                     "default": "default",
-                                    "ff_presets": "string:$inlineTitle:$inlineArrayControls"
+                                    "_presets": "string:$inlineTitle:$inlineArrayControls"
                                 },
                                 {
                                     "type": [
@@ -487,12 +481,12 @@
                                         "null"
                                     ],
                                     "default": null,
-                                    "ff_presets": "numberNull:$inlineTitle:$inlineArrayControls"
+                                    "_presets": "numberNull:$inlineTitle:$inlineArrayControls"
                                 },
                                 {
                                     "type": "boolean",
                                     "default": false,
-                                    "ff_presets": "boolean:$inlineTitle:$inlineArrayControls"
+                                    "_presets": "boolean:$inlineTitle:$inlineArrayControls"
                                 }
                             ]
                         }
@@ -530,7 +524,7 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "string",
                         "mapped",
@@ -542,14 +536,14 @@
                         "type": "string",
                         "title": "string",
                         "default": "hide",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_dataMap": [
+                        "_presets": "string:$inlineTitle",
+                        "_stateMaps": [
                             {
                                 "from": "./@value",
                                 "to": "../mapped/@value"
                             }
                         ],
-                        "ff_params": {
+                        "_params": {
                             "liveUpdate": true
                         }
                     },
@@ -557,8 +551,8 @@
                         "type": "string",
                         "title": "mapped",
                         "default": "hide",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_dataMap": [
+                        "_presets": "string:$inlineTitle",
+                        "_stateMaps": [
                             {
                                 "from": "./@value",
                                 "to": "../hide/@params/hidden",
@@ -573,7 +567,7 @@
                     "hide": {
                         "type": "string",
                         "title": "hide",
-                        "ff_presets": "string:$inlineTitle"
+                        "_presets": "string:$inlineTitle"
                     }
                 }
             }
@@ -601,14 +595,14 @@
                 "value": ""
             }
         },
-        "name": "dataMaps"
+        "name": "stateMaps"
     },
     {
         "schema": {
             "links": [],
             "code": {
                 "type": "object",
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "json",
                         "sync",
@@ -628,14 +622,14 @@
                         "type": "string",
                         "pattern": "json",
                         "title": "json",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_placeholder": "Enter \"json\" to pass validation..."
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter \"json\" to pass validation..."
                     },
                     "sync": {
                         "type": "string",
                         "title": "sync",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_validators": [
+                        "_presets": "string:$inlineTitle",
+                        "_validators": [
                             {
                                 "$": "^/validators/sync",
                                 "args": [
@@ -643,13 +637,13 @@
                                 ]
                             }
                         ],
-                        "ff_placeholder": "Enter \"sync\" to pass validation..."
+                        "_placeholder": "Enter \"sync\" to pass validation..."
                     },
                     "async": {
                         "type": "string",
                         "title": "async",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_validators": [
+                        "_presets": "string:$inlineTitle",
+                        "_validators": [
                             {
                                 "$": "^/validators/async",
                                 "args": [
@@ -657,19 +651,19 @@
                                 ]
                             }
                         ],
-                        "ff_placeholder": "Enter \"async\" to pass validation..."
+                        "_placeholder": "Enter \"async\" to pass validation..."
                     },
                     "submitError": {
                         "type": "string",
                         "title": "submit error",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_placeholder": "Enter \"submit\" to pass validation..."
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter \"submit\" to pass validation..."
                     },
                     "submitWarn": {
                         "type": "string",
                         "title": "submit warn",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_placeholder": "Enter \"warn\" to remove warning..."
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter \"warn\" to remove warning..."
                     }
                 }
             }
@@ -704,7 +698,7 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "formatNum",
                         "parsed"
@@ -714,18 +708,18 @@
                     "formatNum": {
                         "type": "string",
                         "title": "formated",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_dataMap": [
+                        "_presets": "string:$inlineTitle",
+                        "_stateMaps": [
                             {
                                 "from": "./@value",
                                 "to": "../parsed/@value"
                             }
                         ],
-                        "ff_placeholder": "XXX-XXXX-XXX",
-                        "ff_params": {
+                        "_placeholder": "XXX-XXXX-XXX",
+                        "_params": {
                             "liveUpdate": true
                         },
-                        "ff_custom": {
+                        "_custom": {
                             "Main": {
                                 "onChange": "^/fn/eventValue|parseNum|setValue",
                                 "$_maps": {
@@ -742,14 +736,14 @@
                     "parsed": {
                         "type": "string",
                         "title": "parsed",
-                        "ff_presets": "string:$inlineTitle",
-                        "ff_dataMap": [
+                        "_presets": "string:$inlineTitle",
+                        "_stateMaps": [
                             {
                                 "from": "./@/value",
                                 "to": "../formatNum/@/value"
                             }
                         ],
-                        "ff_params": {
+                        "_params": {
                             "liveUpdate": true
                         }
                     }
@@ -790,10 +784,10 @@
                     "someField": {
                         "type": "string",
                         "title": "someField",
-                        "ff_presets": "string:$inlineTitle"
+                        "_presets": "string:$inlineTitle"
                     }
                 },
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "someFieldRef",
                         "someFieldExten"
@@ -846,7 +840,7 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         "reactSelect",
                         "reactSelectMulti"
@@ -856,8 +850,8 @@
                     "reactSelect": {
                         "type": "string",
                         "title": "react-select",
-                        "ff_presets": "reactSelect:$inlineTitle",
-                        "ff_placeholder": "select option...",
+                        "_presets": "reactSelect:$inlineTitle",
+                        "_placeholder": "select option...",
                         "enum": [
                             "option 1",
                             "option 2",
@@ -867,10 +861,10 @@
                     "reactSelectMulti": {
                         "type": "array",
                         "title": "react-select multi",
-                        "ff_presets": "reactSelect:$inlineTitle",
-                        "ff_managed": true,
-                        "ff_placeholder": "select multi options...",
-                        "ff_custom": {
+                        "_presets": "reactSelect:$inlineTitle",
+                        "_simple": true,
+                        "_placeholder": "select multi options...",
+                        "_custom": {
                             "Main": {
                                 "isMulti": true
                             }
@@ -891,7 +885,7 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "{\n  widgets: {\n    reactSelect: Select\n  },\n  fn: {\n    reactSelectParse: function (values) {\n      if (!Array.isArray(values)) return [values.value];\n      return [values.map(function (item) {return item.value})]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values? [{value: values, label: values}]:[];\n      return [values.map(function (value) {return {value, label: value}})]\n    },\n  },\n  sets: {\n    reactSelect: {\n      $_ref: '^/sets/nBase',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        $_reactRef: {tagRef: true},\n        onChange: {$: '^/fn/reactSelectParse|setValue|updCached'},\n        $_maps: {\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n          isDisabled: '@/params/disabled'\n        },\n      },\n    },\n  }\n}"
+            "code": "{\n  widgets: {\n    reactSelect: Select\n  },\n  fn: {\n    reactSelectParse: function (values) {\n      if (!Array.isArray(values)) return [values.value];\n      return [values.map(function (item) {return item.value})]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values? [{value: values, label: values}]:[];\n      return [values.map(function (value) {return {value, label: value}})]\n    },\n  },\n  sets: {\n    reactSelect: {\n      $_ref: '^/sets/nBase',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        onChange: {$: '^/fn/reactSelectParse|setValue|updCached'},\n        $_maps: {\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n          isDisabled: '@/params/disabled'\n        },\n      },\n    },\n  }\n}"
         },
         "css": {
             "links": [
@@ -914,7 +908,7 @@
             "links": [],
             "code": {
                 "type": "object",
-                "ff_dataMap": [
+                "_stateMaps": [
                     {
                         "from": "./@/selector/value",
                         "to": "./@/selector/none",
@@ -925,7 +919,7 @@
                         ]
                     }
                 ],
-                "ff_data": {
+                "_data": {
                     "selector": {
                         "value": "step 1",
                         "enum": [
@@ -935,7 +929,7 @@
                         ]
                     }
                 },
-                "ff_layout": {
+                "_layout": {
                     "$_fields": [
                         {
                             "$_ref": "^/parts/RadioSelector",
@@ -1014,7 +1008,7 @@
                 "properties": {
                     "step 1": {
                         "type": "object",
-                        "ff_dataMap": [
+                        "_stateMaps": [
                             {
                                 "from": "./@/status/valid,untouched",
                                 "to": "../@/selector",
@@ -1025,7 +1019,7 @@
                                 ]
                             }
                         ],
-                        "ff_layout": {
+                        "_layout": {
                             "$_fields": [
                                 "sync",
                                 "schema"
@@ -1036,8 +1030,8 @@
                                 "type": "string",
                                 "title": "sync",
                                 "default": "sync",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_validators": [
+                                "_presets": "string:$inlineTitle",
+                                "_validators": [
                                     {
                                         "$": "^/validators/sync",
                                         "args": [
@@ -1045,21 +1039,21 @@
                                         ]
                                     }
                                 ],
-                                "ff_placeholder": "Enter \"sync\" to pass validation..."
+                                "_placeholder": "Enter \"sync\" to pass validation..."
                             },
                             "schema": {
                                 "type": "string",
                                 "pattern": "json",
                                 "title": "json",
                                 "default": "json",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_placeholder": "Enter \"json\" to pass validation..."
+                                "_presets": "string:$inlineTitle",
+                                "_placeholder": "Enter \"json\" to pass validation..."
                             }
                         }
                     },
                     "step 2": {
                         "type": "object",
-                        "ff_dataMap": [
+                        "_stateMaps": [
                             {
                                 "from": "./@/status/valid,untouched",
                                 "to": "../@/selector",
@@ -1070,7 +1064,7 @@
                                 ]
                             }
                         ],
-                        "ff_layout": {
+                        "_layout": {
                             "$_fields": [
                                 "async",
                                 "submitError"
@@ -1081,8 +1075,8 @@
                                 "type": "string",
                                 "title": "async",
                                 "default": "async",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_validators": [
+                                "_presets": "string:$inlineTitle",
+                                "_validators": [
                                     {
                                         "$": "^/validators/async",
                                         "args": [
@@ -1090,19 +1084,19 @@
                                         ]
                                     }
                                 ],
-                                "ff_placeholder": "Enter \"async\" to pass validation..."
+                                "_placeholder": "Enter \"async\" to pass validation..."
                             },
                             "submitError": {
                                 "type": "string",
                                 "title": "submit error",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_placeholder": "Enter \"submit\" to pass validation..."
+                                "_presets": "string:$inlineTitle",
+                                "_placeholder": "Enter \"submit\" to pass validation..."
                             }
                         }
                     },
                     "step 3": {
                         "type": "object",
-                        "ff_dataMap": [
+                        "_stateMaps": [
                             {
                                 "from": "./@/status/valid,untouched",
                                 "to": "../@/selector",
@@ -1113,7 +1107,7 @@
                                 ]
                             }
                         ],
-                        "ff_layout": {
+                        "_layout": {
                             "$_fields": [
                                 "submitError2",
                                 "submitWarn"
@@ -1123,14 +1117,14 @@
                             "submitError2": {
                                 "type": "string",
                                 "title": "submit error 2",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_placeholder": "Enter \"submit\" to pass validation..."
+                                "_presets": "string:$inlineTitle",
+                                "_placeholder": "Enter \"submit\" to pass validation..."
                             },
                             "submitWarn": {
                                 "type": "string",
                                 "title": "submit warn",
-                                "ff_presets": "string:$inlineTitle",
-                                "ff_placeholder": "Enter \"warn\" to remove warning..."
+                                "_presets": "string:$inlineTitle",
+                                "_placeholder": "Enter \"warn\" to remove warning..."
                             }
                         }
                     }

@@ -183,32 +183,32 @@ function formValues2JSON(formValues: any, track: Path = [], errors: string[] = [
 
   let ffProps = getIn(formValues, 'fieldProps', 'ffProps') || {};
   objKeys(ffProps).forEach(key => {
-    if (key == 'ff_custom') {
-      const {ff_custom = {}} = ffProps;
+    if (key == '_custom') {
+      const {_custom = {}} = ffProps;
       const res = {};
-      ff_custom.selectorVals.forEach((block: string, i: number) => {
-        let b = formObj2JSON(ff_custom.valueArray[i], {errors});
+      _custom.selectorVals.forEach((block: string, i: number) => {
+        let b = formObj2JSON(_custom.valueArray[i], {errors});
         if (isMergeable(b) && objKeys(b).length) res[block] = b;
         else if (!isUndefined(b) && !b) res[block] = b
       });
       result[key] = res;
-    } else if (key == 'ff_params') {
+    } else if (key == '_params') {
       const res = {};
       (ffProps[key] || []).forEach((k: string) => {
         if (k[0] == '!') res[k.substr(1)] = false;
         else res[k] = true;
       });
       result[key] = res;
-      // if (result['ff_params']) return;
+      // if (result['_params']) return;
       // const {params = {}, ...data} = formObj2JSON({type: 'object', valueArray: ffProps[key]}) || {};
-      // if (objKeys(data).length) result['ff_data'] = data;
-      // (ffProps['ff_params'] || []).forEach((p: string) => params[p] = true);
-      // if (objKeys(params).length) result['ff_params'] = params
-    } else if (key == 'ff_managed') {
+      // if (objKeys(data).length) result['_data'] = data;
+      // (ffProps['_params'] || []).forEach((p: string) => params[p] = true);
+      // if (objKeys(params).length) result['_params'] = params
+    } else if (key == '_simple') {
       if (ffProps[key]) result[key] = ffProps[key]
-    } else if (key == 'ff_presets') {
+    } else if (key == '_presets') {
       result[key] = ffProps[key].join(':')
-    } else if (key == 'ff_validators') {
+    } else if (key == '_validators') {
       if (ffProps[key].length)
         result[key] = ffProps[key].map((v: any[]) => {
           const args = v.slice(1).map(f => formObj2JSON(f, {errors}));
@@ -216,7 +216,7 @@ function formValues2JSON(formValues: any, track: Path = [], errors: string[] = [
           objKeys(v).filter(k => isNaN(parseInt(k))).forEach(k => res[k] = v[k]);
           return res
         })
-    } else if (key == 'ff_dataMap') {
+    } else if (key == '_stateMaps') {
       if (ffProps[key].length)
         result[key] = ffProps[key].map((v: any[]) => {
           const args = v.slice(3).map(f => formObj2JSON(f, {errors}));
@@ -250,8 +250,8 @@ function formValues2JSON(formValues: any, track: Path = [], errors: string[] = [
     const items: any[] = [];
     const properties: any = {};
     let {layout} = formValues;
-    result['ff_layout'] = formObj2JSON(layout, {counter: 0, items, properties, isArray, isObject, errors}, track);
-    if (result['ff_layout'].$_fields && !result['ff_layout'].$_fields.length) delete result['ff_layout'].$_fields;
+    result['_layout'] = formObj2JSON(layout, {counter: 0, items, properties, isArray, isObject, errors}, track);
+    if (result['_layout'].$_fields && !result['_layout'].$_fields.length) delete result['_layout'].$_fields;
     if (items.length == 1 && result.additionalItems === null)
       result['items'] = items[0];
     else result['items'] = items;
@@ -261,13 +261,13 @@ function formValues2JSON(formValues: any, track: Path = [], errors: string[] = [
 
   if (!result['title']) delete result['title'];
   if (!result['description']) delete result['description'];
-  ['title', 'description', 'pattern', 'format', 'ff_presets', 'ff_placeholder']
+  ['title', 'description', 'pattern', 'format', '_presets', '_placeholder']
     .forEach(key => (result.hasOwnProperty(key) && result[key] === '') && delete result[key]);
 
-  ['required', 'allOf', 'oneOf', 'anyOf', 'ff_validators', 'ff_dataMap', 'type']
+  ['required', 'allOf', 'oneOf', 'anyOf', '_validators', '_stateMaps', 'type']
     .forEach(key => (result[key] && !result[key].length) && delete result[key]);
 
-  ['ff_layout', 'ff_custom', 'ff_data', 'ff_params', 'items', 'properties', 'definitions', 'patternProperties', 'dependencies']
+  ['_layout', '_custom', '_data', '_params', 'items', 'properties', 'definitions', 'patternProperties', 'dependencies']
     .forEach(key => (result[key] && !objKeys(result[key]).length) && delete result[key]);
 
   ['minLength', 'maxLength', 'multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum', 'minItems', 'maxItems', 'uniqueItems',
@@ -305,7 +305,7 @@ function JSON2formValues(JSONValues: any, name?: string): any {
   };
 
   //const tmp: any = {};
-  //objKeys(JSONValues).forEach(key => tmp[key.substr(0, 3) == 'ff_' ? key.substr(3) : key] = JSONValues[key]);
+  //objKeys(JSONValues).forEach(key => tmp[key.substr(0, 1) == '_' ? key.substr(3) : key] = JSONValues[key]);
   //JSONValues = tmp;
 
   let result: any = {};
@@ -340,7 +340,7 @@ function JSON2formValues(JSONValues: any, name?: string): any {
   //let ffPropsSchema = getSchema(['fieldProps', 'ffProps']); // getIn(FFormSchema, normalizePath('definitions/field/properties/fieldProps/oneOf/1/properties/ffProps/properties')) || {};// fieldPropsSchema.properties.ffProps.properties;
 
   mapProps(ffProps, ['fieldProps', 'ffProps'], {
-      'ff_custom': (v: any) => {
+      '_custom': (v: any) => {
         const res: any = {selector: '', selectorVals: [], valueArray: []};
         objKeys(v || {}).forEach((f: string) => {
           res.selectorVals.push(f);
@@ -350,16 +350,16 @@ function JSON2formValues(JSONValues: any, name?: string): any {
         });
         return res;
       },
-      'ff_presets': (v: string = '') => v ? v.split(':') : [],
-      'ff_params': (v: any = {}) => objKeys(v).map(k => (v[k] ? '' : '!') + k),
-      'ff_dataMap': (v: any = []) => v.map((f: any = {}) => {
+      '_presets': (v: string = '') => v && isString(v) ? v.split(':') : [],
+      '_params': (v: any = {}) => objKeys(v).map(k => (v[k] ? '' : '!') + k),
+      '_stateMaps': (v: any = []) => v.map((f: any = {}) => {
         const {from = '', to = '', $ = '', args = [], ...rest} = f;
         const res = [from, to, $, ...args.map((v: any) => JSON2formObj(v))];
         Object.assign(res, rest);
         return res
         //return [f.from || '', f.to || '', f.$ || '', ...(f.args.map((v: any) => JSON2formObj(v)) || [])]
       }),
-      'ff_validators': (v: any = []) => v.map((f: any = {}) => {
+      '_validators': (v: any = []) => v.map((f: any = {}) => {
         const {$ = '', args, ...rest} = f;
         const res = [$, ...(args.map((v: any) => JSON2formObj(v)) || [])];
         Object.assign(res, rest);
@@ -373,7 +373,7 @@ function JSON2formValues(JSONValues: any, name?: string): any {
     delete ffProps.restProps;
   }
   delete restProps.$ref;
-  delete restProps.ff_layout;
+  delete restProps._layout;
   delete restProps.type;
   delete restProps.items;
   delete restProps.properties;
@@ -382,8 +382,8 @@ function JSON2formValues(JSONValues: any, name?: string): any {
 
   const UPDATABLE = {items: toArray(JSONValues.items || []).slice(), properties: {...JSONValues.properties}};
 
-  const ff_layout = isArray(JSONValues['ff_layout']) ? {$_fields: JSONValues['ff_layout']} : (JSONValues['ff_layout'] || {});
-  result.layout = JSON2formObj({$_fields: [], ...(ff_layout)}, UPDATABLE);
+  const _layout = isArray(JSONValues['_layout']) ? {$_fields: JSONValues['_layout']} : (JSONValues['_layout'] || {});
+  result.layout = JSON2formObj({$_fields: [], ...(_layout)}, UPDATABLE);
   objKeys(UPDATABLE.items).forEach(key => result.layout.fields.push(JSON2formValues(UPDATABLE.items[key])));
   objKeys(UPDATABLE.properties).forEach(key => result.layout.fields.push(JSON2formValues(UPDATABLE.properties[key], key)));
 
