@@ -23,12 +23,13 @@
                     "login": {
                         "type": "string",
                         "title": "login",
+                        "_presets": "string:$noTitle",
                         "_placeholder": "Enter login..."
                     },
                     "password": {
                         "type": "string",
                         "title": "password",
-                        "_presets": "string:$password",
+                        "_presets": "string:$password:$noTitle",
                         "_placeholder": "Enter password..."
                     }
                 }
@@ -46,8 +47,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -106,8 +108,9 @@
             },
             "css": {
                 "links": [
+                    "fform.css",
                     "tacit.min.css",
-                    "style.css"
+                    "tacit.fform.css"
                 ],
                 "code": ".main{\n\n}"
             }
@@ -131,18 +134,18 @@
                     "$_fields": [
                         {
                             "className": {
-                                "inline": true
+                                "fform-inline": true
                             },
                             "$_fields": [
                                 {
                                     "$_ref": "^/parts/Button",
                                     "children": "switch to viewer",
                                     "className": {
-                                        "shrink": true
+                                        "fform-shrink": true
                                     },
                                     "$_maps": {
                                         "disabled": "@/params/viewer",
-                                        "className/button-viewer": false
+                                        "className/fform-button-viewer": false
                                     },
                                     "onClick": {
                                         "$": "^/fn/api",
@@ -160,14 +163,14 @@
                                     "$_ref": "^/parts/Button",
                                     "children": "switch to editor",
                                     "className": {
-                                        "shrink": true
+                                        "fform-shrink": true
                                     },
                                     "$_maps": {
                                         "disabled": {
                                             "$": "^/fn/not",
                                             "args": "@/params/viewer"
                                         },
-                                        "className/button-viewer": false
+                                        "className/fform-button-viewer": false
                                     },
                                     "onClick": {
                                         "$": "^/fn/setValue",
@@ -187,7 +190,7 @@
                         },
                         {
                             "className": {
-                                "inline": true
+                                "fform-inline": true
                             },
                             "$_fields": [
                                 "string",
@@ -311,8 +314,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -346,8 +350,8 @@
                     "$_fields": [
                         {
                             "className": {
-                                "layout": true,
-                                "inline": true
+                                "fform-layout": true,
+                                "fform-inline": true
                             },
                             "$_fields": [
                                 "0",
@@ -505,8 +509,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -583,8 +588,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -679,8 +685,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -761,8 +768,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -821,8 +829,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
             "code": ""
@@ -885,15 +894,16 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "{\n  widgets: {\n    reactSelect: Select\n  },\n  fn: {\n    reactSelectParse: function (values) {\n      if (!Array.isArray(values)) return [values.value];\n      return [values.map(function (item) {return item.value})]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values? [{value: values, label: values}]:[];\n      return [values.map(function (value) {return {value, label: value}})]\n    },\n  },\n  sets: {\n    reactSelect: {\n      $_ref: '^/sets/nBase',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        onChange: {$: '^/fn/reactSelectParse|setValue|updCached'},\n        $_maps: {\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n          isDisabled: '@/params/disabled'\n        },\n      },\n    },\n  }\n}"
+            "code": "{\n  widgets: {\n    reactSelect: Select\n  },\n  fn: {\n    reactSelectParse: function (values) {\n\n      if (values === null) {\n        if (this.$branch[Symbol.for('FFormData')].fData.type === 'array') return [[]];\n        return null;\n      }\n      if (!Array.isArray(values)) return [values.value];\n      return [values.map(function (item) {return item.value})]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values? [{value: values, label: values}]:[[]];\n      return [values.map(function (value) {return {value, label: value}})]\n    },\n  },\n  sets: {\n    reactSelect: {\n      $_ref: '^/sets/simple',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        $_reactRef: {tagRef: true},\n        onChange: {$: '^/fn/reactSelectParse|setValue|liveUpdate'},\n        $_maps: {\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n          isDisabled: '@/params/disabled'\n        },\n      },\n    },\n  }\n}"
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css"
+                "tacit.fform.css"
             ],
             "cxBind": "",
-            "code": ""
+            "code": "label {\n    margin-bottom: 0;\n}\n\ninput[type=\"text\"] {\n    margin-bottom: 0\n}"
         },
         "props": {
             "jsonValidation": false,
@@ -934,8 +944,8 @@
                         {
                             "$_ref": "^/parts/RadioSelector",
                             "className": {
-                                "shrink": true,
-                                "inline": true
+                                "fform-shrink": true,
+                                "fform-inline": true
                             }
                         },
                         "step 1",
@@ -943,7 +953,7 @@
                         "step 3",
                         {
                             "className": {
-                                "inline": true
+                                "fform-inline": true
                             },
                             "$_fields": [
                                 {
@@ -957,7 +967,7 @@
                                         ]
                                     },
                                     "$_maps": {
-                                        "className/hidden": {
+                                        "className/fform-hidden": {
                                             "$": "^/fn/equal",
                                             "args": [
                                                 "@selector/value",
@@ -980,7 +990,7 @@
                                         ]
                                     },
                                     "$_maps": {
-                                        "className/hidden": {
+                                        "className/fform-hidden": {
                                             "$": "^/fn/equal",
                                             "args": [
                                                 "@selector/value",
@@ -992,7 +1002,7 @@
                                 {
                                     "$_ref": "^/parts/Submit",
                                     "$_maps": {
-                                        "className/hidden": {
+                                        "className/fform-hidden": {
                                             "$": "^/fn/equal|not",
                                             "args": [
                                                 "@selector/value",
@@ -1142,8 +1152,9 @@
         },
         "css": {
             "links": [
+                "fform.css",
                 "tacit.min.css",
-                "style.css",
+                "tacit.fform.css",
                 "radio.css"
             ],
             "cxBind": "",

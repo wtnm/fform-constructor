@@ -7,7 +7,8 @@ import * as styling from 'fform/addons/styles.json';
 import {getCreateIn, getIn, isArray, isEqual, isFunction, isUndefined, merge, objKeys, toArray} from "fform/src/commonLib";
 import {formValues2JSON, JSON2formValues} from './constrUtils'
 import {object2PathValues, path2string, SymData, types} from "fform/src/stateLib";
-import Popup from "reactjs-popup";
+
+const Popup = require("reactjs-popup").default;
 // import constrSchema from './constrSchema'
 
 const LZString = require('lz-string');
@@ -55,8 +56,9 @@ const schemaTemplate = {
   },
   "css": {
     "links": [
+      "fform.css",
       "tacit.min.css",
-      "style.css"
+      "tacit.fform.css"
     ]
   },
 };
@@ -256,7 +258,7 @@ class IFrameViewer extends React.Component<any, any> {
 
   shouldComponentUpdate(nextProps: Readonly<any>, nextState: Readonly<any>, nextContext: any): boolean {
     const self = this;
-    if (!nextProps.className.hidden && self._$ref && self.props.value !== nextProps.value) {
+    if (!nextProps.className['fform-hidden'] && self._$ref && self.props.value !== nextProps.value) {
       self._$ref.contentWindow._setForm && self._$ref.contentWindow._setForm(nextProps.value)
     }
     return !isEqual(self.props, nextProps, {skipKeys: ['value']})
@@ -291,9 +293,9 @@ const viewerSchema: JsonSchema = {
   _layout: {
     style: {marginLeft: '1em', display: 'block'},
     $_fields: [{
-      className: {inline: false}, $_fields: [
+      className: {'fform-inline': false}, $_fields: [
         {
-          className: {shrink: true, inline: true},
+          className: {'fform-shrink': true, 'fform-inline': true},
           style: {marginLeft: '0em', marginBottom: '0.5em'},
           $_ref: '^/parts/RadioSelector'
         },
@@ -301,7 +303,7 @@ const viewerSchema: JsonSchema = {
           _$widget: IFrameViewer,
           className: {height: true},
           $_maps: {
-            'className/hidden': {$: '^/fn/equal|^/fn/not', args: ['@/selector/value', 'form']},
+            'className/fform-hidden': {$: '^/fn/equal|^/fn/not', args: ['@/selector/value', 'form']},
             value: '@current'
           }
         }
@@ -322,17 +324,17 @@ const viewerSchema: JsonSchema = {
           _$widget: '^/widgets/Input',
           _$cx: '^/_$cx',
           type: 'textarea',
-          className: {height: true, 'wrapper-margin': true},
+          className: {height: true, 'fform-wrapper-margin': true},
           onChange: {$: '^/fn/eventValue|^/fn/setValue', args: ['${0}', {path: './@value2schema', execute: true}]},
           $_maps: {
-            'className/hidden': {$: '^/fn/not', args: '@/params/fromValue'},
+            'className/fform-hidden': {$: '^/fn/not', args: '@/params/fromValue'},
             value: '@value2schema',
           }
         },
         {
           children: [],
           $_maps: {
-            'className/hidden': {$: '^/fn/not', args: '@/params/fromValue'},
+            'className/fform-hidden': {$: '^/fn/not', args: '@/params/fromValue'},
             'children/0': '@value2schemaError',
           }
         },
@@ -458,7 +460,7 @@ const viewerSchema: JsonSchema = {
         jsonValidation: {
           type: "boolean",
           _presets: 'booleanLeft:$inlineTitle:$shrink',
-          _custom: {Main: {className: {'radio-container': true}, children: {'1': {style: {width: '100%', textAlign: 'center'}}}}},
+          _custom: {Main: {className: {'fform-radio-container': true}, children: {'1': {style: {width: '100%', textAlign: 'center'}}}}},
           title: 'JSON schema Validation'
         },
         rest: {
@@ -527,10 +529,10 @@ class ConstrView extends React.PureComponent<any, any> {
     if (self.props.num) self._syncValues(self.props.value);
     else return null;
 
-    return (<div className='inline layout'>
-      <FForm parent={self.props.$FField.pFForm} touched _$useTag='div' className='layout' style={{width: '55%'}} core={self.schemaCore} {...(self.props.schemaProps || {})}
+    return (<div className='fform-inline fform-layout'>
+      <FForm parent={self.props.$FField.pFForm} touched _$useTag='div' className='fform-layout' style={{width: '55%'}} core={self.schemaCore} {...(self.props.schemaProps || {})}
              disabled={self.props.disabled} value={self._formValues} onChange={self._schemaChange}/>
-      <FForm touched _$useTag='div' className='layout' style={{width: '45%'}} core={self.viewerCore} {...(self.props.viewerProps || {})}
+      <FForm touched _$useTag='div' className='fform-layout' style={{width: '45%'}} core={self.viewerCore} {...(self.props.viewerProps || {})}
              disabled={self.props.disabled} value={self.props.value} onChange={self._viewerChange}/>
     </div>)
   }
@@ -540,7 +542,7 @@ class ConstrView extends React.PureComponent<any, any> {
 const mainSchema: JsonSchema = {
   type: 'object',
   _layout: [{
-    className: {inline: true}, $_fields: [
+    className: {'fform-inline': true}, $_fields: [
       {
         $_ref: '^/parts/Button',
         title: 'undo',
@@ -624,7 +626,7 @@ const mainSchema: JsonSchema = {
       default: '',
       _presets: 'radio:$inlineItems:$inlineTitle:$shrink',
       _stateMaps: [{from: './@/value', to: '../@/selectorValue'}],
-      _custom: {Main: {className: {wrap: true}}}
+      _custom: {Main: {className: {'fform-wrap': true}}}
     },
 
     value: {
@@ -682,7 +684,7 @@ function testJSONdata(data: any) {
 async function getDataFromUrl(hash2Obj: { url: string, selector?: string }, self: any) {
   try {
     let file = await fetch(hash2Obj.url);
-    if (file.status != 200) throw new Error('Url responce status ' + file.status);
+    if (file.status != 200) throw new Error('Url response status ' + file.status);
     let value = await (file).json();
     // value = JSON.parse(value);
     if (testJSONdata(value)) {
@@ -733,7 +735,7 @@ class MainView extends React.PureComponent<any, any> {
     self.core.set('/@/storageName', name);
     try {
       let data = getStorage(name);
-      
+
       if (data && testJSONdata(data)) self.core.setValue(data, {execute: true, replace: true})
     } catch (e) {
       self.openModal(['Failed to load data with error: ', <b key='bold'>{e.message}</b>, <br key='br'/>, '']);

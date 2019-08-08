@@ -16,7 +16,7 @@ const FFormSchema: JsonSchema = {
     tristate: {
       type: ["null", "boolean"],
       _presets: 'booleanNullLeft:$inlineTitle:$shrink',
-      _custom: {Main: {className: {'radio-container': true}}},
+      _custom: {Main: {className: {'fform-radio-container': true}}},
     },
     arg: {
       allOf: [
@@ -107,7 +107,7 @@ const FFormSchema: JsonSchema = {
               type: 'boolean',
               title: '$_fields',
               _presets: 'booleanLeft:$shrink',
-              _custom: {Main: {className: {'radio-container': true}}},
+              _custom: {Main: {className: {'fform-radio-container': true}}},
               _stateMaps: [
                 {from: './@/value', to: '../@/params/fieldsShown'},
                 {from: './@/value', to: '../fields/@/params/hidden', $: '^/fn/not'}
@@ -148,10 +148,10 @@ const FFormSchema: JsonSchema = {
       _layout: {
         $_fields: [
           {
-            $_maps: {'className/hidden': '@/params/hideTopLine'},
+            $_maps: {'className/fform-hidden': '@/params/hideTopLine'},
             $_fields: [
               {
-                className: {inline: true},
+                className: {'fform-inline': true},
                 $_fields: [
                   {
                     $_ref: '^/_parts/expandButton',
@@ -163,7 +163,7 @@ const FFormSchema: JsonSchema = {
                     onClick: {args: {1: "./fields", 3: {"setOneOf": 0}}},
                     style: {marginRight: '-1px'},
                     $_maps: {
-                      'className/hidden': '!@/params/fieldsShown',
+                      'className/fform-hidden': '!@/params/fieldsShown',
                       disabled: false
                     }
                   },
@@ -172,7 +172,7 @@ const FFormSchema: JsonSchema = {
                     "children": ["+object"],
                     onClick: {args: {1: "./fields", 3: {"setOneOf": 1}}},
                     $_maps: {
-                      'className/hidden': '!@/params/fieldsShown',
+                      'className/fform-hidden': '!@/params/fieldsShown',
                       disabled: false
                     }
                   },
@@ -197,7 +197,7 @@ const FFormSchema: JsonSchema = {
                     }
                   }
                 ],
-                $_maps: {'className/hidden': '!@/params/expanded'}
+                $_maps: {'className/fform-hidden': '!@/params/expanded'}
               }
             ]
           }
@@ -227,10 +227,10 @@ const FFormSchema: JsonSchema = {
         }
       },
       _layout: {
-        className: {layout: true, block: true},
+        className: {'fform-layout': true, block: true},
         // _params: {showMoveOut: false},
         $_fields: [{
-          className: {inline: true, layout: true},
+          className: {'fform-inline': true, 'fform-layout': true},
           $_fields: [
             {
               $_ref: '^/_parts/expandButton',
@@ -244,7 +244,7 @@ const FFormSchema: JsonSchema = {
               onClick: {args: {1: "./layout/fields", 3: {"setOneOf": 0}}},// ["./layout/fields", 1, {"setOneOf": 0}]},
               style: {marginRight: '-1px'},
               $_maps: {
-                'className/hidden': '@/params/fieldsAddHidden',
+                'className/fform-hidden': '@/params/fieldsAddHidden',
                 disabled: false
               }
             },
@@ -253,7 +253,7 @@ const FFormSchema: JsonSchema = {
               "children": ["+object"],
               onClick: {args: {1: "./layout/fields", 3: {"setOneOf": 1}}},//["./layout/fields", 1, {"setOneOf": 1}]},
               $_maps: {
-                'className/hidden': '@/params/fieldsAddHidden',
+                'className/fform-hidden': '@/params/fieldsAddHidden',
                 disabled: false
               }
             },
@@ -267,7 +267,7 @@ const FFormSchema: JsonSchema = {
             //   onClick: "^/_usr/moveFieldOut",
             //   style: {marginRight: '0.5em', marginLeft: '0.5em'},
             //   $_maps: {
-            //     'className/hidden': {$: '^/fn/not', args: '@/params/showMoveOut'},
+            //     'className/fform-hidden': {$: '^/fn/not', args: '@/params/showMoveOut'},
             //     disabled: false
             //   }
             // },
@@ -302,7 +302,7 @@ const FFormSchema: JsonSchema = {
           type: 'boolean',
           title: '$ref',
           _presets: 'booleanLeft:$shrink',
-          _custom: {Main: {className: {'radio-container': true}}},
+          _custom: {Main: {className: {'fform-radio-container': true}}},
           _stateMaps: [
             {from: './@/value', to: '../ref/@/params/hidden', $: '^/fn/not'},
             {from: './@/value', to: '../type/@/params/hidden'}
@@ -346,14 +346,14 @@ const FFormSchema: JsonSchema = {
                       type: "object",
                       _presets: 'object:$noTitle',
                       _layout: [{
-                        className: {inline: true},
+                        className: {'fform-inline': true},
                         $_fields: ['title', 'description', 'defaultUnescaped', 'default',
                           {
                             "$_ref": "^/parts/ArrayAddButton",
                             "children": ["+definition"],
                             onClick: {args: {1: "./definitions", 3: {"setOneOf": 0}}},//["./definitions", 1, {"setOneOf": 0}]},
                             $_maps: {
-                              'className/hidden': false,
+                              'className/fform-hidden': false,
                               disabled: false
                             }
                           },]
@@ -375,7 +375,7 @@ const FFormSchema: JsonSchema = {
                         //   type: 'boolean',
                         //   title: 'Default',
                         //   _presets: 'booleanLeft:$shrink',
-                        //   _custom: {Main: {className: {'radio-container': true, unescaped: true}, style: {marginRight: '-1.1em'}}},
+                        //   _custom: {Main: {className: {'fform-radio-container': true, unescaped: true}, style: {marginRight: '-1.1em'}}},
                         // },
                         'default': {
                           type: "string",
@@ -464,7 +464,7 @@ const FFormSchema: JsonSchema = {
                       type: "object",
                       _presets: 'object:$noTitle',
                       _layout: [{
-                        className: {inline: true},
+                        className: {'fform-inline': true},
                         $_fields: ['additionalItems', 'minItems', 'maxItems', 'uniqueItems', {$_ref: '^/parts/Expander'}]
                       }],
                       // _params: {hidden: true},
@@ -511,7 +511,7 @@ const FFormSchema: JsonSchema = {
                       type: "object",
                       _presets: 'object:$noTitle',
                       _layout: [{
-                        className: {inline: true},
+                        className: {'fform-inline': true},
                         $_fields: ['additionalProperties', 'minProperties', 'maxProperties', 'required']
                       }],
                       // _params: {hidden: true},
@@ -564,7 +564,7 @@ const FFormSchema: JsonSchema = {
                       _presets: 'object:$noTitle',
                       _stateMaps: [{from: './selector@value', to: '/@/selectorValue'}],
                       _layout: [{
-                        className: {inline: true},
+                        className: {'fform-inline': true},
                         $_fields: [
                           'selector',
                           {
@@ -573,7 +573,7 @@ const FFormSchema: JsonSchema = {
                             "onClick": {$: '^/_usr/addCombine', args: [0]},
                             style: {marginRight: '-1px', marginLeft: '1em'},
                             $_maps: {
-                              'className/hidden': false,
+                              'className/fform-hidden': false,
                               disabled: false
                             }
                           },
@@ -582,7 +582,7 @@ const FFormSchema: JsonSchema = {
                             "children": ["+strings"],
                             "onClick": {$: '^/_usr/addCombine', args: [1]},
                             $_maps: {
-                              'className/hidden': {$: '^/fn/equal|^/fn/not', args: ['@selectorValue', 'dependencies']},
+                              'className/fform-hidden': {$: '^/fn/equal|^/fn/not', args: ['@selectorValue', 'dependencies']},
                               disabled: false
                             }
                           }
@@ -661,11 +661,11 @@ const FFormSchema: JsonSchema = {
                   _custom: {Wrapper: {style: {paddingBottom: '0em'}}},
                   _layout: [
                     {
-                      className: {layout: true, inline: true},
+                      className: {'fform-layout': true, 'fform-inline': true},
                       $_fields: ['_placeholder', '_params']
                     },
                     {
-                      className: {layout: true, inline: true},
+                      className: {'fform-layout': true, 'fform-inline': true},
                       $_fields: ['_simple', '_presets',
                         {
                           "$_ref": "^/parts/ArrayAddButton",
@@ -673,7 +673,7 @@ const FFormSchema: JsonSchema = {
                           onClick: {args: {1: "./_validators", 3: {"setOneOf": 0}}},
                           style: {marginRight: '-1px'},
                           $_maps: {
-                            'className/hidden': false,
+                            'className/fform-hidden': false,
                             disabled: false
                           }
                         },
@@ -682,7 +682,7 @@ const FFormSchema: JsonSchema = {
                           "children": ["+dataMap"],
                           onClick: {args: {1: "./_stateMaps", 3: {"setOneOf": 0}}},
                           $_maps: {
-                            'className/hidden': false,
+                            'className/fform-hidden': false,
                             disabled: false
                           }
                         },
@@ -717,7 +717,7 @@ const FFormSchema: JsonSchema = {
                       type: 'boolean',
                       title: 'Self managed',
                       _presets: 'booleanLeft:$shrink',
-                      _custom: {Main: {className: {'radio-container': true}}},
+                      _custom: {Main: {className: {'fform-radio-container': true}}},
                     },
 
                     _validators: {
@@ -729,13 +729,13 @@ const FFormSchema: JsonSchema = {
                         type: "array",
                         _presets: 'array:$inlineLayout:$noArrayButtons:$noTitle:$noArrayControls',
                         _layout: {
-                          className: {'wrap': true}, $_fields: [
+                          className: {'fform-wrap': true}, $_fields: [
                             {
                               "$_ref": "^/parts/Button",
                               "children": ["x"],
                               onClick: {$: '^/fn/api', args: ["arrayItemOps", "./", 'del']},
                               $_maps: {
-                                'className/hidden': false,
+                                'className/fform-hidden': false,
                                 disabled: false
                               }
                             },
@@ -758,13 +758,13 @@ const FFormSchema: JsonSchema = {
                         type: "array",
                         _presets: 'array:$inlineLayout:$noArrayButtons:$noArrayControls',
                         _layout: {
-                          className: {'wrap': true},
+                          className: {'fform-wrap': true},
                           $_fields: [{
                             "$_ref": "^/parts/Button",
                             "children": ["x"],
                             onClick: {$: '^/fn/api', args: ["arrayItemOps", "./", 'del']},
                             $_maps: {
-                              'className/hidden': false,
+                              'className/fform-hidden': false,
                               disabled: false
                             }
                           }, {$_ref: '^/sets/object/Title'}]
@@ -800,7 +800,7 @@ const FFormSchema: JsonSchema = {
                       type: "object",
                       _presets: 'object:$noTitle',
                       _layout: [{
-                        className: {inline: true},
+                        className: {'fform-inline': true},
                         $_fields: [
                           'selector',
                           {
@@ -811,7 +811,7 @@ const FFormSchema: JsonSchema = {
                             "children": ["disable"],
                             "onClick": "^/_usr/customDisable",
                             $_maps: {
-                              'className/hidden': false,
+                              'className/fform-hidden': false,
                               'className/selected': {$: '^/_usr/customIsDisabled', args: ['@/params/selectorMapped', '@/params/enumExtenMapped']},
                               disabled: false, //{$: '^/fn/equal', args: ['@/params/selectorMapped', '', '$_parse']}
                             }

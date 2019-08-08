@@ -3,7 +3,8 @@ import * as React from "react";
 //const Select = require('react-select').default;
 
 import ReactJson from 'react-json-view'
-import Creatable from 'react-select/lib/Creatable';
+
+const Creatable = require('react-select/creatable').default;
 import Select from 'react-select';
 import {objectDerefer} from 'fform/src/api';
 import {
@@ -13,7 +14,7 @@ import {
   isUndefined,
   isString
 } from 'fform/src/commonLib';
-import {types, normalizePath} from 'fform/src/stateLib';
+import {types, normalizePath, SymData} from 'fform/src/stateLib';
 import {getElements} from './constrView'
 import {isFField} from "./constrUtils";
 
@@ -45,7 +46,7 @@ let constrElements = {
     boolean: {[SymTypes]: ['boolean']},
     object: {
       [SymTypes]: ['array', 'object'],
-      Wrapper: {className: {'object-wrapper': true}}
+      Wrapper: {className: {'fform-object-wrapper': true}}
     },
     array: {[SymTypes]: ['array', 'object']},
     textarea: {[SymTypes]: ['string']},
@@ -83,7 +84,7 @@ let constrElements = {
   },
   parts: {
     Button: {
-      className: {shrink: true},
+      className: {'fform-shrink': true},
     },
   },
   _parts: {
@@ -97,14 +98,14 @@ let constrElements = {
         args: [{$: '^/fn/not', args: '@/params/expanded'}, {path: './@/params/expanded'}],
       }
     },
-    emptyArray: {children: ['(no items)'], style: {textAlign: 'center'}, $_maps: {'className/hidden': '@/length'}}
+    emptyArray: {children: ['(no items)'], style: {textAlign: 'center'}, $_maps: {'className/fform-hidden': '@/length'}}
   },
   _usr: {
     // multi(...args: any[]) {
     //   for (let i = 0; i < args.length; i++) isFunction(args[i]) && args[i]()
     // },
     selectField: function (event: any) {
-      if (!isString(event.target.className) || !~event.target.className.indexOf('wrapper'))
+      if (!isString(event.target.className) || !~event.target.className.indexOf('fform-wrapper'))
         return;
       let mainForm = this.pFForm.parent;
       if (mainForm) {
@@ -142,6 +143,10 @@ let constrElements = {
       return [eval(value)]
     },
     reactSelectParse: function (values: any) {
+      if (values === null) {
+        if (this.$branch[SymData].fData.type === 'array') return [[]];
+        return null;
+      }
       if (!Array.isArray(values)) return values.value;
       return [values.map((item: any) => item.value)]
     },

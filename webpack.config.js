@@ -36,11 +36,36 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.scss$/,
-          loader: `style-loader!css-loader?importLoaders=1&sourceMap!postcss-loader?sourceMap!sass-loader?sourceMap`,
+          //loader: `style-loader!css-loader?sourceMap&importLoaders=1!postcss-loader?sourceMap!sass-loader?sourceMap`,
+          use: [
+            'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 2, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
+                sourceMap: true,
+              },
+            },
+            'postcss-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
+              },
+            },
+          ],
         },
         {
           test: /\.css$/,
-          loader: `style-loader!css-loader?importLoaders=1!postcss-loader`,
+          use: [
+            'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 2, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
+              },
+            }
+          ]
         }
       ],
     },
