@@ -96,15 +96,26 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "../fform/addons/css/fform.css":
-/*!*************************************!*\
-  !*** ../fform/addons/css/fform.css ***!
-  \*************************************/
+/***/ "../fform/addons/styling/basic.json":
+/*!******************************************!*\
+  !*** ../fform/addons/styling/basic.json ***!
+  \******************************************/
+/*! exports provided: sets, parts, default */
+/***/ (function(module) {
+
+module.exports = {"sets":{"base":{"Wrapper":{"className":{"fform-wrapper":true},"ArrayItemBody":{"className":{"fform-array-item":true}},"ArrayItemMenu":{"className":{"fform-array-menu":true}}},"Body":{"className":{"fform-body":true}},"Message":{"className":{"fform-messages":true}}},"simple":{"Title":{"className":{"fform-title":true}},"Main":{"className":{}}},"object":{"Title":{"className":{"fform-title-container":true},"children":[{"className":{"fform-title":true}},{"className":{"fform-add-button":true}},{"className":{"fform-del-button":true}},{"className":{"fform-empty-message":true}}]},"Main":{"LayoutDefaultClass":{"fform-layout":true}}},"booleanLeft":{"Main":{"className":"fform-boolean-left-container","children":{"0":{"className":"fform-boolean-left"}}}}},"parts":{"RadioSelector":{"className":{"fform-radio":true},"$_maps":{"children":{"0":{"args":{"2":{"className":{"fform-radio-container":true}},"3":{"className":{"fform-radio-input":true}},"4":{"className":{"fform-radio-label":true}}}}}}},"ArrayItemMenu":{"className":{"fform-item-menu":true},"buttonsProps":{"first":{"children":["⇑"]},"last":{"children":["⇓"]},"up":{"children":["↑"]},"down":{"children":["↓"]},"del":{"children":["×"]}}}}};
+
+/***/ }),
+
+/***/ "../fform/addons/styling/fform.css":
+/*!*****************************************!*\
+  !*** ../fform/addons/styling/fform.css ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../fform-constructor/node_modules/css-loader/dist/cjs.js??ref--6-1!./fform.css */ "./node_modules/css-loader/dist/cjs.js?!../fform/addons/css/fform.css");
+var content = __webpack_require__(/*! !../../../fform-constructor/node_modules/css-loader/dist/cjs.js??ref--6-1!./fform.css */ "./node_modules/css-loader/dist/cjs.js?!../fform/addons/styling/fform.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -123,17 +134,6 @@ var update = __webpack_require__(/*! ../../../fform-constructor/node_modules/sty
 if(content.locals) module.exports = content.locals;
 
 if(false) {}
-
-/***/ }),
-
-/***/ "../fform/addons/styles.json":
-/*!***********************************!*\
-  !*** ../fform/addons/styles.json ***!
-  \***********************************/
-/*! exports provided: sets, parts, default */
-/***/ (function(module) {
-
-module.exports = {"sets":{"base":{"Wrapper":{"className":{"fform-wrapper":true},"ArrayItemBody":{"className":{"fform-array-item":true}},"ArrayItemMenu":{"className":{"fform-array-menu":true}}},"Body":{"className":{"fform-body":true}},"Message":{"className":{"fform-messages":true}}},"simple":{"Title":{"className":{"fform-title":true}},"Main":{"className":{}}},"object":{"Title":{"className":{"fform-title-container":true},"children":[{"className":{"fform-title":true}},{"className":{"fform-add-button":true}},{"className":{"fform-del-button":true}},{"className":{"fform-empty-message":true}}]},"Main":{"LayoutDefaultClass":{"fform-layout":true}}},"booleanLeft":{"Main":{"className":"fform-boolean-left-container","children":{"0":{"className":"fform-boolean-left"}}}}},"parts":{"RadioSelector":{"className":{"fform-radio":true},"$_maps":{"children":{"0":{"args":{"2":{"className":{"fform-radio-container":true}},"3":{"className":{"fform-radio-input":true}},"4":{"className":{"fform-radio-label":true}}}}}}},"ArrayItemMenu":{"className":{"fform-item-menu":true},"buttonsProps":{"first":{"children":["⇑"]},"last":{"children":["⇓"]},"up":{"children":["↑"]},"down":{"children":["↓"]},"del":{"children":["×"]}}}}};
 
 /***/ }),
 
@@ -8516,10 +8516,10 @@ var weakMemoize = function weakMemoize(func) {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js?!../fform/addons/css/fform.css":
-/*!*************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??ref--6-1!../fform/addons/css/fform.css ***!
-  \*************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js?!../fform/addons/styling/fform.css":
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??ref--6-1!../fform/addons/styling/fform.css ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -43126,7 +43126,7 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const fform_1 = __webpack_require__(/*! fform/src/fform */ "../fform/src/fform.tsx");
 const constrSchema_1 = __webpack_require__(/*! ./constrSchema */ "./src/constrSchema.ts");
 const constrLib_1 = __webpack_require__(/*! ./constrLib */ "./src/constrLib.tsx");
-const styling = __webpack_require__(/*! fform/addons/styles.json */ "../fform/addons/styles.json");
+const styling = __webpack_require__(/*! fform/addons/styling/basic.json */ "../fform/addons/styling/basic.json");
 const commonLib_1 = __webpack_require__(/*! fform/src/commonLib */ "../fform/src/commonLib.tsx");
 const constrUtils_1 = __webpack_require__(/*! ./constrUtils */ "./src/constrUtils.tsx");
 const stateLib_1 = __webpack_require__(/*! fform/src/stateLib */ "../fform/src/stateLib.tsx");
@@ -43848,7 +43848,7 @@ const react_dom_1 = __webpack_require__(/*! react-dom */ "./node_modules/react-d
 // import {elements} from 'fform/src/fform';
 const constrView_1 = __webpack_require__(/*! ./constrView */ "./src/constrView.tsx");
 __webpack_require__(/*! ./tacit/main.scss */ "./src/tacit/main.scss");
-__webpack_require__(/*! fform/addons/css/fform.css */ "../fform/addons/css/fform.css");
+__webpack_require__(/*! fform/addons/styling/fform.css */ "../fform/addons/styling/fform.css");
 __webpack_require__(/*! ./styles.scss */ "./src/styles.scss");
 if (typeof window != 'undefined') {
     const container = document.querySelector('#root');

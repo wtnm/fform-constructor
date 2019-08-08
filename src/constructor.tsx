@@ -6,7 +6,7 @@ import {render} from 'react-dom';
 import MainView from './constrView';
 
 import './tacit/main.scss';
-import 'fform/addons/css/fform.css';
+import 'fform/addons/styling/fform.css';
 import './styles.scss';
 
 if (typeof window != 'undefined') {

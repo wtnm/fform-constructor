@@ -3,7 +3,7 @@ import * as React from 'react';
 import {FForm, FFormStateAPI, elements, fformCores} from 'fform/src/fform';
 import constrSchema from './constrSchema';
 import constrObj from './constrLib';
-import * as styling from 'fform/addons/styles.json';
+import * as styling from 'fform/addons/styling/basic.json';
 import {getCreateIn, getIn, isArray, isEqual, isFunction, isUndefined, merge, objKeys, toArray} from "fform/src/commonLib";
 import {formValues2JSON, JSON2formValues} from './constrUtils'
 import {object2PathValues, path2string, SymData, types} from "fform/src/stateLib";
