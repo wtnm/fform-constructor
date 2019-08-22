@@ -152,7 +152,6 @@ let constrElements = {
     },
     reactSelectValue: function (values: any = []) {
       if (!Array.isArray(values)) return values ? [{value: values, label: values}] : [];
-      // if (!Array.isArray(values)) return {value: values, label: values};
       return [values.map((value: string) => {return {value, label: value}})]
     },
     reactSelectPresetOptions: function (values: any, fieldTypes: string[]) {

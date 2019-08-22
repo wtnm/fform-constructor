@@ -1,401 +1,1491 @@
 [
-  {
-    "schema": {
-      "links": [],
-      "code": {
-        "type": "object",
-        "_layout": {
-          "$_fields": [
-            "login",
-            "password",
-            {
-              "_$widget": "button",
-              "type": "submit",
-              "children": [
-                "Send"
-              ]
-            }
-          ]
-        },
-        "properties": {
-          "login": {
-            "type": "string",
-            "title": "phone number",
-            "_placeholder": "Enter login..."
-          },
-          "password": {
-            "type": "string",
-            "title": "password",
-            "_presets": "string:$password",
-            "_placeholder": "Enter password..."
-          }
-        }
-      },
-      "error": ""
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
-    },
-    "css": {
-      "links": [
-        "fform.css",
-        "tacit.min.css",
-        "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
-    },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": "{\"onSubmit\":\"^/fn/_submit\"}"
-      }
-    },
-    "formProps": {
-      "jsonValidation": false,
-      "props": []
-    },
-    "data": {
-      "schema": {
-        "links": [
-          {
-            "path": "#/definitions/imported",
-            "link": "imported.json"
-          }
-        ],
-        "code": {
-          "type": "object",
-          "_layout": {
-            "$_fields": [
-              "stringProp",
-              "impObj"
-            ]
-          },
-          "properties": {
-            "stringProp": {
-              "type": "string",
-              "title": "string"
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password"
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "phone number",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password",
+                        "_placeholder": "Enter password..."
+                    }
+                }
             },
-            "impObj": {
-              "$ref": "#/definitions/imported"
-            }
-          }
-        }
-      },
-      "elements": {
-        "links": [
-          {
-            "import": [],
-            "from": "styles.json"
-          },
-          {
-            "import": [
-              "obj"
+            "error": ""
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
             ],
-            "from": "objs.js"
-          }
-        ],
-        "code": "fn:{one:()=>alert('one')}"
-      },
-      "css": {
-        "links": [
-          "fform.css",
-          "tacit.min.css",
-          "tacit.fform.css"
-        ],
-        "code": ".main{\n\n}"
-      }
-    },
-    "name": "login form"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {
-        "type": "object",
-        "_layout": {
-          "$_fields": [
-            "login",
-            "password",
-            {
-              "className": {
-                "fform-inline": true
-              },
-              "$_fields": [
-                {
-                  "_$widget": "button",
-                  "type": "submit",
-                  "children": [
-                    "Send"
-                  ]
-                },
-                {
-                  "_$widget": "button",
-                  "type": "reset",
-                  "children": [
-                    "Reset"
-                  ]
-                }
-              ]
-            }
-          ]
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  }\n}"
         },
-        "properties": {
-          "login": {
-            "type": "string",
-            "title": "login",
-            "_presets": "string:$inlineTitle",
-            "_placeholder": "Enter login..."
-          },
-          "password": {
-            "type": "string",
-            "title": "password",
-            "_presets": "string:$password:$inlineTitle",
-            "_placeholder": "Enter password..."
-          }
-        }
-      }
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
-    },
-    "css": {
-      "links": [
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
-    },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": "{\"onSubmit\":\"^/fn/_submit\"}"
-      }
-    },
-    "name": "layout usage"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {
-        "type": "object",
-        "_presets": [],
-        "_simple": false,
-        "_validators": [],
-        "_stateMaps": [],
-        "_placeholder": "",
-        "_params": [],
-        "_custom": {},
-        "_layout": {
-          "$_fields": [
-            "login",
-            "password",
-            {
-              "className": {
-                "fform-inline": true
-              },
-              "$_fields": [
-                {
-                  "$_ref": "^/parts/Submit",
-                  "children": [
-                    "Send"
-                  ]
-                },
-                {
-                  "$_ref": "^/parts/Reset",
-                  "children": [
-                    "Reset"
-                  ]
-                }
-              ]
-            }
-          ]
+            ],
+            "cxBind": "",
+            "code": ""
         },
-        "properties": {
-          "login": {
-            "type": "string",
-            "title": "login",
-            "_presets": [],
-            "_simple": false,
-            "_validators": [],
-            "_stateMaps": [],
-            "_placeholder": "",
-            "_params": [],
-            "_custom": {},
-            "_presets": "string:$inlineTitle",
-            "_placeholder": "Enter login..."
-          },
-          "password": {
-            "type": "string",
-            "title": "password",
-            "_presets": "string:$password:$inlineTitle",
-            "_placeholder": "Enter password..."
-          }
-        }
-      }
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "formProps": {
+            "jsonValidation": false,
+            "props": []
+        },
+        "data": {
+            "schema": {
+                "links": [
+                    {
+                        "path": "#/definitions/imported",
+                        "link": "imported.json"
+                    }
+                ],
+                "code": {
+                    "type": "object",
+                    "_layout": {
+                        "$_fields": [
+                            "stringProp",
+                            "impObj"
+                        ]
+                    },
+                    "properties": {
+                        "stringProp": {
+                            "type": "string",
+                            "title": "string"
+                        },
+                        "impObj": {
+                            "$ref": "#/definitions/imported"
+                        }
+                    }
+                }
+            },
+            "elements": {
+                "links": [
+                    {
+                        "import": [],
+                        "from": "styles.json"
+                    },
+                    {
+                        "import": [
+                            "obj"
+                        ],
+                        "from": "objs.js"
+                    }
+                ],
+                "code": "fn:{one:()=>alert('one')}"
+            },
+            "css": {
+                "links": [
+                    "fform.css",
+                    "tacit.min.css",
+                    "tacit.fform.css"
+                ],
+                "code": ".main{\n\n}"
+            }
+        },
+        "name": "01. Form fields"
     },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": "fn:{\n  _submit(event,value){\n    alert(JSON.stringify(value));\n    event.preventDefault();\n  }\n}"
-    },
-    "css": {
-      "links": [
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "_$widget": "button",
+                            "type": "submit",
+                            "children": [
+                                "Send"
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "phone number",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            },
+            "error": ""
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "formProps": {
+            "jsonValidation": false,
+            "props": []
+        },
+        "data": {
+            "schema": {
+                "links": [
+                    {
+                        "path": "#/definitions/imported",
+                        "link": "imported.json"
+                    }
+                ],
+                "code": {
+                    "type": "object",
+                    "_layout": {
+                        "$_fields": [
+                            "stringProp",
+                            "impObj"
+                        ]
+                    },
+                    "properties": {
+                        "stringProp": {
+                            "type": "string",
+                            "title": "string"
+                        },
+                        "impObj": {
+                            "$ref": "#/definitions/imported"
+                        }
+                    }
+                }
+            },
+            "elements": {
+                "links": [
+                    {
+                        "import": [],
+                        "from": "styles.json"
+                    },
+                    {
+                        "import": [
+                            "obj"
+                        ],
+                        "from": "objs.js"
+                    }
+                ],
+                "code": "fn:{one:()=>alert('one')}"
+            },
+            "css": {
+                "links": [
+                    "fform.css",
+                    "tacit.min.css",
+                    "tacit.fform.css"
+                ],
+                "code": ".main{\n\n}"
+            }
+        },
+        "name": "02. layout usage"
     },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": "{\"onSubmit\":\"^/fn/_submit\"}"
-      }
-    },
-    "name": "schema extending"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {}
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": ""
-    },
-    "css": {
-      "links": [
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "className": {
+                                "fform-inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "_$widget": "button",
+                                    "type": "submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "_$widget": "button",
+                                    "type": "reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter login..."
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "03. Styles and inner layouts"
     },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": ""
-      }
-    },
-    "name": "component extending"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {}
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": ""
-    },
-    "css": {
-      "links": [
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "className": {
+                                "fform-inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "$_ref": "^/parts/Submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "$_ref": "^/parts/Reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter login...",
+                        "_custom": {
+                            "Main": {
+                                "$_maps": {
+                                    "value": {
+                                        "$": "^/fn/formatPhone",
+                                        "args": [
+                                            "@/value"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  }\n}"
+        },
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "04. Elements extending"
     },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": ""
-      }
-    },
-    "name": "data processors"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {}
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": "fn: {\n      formatNum: function (val, ...args) {\n        var a = val.substr(3, 4);\n        var b = val.substr(7, 3);\n        return [val.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n      },\n      parseNum: function (val, ...args) {\n        return [val.replace(/\\D+/g, '').substr(0,10), ...args]\n      }\n}"
-    },
-    "css": {
-      "links": [
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "className": {
+                                "fform-inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "$_ref": "^/parts/Submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "$_ref": "^/parts/Reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": "string:$inlineTitle",
+                        "_placeholder": "Enter login...",
+                        "_custom": {
+                            "Main": {
+                                "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                "$_maps": {
+                                    "value": {
+                                        "$": "^/fn/formatPhone",
+                                        "args": [
+                                            "@/value"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args]\n}"
+        },
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
+            ],
+            "cxBind": "",
+            "code": ""
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "05. Data processors"
     },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": ""
-      }
-    },
-    "name": "validation"
-  },
-  {
-    "schema": {
-      "links": [],
-      "code": {}
-    },
-    "elements": {
-      "links": [
-        {
-          "import": [],
-          "from": "styles.json"
-        }
-      ],
-      "code": ""
-    },
-    "css": {
-      "links": [
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "type": "object",
+                "_layout": {
+                    "$_fields": [
+                        "login",
+                        "password",
+                        {
+                            "_$widget": "a",
+                            "href": "#",
+                            "className": {
+                                "grayed": true
+                            },
+                            "onClick": {
+                                "$": "^/fn/restorePass"
+                            },
+                            "children": [
+                                "Restore password"
+                            ],
+                            "$_maps": {
+                                "className/activated": "@/params/activated"
+                            }
+                        },
+                        {
+                            "className": {
+                                "fform-inline": true
+                            },
+                            "$_fields": [
+                                {
+                                    "$_ref": "^/parts/Submit",
+                                    "children": [
+                                        "Send"
+                                    ]
+                                },
+                                {
+                                    "$_ref": "^/parts/Reset",
+                                    "children": [
+                                        "Reset"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "login",
+                        "_presets": "string:$inlineTitle",
+                        "_stateMaps": [
+                            {
+                                "from": "./@/value",
+                                "to": "../@/params/activated",
+                                "$": "^/fn/getLength|equal",
+                                "args": [
+                                    "${0}",
+                                    10
+                                ]
+                            }
+                        ],
+                        "_placeholder": "Enter login...",
+                        "_params": {
+                            "liveUpdate": true
+                        },
+                        "_custom": {
+                            "Main": {
+                                "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                "$_maps": {
+                                    "value": {
+                                        "$": "^/fn/formatPhone",
+                                        "args": [
+                                            "@/value"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "password",
+                        "_presets": "string:$password:$inlineTitle",
+                        "_placeholder": "Enter password..."
+                    }
+                }
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        }\n}"
+        },
+        "css": {
+            "links": [
                 "fform.css",
                 "tacit.min.css",
                 "tacit.fform.css"
-      ],
-      "cxBind": "",
-      "code": ""
+            ],
+            "cxBind": "",
+            "code": ".grayed {\n    color: #aaa;\n}\n\n.activated {\n    color: #2667FF;\n}"
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "06.  _stateMaps usage"
     },
-    "props": {
-      "jsonValidation": false,
-      "rest": {
-        "value": ""
-      }
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "definitions": {
+                    "loginForm": {
+                        "type": "object",
+                        "_layout": {
+                            "$_fields": [
+                                "login",
+                                "password",
+                                {
+                                    "_$widget": "a",
+                                    "href": "#",
+                                    "className": {
+                                        "grayed": true
+                                    },
+                                    "onClick": {
+                                        "$": "^/fn/restorePass"
+                                    },
+                                    "children": [
+                                        "Restore password"
+                                    ],
+                                    "$_maps": {
+                                        "className/activated": "@/params/activated"
+                                    }
+                                },
+                                {
+                                    "className": {
+                                        "fform-inline": true
+                                    },
+                                    "$_fields": [
+                                        {
+                                            "$_ref": "^/parts/Button",
+                                            "children": [],
+                                            "onClick": {
+                                                "$": "^/fn/setValue",
+                                                "args": [
+                                                    {
+                                                        "$": "^/fn/iif",
+                                                        "args": [
+                                                            "@oneOf",
+                                                            0,
+                                                            1
+                                                        ]
+                                                    },
+                                                    {
+                                                        "path": "./@oneOf"
+                                                    }
+                                                ]
+                                            },
+                                            "$_maps": {
+                                                "children/0": {
+                                                    "$": "^/fn/iif",
+                                                    "args": [
+                                                        "@oneOf",
+                                                        "Back to login form",
+                                                        "Register"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "$_ref": "^/parts/Submit",
+                                            "children": [
+                                                "Send"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "properties": {
+                            "login": {
+                                "type": "string",
+                                "title": "login",
+                                "_presets": "string:$inlineTitle",
+                                "_stateMaps": [
+                                    {
+                                        "from": "./@/value",
+                                        "to": "../@/params/activated",
+                                        "$": "^/fn/getLength|equal",
+                                        "args": [
+                                            "${0}",
+                                            10
+                                        ]
+                                    }
+                                ],
+                                "_placeholder": "Enter login...",
+                                "_params": {
+                                    "liveUpdate": true
+                                },
+                                "_custom": {
+                                    "Main": {
+                                        "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                        "$_maps": {
+                                            "value": {
+                                                "$": "^/fn/formatPhone",
+                                                "args": [
+                                                    "@/value"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "password": {
+                                "type": "string",
+                                "title": "password",
+                                "_presets": "string:$password:$inlineTitle",
+                                "_placeholder": "Enter password..."
+                            }
+                        }
+                    }
+                },
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/loginForm"
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "_layout": {
+                                    "$_fields": {
+                                        "0": {
+                                            "$_fields": [
+                                                "login",
+                                                "email",
+                                                {
+                                                    "className": {
+                                                        "fform-inline": true
+                                                    },
+                                                    "$_fields": [
+                                                        "password",
+                                                        "confirm"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "2": false
+                                    }
+                                },
+                                "properties": {
+                                    "confirm": {
+                                        "type": "string",
+                                        "title": "confirm",
+                                        "_placeholder": "Confirm password...",
+                                        "_presets": "string:$password:$inlineTitle"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "title": "E-mail",
+                                        "_placeholder": "Enter email...",
+                                        "_presets": "string:$inlineTitle"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        }\n}"
+        },
+        "css": {
+            "links": [
+                "fform.css",
+                "tacit.min.css",
+                "tacit.fform.css"
+            ],
+            "cxBind": "",
+            "code": ".grayed {\n    color: #aaa;\n}\n\n.activated {\n    color: #2667FF;\n}"
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "07. Schema extending and combinig"
     },
-    "name": "schema combinig"
-  }
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "definitions": {
+                    "loginForm": {
+                        "type": "object",
+                        "_oneOfSelector": "^/fn/oneOfGetter",
+                        "_layout": {
+                            "$_fields": [
+                                "login",
+                                "password",
+                                {
+                                    "_$widget": "a",
+                                    "href": "#",
+                                    "className": {
+                                        "grayed": true
+                                    },
+                                    "onClick": {
+                                        "$": "^/fn/restorePass"
+                                    },
+                                    "children": [
+                                        "Restore password"
+                                    ],
+                                    "$_maps": {
+                                        "className/activated": "@/params/activated"
+                                    }
+                                },
+                                {
+                                    "className": {
+                                        "fform-inline": true
+                                    },
+                                    "$_fields": [
+                                        {
+                                            "$_ref": "^/parts/Button",
+                                            "children": [],
+                                            "onClick": {
+                                                "$": "^/fn/setValue",
+                                                "args": [
+                                                    {
+                                                        "$": "^/fn/iif",
+                                                        "args": [
+                                                            "@oneOf",
+                                                            0,
+                                                            1
+                                                        ]
+                                                    },
+                                                    {
+                                                        "path": "./@oneOf"
+                                                    }
+                                                ]
+                                            },
+                                            "$_maps": {
+                                                "children/0": {
+                                                    "$": "^/fn/iif",
+                                                    "args": [
+                                                        "@oneOf",
+                                                        "Back to login form",
+                                                        "Register"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "$_ref": "^/parts/Submit",
+                                            "children": [
+                                                "Send"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "oneOf"
+                            ]
+                        },
+                        "properties": {
+                            "login": {
+                                "type": "string",
+                                "title": "login",
+                                "_presets": "string:$inlineTitle",
+                                "_stateMaps": [
+                                    {
+                                        "from": "./@/value",
+                                        "to": "../@/params/activated",
+                                        "$": "^/fn/getLength|equal",
+                                        "args": [
+                                            "${0}",
+                                            10
+                                        ]
+                                    }
+                                ],
+                                "_placeholder": "Enter login...",
+                                "_params": {
+                                    "liveUpdate": true
+                                },
+                                "_custom": {
+                                    "Main": {
+                                        "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                        "$_maps": {
+                                            "value": {
+                                                "$": "^/fn/formatPhone",
+                                                "args": [
+                                                    "@/value"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "password": {
+                                "type": "string",
+                                "title": "password",
+                                "_presets": "string:$password:$inlineTitle",
+                                "_placeholder": "Enter password..."
+                            },
+                            "oneOf": {
+                                "type": "integer",
+                                "_stateMaps": [
+                                    {
+                                        "from": "../@/oneOf",
+                                        "to": "./@/value"
+                                    }
+                                ],
+                                "_params": {
+                                    "hidden": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/loginForm"
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "_layout": {
+                                    "$_fields": {
+                                        "0": {
+                                            "$_fields": [
+                                                "login",
+                                                "email",
+                                                {
+                                                    "className": {
+                                                        "fform-inline": true
+                                                    },
+                                                    "$_fields": [
+                                                        "password",
+                                                        "confirm"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "2": false
+                                    }
+                                },
+                                "properties": {
+                                    "confirm": {
+                                        "type": "string",
+                                        "title": "confirm",
+                                        "_placeholder": "Confirm password...",
+                                        "_presets": "string:$password:$inlineTitle"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "title": "E-mail",
+                                        "_placeholder": "Enter email...",
+                                        "_presets": "string:$inlineTitle"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0\n}"
+        },
+        "css": {
+            "links": [
+                "fform.css",
+                "tacit.min.css",
+                "tacit.fform.css"
+            ],
+            "cxBind": "",
+            "code": ".grayed {\n    color: #aaa;\n}\n\n.activated {\n    color: #2667FF;\n}"
+        },
+        "props": {
+            "jsonValidation": false,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/fn/_submit\"}"
+            }
+        },
+        "name": "08. _oneOfSelector usage"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "definitions": {
+                    "loginForm": {
+                        "type": "object",
+                        "_oneOfSelector": "^/fn/oneOfGetter",
+                        "_layout": {
+                            "$_fields": [
+                                "login",
+                                "password",
+                                {
+                                    "_$widget": "a",
+                                    "href": "#",
+                                    "className": {
+                                        "grayed": true
+                                    },
+                                    "onClick": {
+                                        "$": "^/fn/restorePass"
+                                    },
+                                    "children": [
+                                        "Restore password"
+                                    ],
+                                    "$_maps": {
+                                        "className/activated": "@/params/activated"
+                                    }
+                                },
+                                {
+                                    "className": {
+                                        "fform-inline": true
+                                    },
+                                    "$_fields": [
+                                        {
+                                            "$_ref": "^/parts/Button",
+                                            "children": [],
+                                            "onClick": {
+                                                "$": "^/fn/setValue",
+                                                "args": [
+                                                    {
+                                                        "$": "^/fn/iif",
+                                                        "args": [
+                                                            "@oneOf",
+                                                            0,
+                                                            1
+                                                        ]
+                                                    },
+                                                    {
+                                                        "path": "./@oneOf"
+                                                    }
+                                                ]
+                                            },
+                                            "$_maps": {
+                                                "children/0": {
+                                                    "$": "^/fn/iif",
+                                                    "args": [
+                                                        "@oneOf",
+                                                        "Back to login form",
+                                                        "Register"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "$_ref": "^/parts/Submit",
+                                            "children": [
+                                                "Send"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "oneOf"
+                            ]
+                        },
+                        "properties": {
+                            "login": {
+                                "type": "string",
+                                "title": "login",
+                                "_presets": "string:$inlineTitle",
+                                "_stateMaps": [
+                                    {
+                                        "from": "./@/value",
+                                        "to": "../@/params/activated",
+                                        "$": "^/fn/getLength|equal",
+                                        "args": [
+                                            "${0}",
+                                            10
+                                        ]
+                                    }
+                                ],
+                                "_placeholder": "Enter login...",
+                                "_params": {
+                                    "liveUpdate": true
+                                },
+                                "_custom": {
+                                    "Main": {
+                                        "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                        "$_maps": {
+                                            "value": {
+                                                "$": "^/fn/formatPhone",
+                                                "args": [
+                                                    "@/value"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "password": {
+                                "type": "string",
+                                "title": "password",
+                                "_presets": "string:$password:$inlineTitle",
+                                "_placeholder": "Enter password..."
+                            },
+                            "oneOf": {
+                                "type": "integer",
+                                "_stateMaps": [
+                                    {
+                                        "from": "../@/oneOf",
+                                        "to": "./@/value"
+                                    }
+                                ],
+                                "_params": {
+                                    "hidden": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "oneOf": [
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "properties": {
+                                    "oneOf": {
+                                        "minimum": 0,
+                                        "maximum": 0
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "_layout": {
+                                    "$_fields": {
+                                        "0": {
+                                            "$_fields": [
+                                                "login",
+                                                "email",
+                                                {
+                                                    "className": {
+                                                        "fform-inline": true
+                                                    },
+                                                    "$_fields": [
+                                                        "password",
+                                                        "confirm"
+                                                    ]
+                                                },
+                                                {
+                                                    "children": [
+                                                        "captcha to display here: 12345"
+                                                    ]
+                                                },
+                                                "captcha"
+                                            ]
+                                        },
+                                        "2": false
+                                    }
+                                },
+                                "_validators": [
+                                    "^/validators/testPasswords"
+                                ],
+                                "properties": {
+                                    "captcha": {
+                                        "type": "string",
+                                        "title": "Captcha",
+                                        "_placeholder": "Enter captcha...",
+                                        "_presets": "string:$inlineTitle"
+                                    },
+                                    "login": {
+                                        "_validators": [
+                                            "^/validators/testPhoneNumber"
+                                        ]
+                                    },
+                                    "confirm": {
+                                        "type": "string",
+                                        "title": "confirm",
+                                        "_placeholder": "Confirm password...",
+                                        "_presets": "string:$password:$inlineTitle"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "title": "E-mail",
+                                        "_placeholder": "Enter email...",
+                                        "_presets": "string:$inlineTitle",
+                                        "pattern": "\\S+@\\S+\\.\\S+"
+                                    },
+                                    "oneOf": {
+                                        "minimum": 1,
+                                        "maximum": 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t\tasync testCaptcha(event, value, form){\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n}"
+        },
+        "css": {
+            "links": [
+                "fform.css",
+                "tacit.min.css",
+                "tacit.fform.css"
+            ],
+            "cxBind": "",
+            "code": ".grayed {\n    color: #aaa;\n}\n\n.activated {\n    color: #2667FF;\n}"
+        },
+        "props": {
+            "jsonValidation": true,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/submits/testCaptcha\"}"
+            }
+        },
+        "name": "09. Validation"
+    },
+    {
+        "schema": {
+            "links": [],
+            "code": {
+                "definitions": {
+                    "loginForm": {
+                        "type": "object",
+                        "_oneOfSelector": "^/fn/oneOfGetter",
+                        "_layout": {
+                            "$_fields": [
+                                "login",
+                                "password",
+                                {
+                                    "_$widget": "a",
+                                    "href": "#",
+                                    "className": {
+                                        "grayed": true
+                                    },
+                                    "onClick": {
+                                        "$": "^/fn/restorePass"
+                                    },
+                                    "children": [
+                                        "Restore password"
+                                    ],
+                                    "$_maps": {
+                                        "className/activated": "@/params/activated"
+                                    }
+                                },
+                                {
+                                    "className": {
+                                        "fform-inline": true
+                                    },
+                                    "$_fields": [
+                                        {
+                                            "$_ref": "^/parts/Button",
+                                            "children": [],
+                                            "onClick": {
+                                                "$": "^/fn/setValue",
+                                                "args": [
+                                                    {
+                                                        "$": "^/fn/iif",
+                                                        "args": [
+                                                            "@oneOf",
+                                                            0,
+                                                            1
+                                                        ]
+                                                    },
+                                                    {
+                                                        "path": "./@oneOf"
+                                                    }
+                                                ]
+                                            },
+                                            "$_maps": {
+                                                "children/0": {
+                                                    "$": "^/fn/iif",
+                                                    "args": [
+                                                        "@oneOf",
+                                                        "Back to login form",
+                                                        "Register"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "$_ref": "^/parts/Submit",
+                                            "children": [
+                                                "Send"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "oneOf"
+                            ]
+                        },
+                        "properties": {
+                            "login": {
+                                "type": "string",
+                                "title": "login",
+                                "_presets": "string:$inlineTitle",
+                                "_stateMaps": [
+                                    {
+                                        "from": "./@/value",
+                                        "to": "../@/params/activated",
+                                        "$": "^/fn/getLength|equal",
+                                        "args": [
+                                            "${0}",
+                                            10
+                                        ]
+                                    }
+                                ],
+                                "_placeholder": "Enter login...",
+                                "_params": {
+                                    "liveUpdate": true
+                                },
+                                "_custom": {
+                                    "Main": {
+                                        "onChange": "^/fn/eventValue|parsePhone|setValue",
+                                        "$_maps": {
+                                            "value": {
+                                                "$": "^/fn/formatPhone",
+                                                "args": [
+                                                    "@/value"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "password": {
+                                "type": "string",
+                                "title": "password",
+                                "_presets": "string:$password:$inlineTitle",
+                                "_placeholder": "Enter password..."
+                            },
+                            "oneOf": {
+                                "type": "integer",
+                                "_stateMaps": [
+                                    {
+                                        "from": "../@/oneOf",
+                                        "to": "./@/value"
+                                    }
+                                ],
+                                "_params": {
+                                    "hidden": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "oneOf": [
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "properties": {
+                                    "oneOf": {
+                                        "minimum": 0,
+                                        "maximum": 0
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/loginForm"
+                            },
+                            {
+                                "_layout": {
+                                    "$_fields": {
+                                        "0": {
+                                            "$_fields": [
+                                                "login",
+                                                "email",
+                                                {
+                                                    "className": {
+                                                        "fform-inline": true
+                                                    },
+                                                    "$_fields": [
+                                                        "password",
+                                                        "confirm"
+                                                    ]
+                                                },
+                                                "subs",
+                                                {
+                                                    "children": [
+                                                        "captcha to display here: 12345"
+                                                    ]
+                                                },
+                                                "captcha"
+                                            ]
+                                        },
+                                        "2": false
+                                    }
+                                },
+                                "_validators": [
+                                    "^/validators/testPasswords"
+                                ],
+                                "properties": {
+                                    "captcha": {
+                                        "type": "string",
+                                        "title": "Captcha",
+                                        "_placeholder": "Enter captcha...",
+                                        "_presets": "string:$inlineTitle"
+                                    },
+                                    "login": {
+                                        "_validators": [
+                                            "^/validators/testPhoneNumber"
+                                        ]
+                                    },
+                                    "confirm": {
+                                        "type": "string",
+                                        "title": "confirm",
+                                        "_placeholder": "Confirm password...",
+                                        "_presets": "string:$password:$inlineTitle"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "title": "E-mail",
+                                        "_placeholder": "Enter email...",
+                                        "_presets": "string:$inlineTitle",
+                                        "pattern": "\\S+@\\S+\\.\\S+"
+                                    },
+                                    "oneOf": {
+                                        "minimum": 1,
+                                        "maximum": 1
+                                    },
+                                    "subs": {
+                                        "type": "array",
+                                        "title": "Some subs",
+                                        "_presets": "reactSelect:$inlineTitle",
+                                        "_simple": true,
+                                        "_placeholder": "Select subs...",
+                                        "_custom": {
+                                            "Body": {
+                                                "className": {
+                                                    "react-select": true
+                                                }
+                                            },
+                                            "Main": {
+                                                "isMulti": true
+                                            }
+                                        },
+                                        "enum": [
+                                            "one",
+                                            "two",
+                                            "three",
+                                            "four",
+                                            "five",
+                                            "six",
+                                            "seven",
+                                            "eight"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "elements": {
+            "links": [
+                {
+                    "import": [],
+                    "from": "styles.json"
+                }
+            ],
+            "code": "  widgets: {\n    reactSelect: Select\n  },\nfn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0,\n    reactSelectParse: function (values) {\n      if (values === null) {\n        if (this.$branch[Symbol.for('FFormData')].fData.type === 'array') return [[]];\n        return null;\n      }\n      if (!Array.isArray(values)) return values.value;\n      return [values.map((item) => item.value)]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values ? [{value: values, label: values}] : [];\n      return [values.map((value) => {return {value, label: value}})]\n    },\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t\tasync testCaptcha(event, value, form){\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n},\nsets: {\n    reactSelect: {\n      $_ref: '^/sets/simple',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        onChange: {$: '^/fn/reactSelectParse|setValue|liveUpdate'},\n        $_maps: {\n          isDisabled: '@/params/disabled',\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n        },\n      },\n    },\n  }"
+        },
+        "css": {
+            "links": [
+                "fform.css",
+                "tacit.min.css",
+                "tacit.fform.css"
+            ],
+            "cxBind": "",
+            "code": ".grayed {\n    color: #aaa;\n}\n\n.activated {\n    color: #2667FF;\n}\n\n.react-select {\n    margin-bottom: 1em;\n}\n\n.react-select label {\n    margin-bottom: 0;\n}\n\n.react-select input[type=\"text\"] {\n    margin-bottom: 0\n}"
+        },
+        "props": {
+            "jsonValidation": true,
+            "rest": {
+                "value": "{\"onSubmit\":\"^/submits/testCaptcha\"}"
+            }
+        },
+        "name": "10. Custom components"
+    }
 ]

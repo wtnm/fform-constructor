@@ -103,7 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /*! exports provided: sets, parts, default */
 /***/ (function(module) {
 
-module.exports = {"sets":{"base":{"Wrapper":{"className":{"fform-wrapper":true},"ArrayItemBody":{"className":{"fform-array-item":true}},"ArrayItemMenu":{"className":{"fform-array-menu":true}}},"Body":{"className":{"fform-body":true}},"Message":{"className":{"fform-messages":true}}},"simple":{"Title":{"className":{"fform-title":true}},"Main":{"className":{}}},"object":{"Title":{"className":{"fform-title-container":true},"children":[{"className":{"fform-title":true}},{"className":{"fform-add-button":true}},{"className":{"fform-del-button":true}},{"className":{"fform-empty-message":true}}]},"Main":{"LayoutDefaultClass":{"fform-layout":true}}},"booleanLeft":{"Main":{"className":"fform-boolean-left-container","children":{"0":{"className":"fform-boolean-left"}}}}},"parts":{"RadioSelector":{"className":{"fform-radio":true},"$_maps":{"children":{"0":{"args":{"2":{"className":{"fform-radio-container":true}},"3":{"className":{"fform-radio-input":true}},"4":{"className":{"fform-radio-label":true}}}}}}},"ArrayItemMenu":{"className":{"fform-item-menu":true},"buttonsProps":{"first":{"children":["⇑"]},"last":{"children":["⇓"]},"up":{"children":["↑"]},"down":{"children":["↓"]},"del":{"children":["×"]}}}}};
+module.exports = {"sets":{"base":{"Wrapper":{"className":{"fform-wrapper":true},"ArrayItemBody":{"className":{"fform-array-item":true}},"ArrayItemMenu":{"className":{"fform-array-menu":true}}},"Body":{"className":{"fform-body":true}},"Message":{"className":{"fform-messages":true}}},"simple":{"Title":{"className":{"fform-title":true}},"Main":{"className":{}}},"object":{"Title":{"className":{"fform-title-container":true},"children":[{"className":{"fform-title":true}},{"className":{"fform-add-button":true}},{"className":{"fform-del-button":true}},{"className":{"fform-empty-message":true}}]},"Main":{"LayoutDefaultClass":{"fform-layout":true}}},"booleanLeft":{"Main":{"className":{"fform-boolean-left-container":true},"children":{"0":{"className":{"fform-boolean-left":true}}}}}},"parts":{"Button":{"className":{"fform-button":true}},"RadioSelector":{"className":{"fform-radio":true},"$_maps":{"children":{"0":{"args":{"2":{"className":{"fform-radio-container":true}},"3":{"className":{"fform-radio-input":true}},"4":{"className":{"fform-radio-label":true}}}}}}},"ArrayItemMenu":{"className":{"fform-item-menu":true},"buttonsProps":{"first":{"children":["⇑"]},"last":{"children":["⇓"]},"up":{"children":["↑"]},"down":{"children":["↓"]},"del":{"children":["×"]}}}}};
 
 /***/ }),
 
@@ -2313,7 +2313,7 @@ class FFormStateManager {
             throw new Error('Expected "name" to be passed together with "store".');
         const self = this;
         self.props = props;
-        self.schema = isCompiled(props.schema) ? props.schema : compileSchema(props.elements, props.schema);
+        self.schema = compileSchema(props.schema, props.elements);
         self.name = props.name || '';
         self.dispatch = props.store ? props.store.dispatch : self._dispatch.bind(self);
         self._reducer = formReducer();
@@ -2474,8 +2474,9 @@ class FFormStateAPI extends FFormStateManager {
                     this.switch([path, '@/messages/' + priority], props, rest);
             }
             else {
-                stateLib_1.object2PathValues(value, { arrayAsValue: true }).forEach(p => {
-                    this.set([path, p, msgPath], p.pop(), rest);
+                let r = stateLib_1.object2PathValues(value, { arrayAsValue: true });
+                r.forEach(p => {
+                    this.set([path, p, msgPath], p.pop(), Object.assign({ replace: true }, rest));
                     if (commonLib_1.isObject(props))
                         this.set([path, p, '@/messages/' + priority], props, rest);
                 });
@@ -2493,7 +2494,7 @@ class FFormStateAPI extends FFormStateManager {
                 Object.assign({ path: [path, '@', '/params/hidden'], value: false }, opts),
             ], opts);
         };
-        this.getSchemaPart = (path) => {
+        this.getSchemaPart = (path = []) => {
             path = stateLib_1.normalizePath(path);
             return stateLib_1.getSchemaPart(this.schema, path, stateLib_1.oneOfFromState(this.getState()));
         };
@@ -2630,7 +2631,9 @@ exports.formReducer = formReducer;
 /////////////////////////////////////////////
 //  Schema compile functions
 /////////////////////////////////////////////
-const compileSchema = commonLib_1.memoize((elements, schema) => schemaCompiler(elements, schema));
+const compileSchema = (schema, elements) => isCompiled(schema) ? schema : getCompiledSchema(elements, schema);
+exports.compileSchema = compileSchema;
+const getCompiledSchema = commonLib_1.memoize((elements, schema) => schemaCompiler(elements, schema));
 function schemaCompiler(elements = {}, schema) {
     if (isCompiled(schema))
         return schema;
@@ -2698,10 +2701,14 @@ function objectDerefer(_elements, obj2deref, track = []) {
     //objKeys(restObj).forEach(key => result[key] = isMergeable(restObj[key]) ? objectDerefer(_objects, restObj[key]) : restObj[key]);
 }
 exports.objectDerefer = objectDerefer;
+function skipKey(key, obj) {
+    return key.substr(0, 2) == '_$' || obj['_$skipKeys'] && ~obj['_$skipKeys'].indexOf(key);
+}
+exports.skipKey = skipKey;
 function objectResolver(_elements, obj2resolve, track = []) {
     const convRef = (refs, prefix = '') => commonLib_1.deArray(refs.split('|').map((ref, i) => {
         ref = ref.trim();
-        if (isRef(ref))
+        if (stateLib_1.isElemRef(ref))
             prefix = ref.substr(0, ref.lastIndexOf('/') + 1);
         else
             ref = prefix + ref;
@@ -2709,18 +2716,23 @@ function objectResolver(_elements, obj2resolve, track = []) {
         testRef(refRes, ref, track.concat('@' + i));
         return refRes;
     }));
-    const isRef = (val) => val.substr(0, 2) == '^/';
+    if (stateLib_1.isElemRef(obj2resolve))
+        return convRef(obj2resolve);
+    if (!commonLib_1.isMergeable(obj2resolve))
+        return obj2resolve;
     const _objs = { '^': _elements };
     const result = objectDerefer(_elements, obj2resolve);
     const retResult = commonLib_1.isArray(result) ? [] : {};
     commonLib_1.objKeys(result).forEach((key) => {
         let value = result[key];
-        if (commonLib_1.isString(value) && isRef(value.trim())) {
+        // if(key == '_$styles') debugger;
+        // console.log('value', value);
+        if (stateLib_1.isElemRef(value)) {
             value = convRef(value);
-            if (key !== '$' && key.substr(0, 2) !== '_$' && (commonLib_1.isFunction(value) || commonLib_1.isArray(value) && value.every(commonLib_1.isFunction)))
+            if (key !== '$' && !skipKey(key, result) && (commonLib_1.isFunction(value) || commonLib_1.isArray(value) && value.every(commonLib_1.isFunction)))
                 value = { $: value };
         }
-        if (key.substr(0, 2) !== '_$' && commonLib_1.isMergeable(value))
+        if (!skipKey(key, result))
             retResult[key] = objectResolver(_elements, value, track.concat(key));
         else
             retResult[key] = value;
@@ -3126,6 +3138,9 @@ exports.FFormStateAPI = api_1.FFormStateAPI;
 exports.fformCores = api_1.fformCores;
 exports.formReducer = api_1.formReducer;
 const _$cxSym = Symbol('_$cx');
+// jsonschema Ajv = require('jsonschema');
+//
+// console.log(jsonschema)
 /////////////////////////////////////////////
 //  Main class
 /////////////////////////////////////////////
@@ -3160,7 +3175,6 @@ class FForm extends react_1.Component {
         self._setRootRef = self._setRootRef.bind(self);
         self._setFormRef = self._setFormRef.bind(self);
         self._submit = self._submit.bind(self);
-        self._getPath = self._getPath.bind(self);
         self.reset = self.reset.bind(self);
     }
     _updateMethods(nextProps, prevProps = {}) {
@@ -3200,34 +3214,47 @@ class FForm extends react_1.Component {
             return;
         self._savedState = state;
         if (self._methods.onStateChange)
-            self._methods.onStateChange(state, self);
+            self._methods.onStateChange(self._extendEvent(new Event('stateChanged')));
         if (state[stateLib_1.SymData].current !== self._savedValue) {
             self._savedValue = state[stateLib_1.SymData].current;
             if (self._methods.onChange)
-                self._methods.onChange(self._savedValue, self);
+                self._methods.onChange(self._extendEvent(new Event('valueChanged')));
         }
         if (self._root)
             self._root.setState({ branch: state });
     }
+    _extendEvent(event) {
+        const self = this;
+        event.value = self._savedValue;
+        event.state = self._savedState;
+        event.fform = self;
+        return event;
+    }
     _submit(event) {
         const self = this;
         const setPending = (val) => self.api.set([], val, { [stateLib_1.SymData]: ['status', 'pending'] });
+        const setMessagesFromSubmit = (messages) => {
+            commonLib_1.toArray(messages).forEach(value => {
+                let opts = value[stateLib_1.SymData];
+                self.api.setMessages(commonLib_1.objKeys(value).length ? value : null, opts);
+            });
+        };
         self.api.set([], 0, { [stateLib_1.SymData]: ['status', 'untouched'], execute: true, macros: 'switch' });
         if (self._methods.onSubmit) {
             self.api.setMessages(null, { execute: true });
-            let result = self._methods.onSubmit(event, self._savedValue, self);
+            let result = self._methods.onSubmit(self._extendEvent(event));
             if (result && result.then && typeof result.then === 'function') { //Promise
                 setPending(1);
-                result.then((val) => {
+                result.then((messages) => {
                     setPending(0);
-                    self.api.setMessages(val);
+                    setMessagesFromSubmit(messages);
                 }, (reason) => {
                     setPending(0);
-                    self.api.setMessages(reason);
+                    setMessagesFromSubmit(reason);
                 });
             }
             else
-                self.api.setMessages(result);
+                setMessagesFromSubmit(result);
         }
     }
     _getCoreFromParams(coreParams, context) {
@@ -3261,7 +3288,7 @@ class FForm extends react_1.Component {
     getRef(path) {
         return this._root && this._root.getRef(path);
     }
-    _getPath() {
+    static _getPath() {
         return '#';
     }
     getDataObject(branch, ffield) {
@@ -3290,7 +3317,7 @@ class FForm extends react_1.Component {
         FForm.params.forEach(k => delete rest[k]);
         commonLib_1.objKeys(rest).forEach(k => (k[0] === '_' || k[0] === '$') && delete rest[k]); // remove props that starts with '_' or '$'
         return (react_1.createElement(UseTag, Object.assign({ ref: self._setFormRef }, rest, { onSubmit: self._submit, onReset: self.reset }),
-            react_1.createElement(FField, { ref: self._setRootRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: self._getPath, FFormApi: self.api })));
+            react_1.createElement(FField, { ref: self._setRootRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: FForm._getPath, FFormApi: self.api })));
     }
 }
 FForm.params = ['readonly', 'disabled', 'viewer', 'liveValidate', 'liveUpdate'];
@@ -3362,10 +3389,10 @@ class FField extends FRefsGeneric {
             return path.length == 1 ? self.$refs[path[0]] : self.$refs[path[0]].getRef(path.slice(1));
         return self.$refs['@Main'] && self.$refs['@Main'].getRef && self.$refs['@Main'].getRef(path);
     }
-    _resolver(obj) {
+    _resolver(value) {
         const self = this;
         try {
-            return api_1.objectResolver(self.pFForm.elements, obj);
+            return api_1.objectResolver(self.pFForm.elements, value);
         }
         catch (e) {
             throw self._addErrPath(e);
@@ -3379,6 +3406,10 @@ class FField extends FRefsGeneric {
     _updateStateApi(stateApi) {
         const self = this;
         if (stateApi) {
+            if (!stateApi.wrapper) {
+                self.api = stateApi;
+                return;
+            }
             const api = stateApi.wrapper({
                 get path() { return self.path; },
             });
@@ -3455,7 +3486,7 @@ class FField extends FRefsGeneric {
         self._components = components;
         self._blocks = commonLib_1.objKeys(components).filter(key => components[key]);
         self._blocks.forEach((block) => {
-            const _a = components[block], { _$widget, $_reactRef } = _a, staticProps = __rest(_a, ["_$widget", "$_reactRef"]);
+            const _a = components[block], { _$widget, $_reactRef, _$skipKeys } = _a, staticProps = __rest(_a, ["_$widget", "$_reactRef", "_$skipKeys"]);
             if (!_$widget)
                 throw new Error('_$widget for "' + block + '" is empty');
             self._widgets[block] = _$widget;
@@ -3512,20 +3543,20 @@ class FField extends FRefsGeneric {
     }
     render() {
         const self = this;
-        try {
-            if (commonLib_1.isUndefined(self.state.branch))
-                return null;
-            if (commonLib_1.getIn(self.getData(), 'params', 'norender'))
-                return false;
-            if (self._rebuild)
-                this._build();
-            return self._widgets['Builder'] ? react_1.createElement(self._widgets['Builder'], self._mappedData['Builder'], self._mappedData) : null;
-        }
-        catch (e) {
-            throw self._addErrPath(e);
-        }
+        //try {
+        if (commonLib_1.isUndefined(self.state.branch))
+            return null;
+        if (commonLib_1.getIn(self.getData(), 'params', 'norender'))
+            return false;
+        if (self._rebuild)
+            this._build();
+        return self._widgets['Builder'] ? react_1.createElement(self._widgets['Builder'], self._mappedData['Builder'], self._mappedData) : null;
+        // } catch (e) {
+        //   throw self._addErrPath(e)
+        // }
     }
 }
+exports.FField = FField;
 //enumOptions={self._enumOptions}
 /////////////////////////////////////////////
 //  Section class
@@ -3607,7 +3638,7 @@ class FSection extends FRefsGeneric {
         function normalizeLayout(counter, layout) {
             let { $_maps, rest } = extractMaps(layout, ['$_fields']);
             // rest = self.props.$FField.wrapFns(rest, ['$_maps']);
-            let { $_fields, $_reactRef, _$widget = LayoutDefaultWidget, className } = rest, staticProps = __rest(rest, ["$_fields", "$_reactRef", "_$widget", "className"]);
+            let { $_fields, $_reactRef, _$skipKeys, _$widget = LayoutDefaultWidget, className } = rest, staticProps = __rest(rest, ["$_fields", "$_reactRef", "_$skipKeys", "_$widget", "className"]);
             if ($_fields || !counter)
                 className = commonLib_1.merge(LayoutDefaultClass, className);
             staticProps.className = className;
@@ -3706,7 +3737,7 @@ class FSection extends FRefsGeneric {
     }
     shouldComponentUpdate(nextProps) {
         const self = this;
-        if (nextProps.FFormApi !== self.props.FFormApi || nextProps.oneOf !== self.props.oneOf)
+        if (['FFormApi', 'oneOf', 'branchKeys'].some(comparePropsFn(self.props, nextProps)))
             return self._rebuild = true;
         let doUpdate = !commonLib_1.isEqual(nextProps, self.props, { skipKeys: ['$branch'] });
         let prevBranch = self.props.$branch;
@@ -3741,24 +3772,23 @@ class FSection extends FRefsGeneric {
     render() {
         const self = this;
         let props = self.props;
-        try {
-            if (props.viewer) {
-                let _a = props.viewerProps || {}, { _$widget = UniversalViewer } = _a, rest = __rest(_a, ["_$widget"]);
-                rest.inputProps = props;
-                rest.value = props.$FField.value;
-                return react_1.createElement(_$widget, rest);
-            }
-            if (stateLib_1.isSelfManaged(props.$branch))
-                return null;
-            if (self._rebuild)
-                self._build(props); // make rebuild here to avoid addComponentAsRefTo Invariant Violation error https://gist.github.com/jimfb/4faa6cbfb1ef476bd105
-            return react_1.createElement(FSectionWidget, { "_$widget": self._$widget, "_$cx": props._$cx, key: 'widget_0', ref: self._setWidRef((0)), getMappedData: self._getMappedData(0) },
-                self._objectLayouts,
-                self._arrayLayouts);
+        // try {
+        if (props.viewer) {
+            let _a = props.viewerProps || {}, { _$widget = UniversalViewer } = _a, rest = __rest(_a, ["_$widget"]);
+            rest.inputProps = props;
+            rest.value = props.$FField.value;
+            return react_1.createElement(_$widget, rest);
         }
-        catch (e) {
-            throw self.props.$FField._addErrPath(e);
-        }
+        if (stateLib_1.isSelfManaged(props.$branch))
+            return null;
+        if (self._rebuild)
+            self._build(props); // make rebuild here to avoid addComponentAsRefTo Invariant Violation error https://gist.github.com/jimfb/4faa6cbfb1ef476bd105
+        return react_1.createElement(FSectionWidget, { "_$widget": self._$widget, "_$cx": props._$cx, key: 'widget_0', ref: self._setWidRef((0)), getMappedData: self._getMappedData(0) },
+            self._objectLayouts,
+            self._arrayLayouts);
+        // } catch (e) {
+        //   throw self.props.$FField._addErrPath(e)
+        // }
     }
 }
 /////////////////////////////////////////////
@@ -3778,6 +3808,9 @@ class GenericWidget extends FRefsGeneric {
             refObject.ref = passedReactRef;
         else
             Object.assign(refObject, passedReactRef);
+        // console.log('className', className);
+        if (typeof className == "string")
+            debugger;
         return react_1.createElement(Widget, Object.assign({ key: key, className: (!passCx(Widget) && this.props._$cx) ? this.props._$cx(className) : className, "_$cx": passCx(Widget) ? this.props._$cx : undefined }, rest, refObject));
     }
     _mapChildren(children, $_reactRef) {
@@ -3944,7 +3977,7 @@ function bindProcessorToThis(val, opts = {}) {
     }
     else if (commonLib_1.isMergeable(val)) {
         const result = commonLib_1.isArray(val) ? [] : {};
-        commonLib_1.objKeys(val).forEach(key => result[key] = key.substr(0, 2) != '_$' ? bindedFn(val[key], opts) : val[key]); //!~ignore.indexOf(key) &&
+        commonLib_1.objKeys(val).forEach(key => result[key] = !api_1.skipKey(key, val) ? bindedFn(val[key], opts) : val[key]); //!~ignore.indexOf(key) &&
         return result;
     }
     return val;
@@ -3983,7 +4016,7 @@ function normalizeMaps($_maps, prePath = '') {
         let value = $_maps[key];
         if (!value)
             return;
-        const to = stateLib_1.multiplyPath(stateLib_1.normalizePath((prePath ? prePath + '/' : '') + key));
+        const to = stateLib_1.multiplePath(stateLib_1.normalizePath((prePath ? prePath + '/' : '') + key));
         if (commonLib_1.isFunction(value) || commonLib_1.isArray(value)) {
             commonLib_1.toArray(value).forEach((fn) => {
                 const _a = fn._map, { update = 'data', replace = true } = _a, rest = __rest(_a, ["update", "replace"]);
@@ -4034,6 +4067,14 @@ const getExten = (enumExten, value) => {
         res = { label: res };
     return commonLib_1.isObject(res) ? res : {};
 };
+exports.getExten = getExten;
+function comparePropsFn(prevProps, nextProps, opts = {}) {
+    if (opts.equal)
+        return (key) => prevProps[key] === nextProps[key];
+    else
+        return (key) => prevProps[key] !== nextProps[key];
+}
+exports.comparePropsFn = comparePropsFn;
 function classNames(...styles) {
     const classes = [];
     for (let i = 0; i < styles.length; i++) {
@@ -4132,7 +4173,7 @@ let elementsBase = {
                 children: [],
                 $_maps: {
                     children: { $: '^/fn/messages', args: ['@/messages', {}] },
-                    'className/fform-hidden': { $: '^/fn/not', args: '@/status/touched' },
+                    'className/fform-hidden': { $: '^/fn/or', args: ['@/params/viewer', '!@/status/touched'] },
                 }
             }
         },
@@ -4185,7 +4226,7 @@ let elementsBase = {
             Main: { type: 'textarea', viewerProps: { className: { 'fform-viewer': false, 'fform-viewer-inverted': true } } },
             Title: {
                 $_maps: {
-                    'className/fform-fform-title-viewer-inverted': '@/params/viewer'
+                    'className/fform-title-viewer-inverted': '@/params/viewer'
                 }
             }
         },
@@ -4260,6 +4301,7 @@ let elementsBase = {
                 $_maps: {
                     length: '@/length',
                     oneOf: '@/oneOf',
+                    branchKeys: '@/branchKeys',
                     isArray: { $: '^/fn/equal', args: ['@/fData/type', 'array'] },
                     $branch: { $: '^/fn/getProp', args: '$branch', update: 'every' },
                     arrayStart: { $: '^/fn/getArrayStart', args: [], update: 'build' },
@@ -4354,9 +4396,12 @@ let elementsBase = {
         format(str, ...args) {
             return args.reduce((str, val, i) => str.replace('${' + i + '}', val), str);
         },
-        iif(iif, trueVal, falseVaL, ...args) { return [iif ? trueVal : falseVaL, ...args]; },
-        not(v, ...args) { return [!v, ...args]; },
-        equal(a, ...args) { return [args.some(b => a === b)]; },
+        iif: (iif, trueVal, falseVaL, ...args) => [iif ? trueVal : falseVaL, ...args],
+        not: (v, ...args) => [!v, ...args],
+        equal: (a, ...args) => [args.some(b => a === b)],
+        equalAll: (a, ...args) => [args.every(b => a === b)],
+        or: (...args) => [args.some(Boolean)],
+        and: (...args) => [args.every(Boolean)],
         getArrayStart(...args) { return [stateLib_1.arrayStart(this.schemaPart), ...args]; },
         getProp(key, ...args) { return [commonLib_1.getIn(this, stateLib_1.normalizePath(key)), ...args]; },
         eventValue: (event, ...args) => [event.target.value, ...args],
@@ -4402,10 +4447,14 @@ let elementsBase = {
         },
         messages(messages, staticProps = {}) {
             const { className: cnSP = {} } = staticProps, restSP = __rest(staticProps, ["className"]);
-            return [commonLib_1.objKeys(messages).map(priority => {
+            return [commonLib_1.objKeys(messages || []).map(priority => {
                     const _a = messages[priority], { norender, texts, className = {} } = _a, rest = __rest(_a, ["norender", "texts", "className"]);
                     const children = [];
-                    commonLib_1.objKeys(texts).forEach((key) => commonLib_1.toArray(texts[key]).forEach((v, i, arr) => (commonLib_1.isString(v) && commonLib_1.isString(children[children.length - 1])) ? children.push(v, { _$widget: 'br' }) : children.push(v)));
+                    commonLib_1.objKeys(texts).forEach((key) => commonLib_1.toArray(texts[key]).forEach((v, i, arr) => {
+                        if (stateLib_1.isElemRef(v))
+                            v = this._resolver(v);
+                        (commonLib_1.isString(v) && commonLib_1.isString(children[children.length - 1])) ? children.push({ _$widget: 'br' }, v) : children.push(v);
+                    }));
                     if (norender || !children.length)
                         return null;
                     return Object.assign({ children }, restSP, { className: Object.assign({ ['fform-message-priority-' + priority]: true }, cnSP, className) }, rest);
@@ -4489,12 +4538,10 @@ let elementsBase = {
             }
         },
         Button: {
-            _$widget: '^/widgets/Generic',
-            _$cx: '^/_$cx',
-            _$useTag: 'button',
+            _$widget: 'button',
             type: 'button',
             $_maps: {
-                'className/fform-button-viewer': '@/params/viewer',
+                'className/fform-hidden': '@/params/viewer',
                 disabled: '@/params/disabled',
             }
         },
@@ -4502,13 +4549,11 @@ let elementsBase = {
             $_ref: '^/parts/Button',
             type: 'submit',
             children: ['Submit']
-            // $_maps: {disabled: {$: '^/fn/not', args: '@/status/valid'},}
         },
         Reset: {
             $_ref: '^/parts/Button',
             type: 'reset',
             children: ['Reset'],
-            //onClick: {$: '^/fn/api', args: ['reset']},
             $_maps: {
                 disabled: '@/status/pristine',
             }
@@ -4518,27 +4563,27 @@ let elementsBase = {
             children: ['+'],
             onClick: { $: '^/fn/api', args: ['arrayAdd', './', 1] },
             $_maps: {
-                'className/fform-hidden': { $: '^/fn/equal | ^/fn/not', args: ['@/fData/type', 'array'] },
-                'disabled': { $: '^/fn/equal', args: [true, { $: '^/fn/not', args: '@/fData/canAdd' }, '@params/disabled'] }
+                'className/fform-hidden': { $: '^/fn/or', args: ['@/params/viewer', { $: '^/fn/equal | ^/fn/not', args: ['@/fData/type', 'array'] }] },
+                'disabled': { $: '^/fn/or', args: ['!@/fData/canAdd', '@params/disabled'] }
             }
         },
         ArrayDelButton: {
-            $_ref: '^/parts/Button',
+            $_ref: '^/parts/ArrayAddButton',
             children: ['-'],
-            onClick: { $: '^/fn/api', args: ['arrayAdd', './', -1] },
+            onClick: { args: { 2: -1 } },
             $_maps: {
-                'className/fform-hidden': { $: '^/fn/equal | ^/fn/not', args: ['@/fData/type', 'array'] },
-                'disabled': { $: '^/fn/equal', args: [true, { $: '^/fn/not', args: '@/length' }, '@params/disabled'] },
-            },
+                'disabled': { $: '^/fn/or', args: ['!@/length', '@params/disabled'] }
+            }
         },
         ArrayEmpty: {
             children: '(array is empty)',
-            _$useTag: 'span',
+            _$widget: 'span',
             $_maps: { 'className/fform-hidden': { $: '^/fn/equal | ^/fn/not', args: ['@/length', 0] } }
         },
         ArrayItemMenu: {
             _$widget: '^/widgets/ItemMenu',
             _$cx: '^/_$cx',
+            _$buttonDefaults: '^/parts/Button',
             buttons: ['first', 'last', 'up', 'down', 'del'],
             onClick: { $: '^/fn/api', args: ['arrayItemOps', './', '${0}'] },
             buttonsProps: {
@@ -4613,6 +4658,12 @@ types.string = commonLib_2.isString; //(value: any) => typeof value === "string"
 types.array = commonLib_2.isArray;
 types.object = commonLib_2.isObject; //(value: any) => typeof value === "object" && value && !isArray(value);// isObject(value);  //
 types.empty = { 'any': null, 'null': null, 'boolean': false, 'number': 0, 'integer': 0, 'string': '', array: Object.freeze([]), object: Object.freeze({}) };
+types.detect = (value) => {
+    for (let i = 0; i < types.length; i++) {
+        if (types[types[i]](value))
+            return types[i];
+    }
+};
 /////////////////////////////////////////////
 //  Macros
 /////////////////////////////////////////////
@@ -4809,7 +4860,7 @@ function branchKeys(branch) {
         for (let j = 0; j < commonLib_1.getIn(branch, SymData, 'length'); j++)
             keys.push(j.toString());
     else
-        keys = commonLib_1.objKeys(branch).filter(v => v);
+        keys = commonLib_1.objKeys(branch).filter(Boolean);
     return keys;
 }
 exports.branchKeys = branchKeys;
@@ -4856,7 +4907,7 @@ const additionalItemsSchema = commonLib_1.memoize(function (items) {
         }, { noStrictArrayResult: true })
     };
 });
-function getSchemaPart(schema, path, getOneOf, fullOneOf) {
+function getSchemaPart(schema, path, value_or_getOneOf, fullOneOf) {
     function getArrayItemSchemaPart(index, schemaPart) {
         let items = [];
         if (schemaPart.items) {
@@ -4897,7 +4948,7 @@ function getSchemaPart(schema, path, getOneOf, fullOneOf) {
                 schemaPart = derefAndMergeAllOf(schema, schemaPart); // merge allOf, with derefing it and merge with schemaPart
                 if (schemaPart.oneOf) {
                     let { oneOf } = schemaPart, restSchemaPart = __rest(schemaPart, ["oneOf"]);
-                    schemaPart = oneOf.map((oneOfPart) => commonLib_1.merge(derefAndMergeAllOf(schema, oneOfPart), restSchemaPart, { array: 'replace' })); // deref every oneOf, merge allOf in there, and merge with schemaPart
+                    schemaPart = oneOf.map((oneOfPart, i) => commonLib_1.merge.all(derefAndMergeAllOf(schema, oneOfPart), [restSchemaPart, { _oneOfIndex: i }], { array: 'replace' })); // deref every oneOf, merge allOf in there, and merge with schemaPart
                 }
                 combinedSchemas.set(schemaPartAsKey, schemaPart);
             }
@@ -4916,17 +4967,42 @@ function getSchemaPart(schema, path, getOneOf, fullOneOf) {
         }
         return schemaPart;
     }
+    function detectOneOfNType(schemaPart, valuePart, path) {
+        let oneOf = 0, type = types.detect(valuePart);
+        if (type) {
+            schemaPart = commonLib_1.toArray(schemaPart);
+            for (let j = 0; j < schemaPart.length; j++) {
+                let types = schemaPart[j].type;
+                if (!types || commonLib_1.toArray(types).some(t => (t === type))) {
+                    oneOf = j;
+                    break;
+                }
+            }
+            if (schemaPart[oneOf]._oneOfSelector) {
+                oneOf = processFn.call({ path: path2string(path) }, schemaPart[oneOf]._oneOfSelector, valuePart);
+                if (commonLib_2.isArray(oneOf))
+                    oneOf = oneOf[0];
+            }
+        }
+        return { oneOf, type };
+    }
+    const getOneOf = commonLib_2.isFunction(value_or_getOneOf) ? value_or_getOneOf : undefined;
+    const value = !commonLib_2.isFunction(value_or_getOneOf) ? value_or_getOneOf : undefined;
     const errorText = 'Schema path not found: ';
     let schemaPart = schema;
     const combinedSchemas = commonLib_1.getCreateIn(schemaStorage(schema), new Map(), 'combinedSchemas');
-    let type;
+    //let type;
     for (let i = path[0] == '#' ? 1 : 0; i < path.length; i++) {
         if (!schemaPart)
             throw new Error(errorText + path.join('/'));
         schemaPart = combineSchemasINNER_PROCEDURE(schemaPart);
-        let { oneOf, type } = getOneOf(path.slice(0, i));
+        //let oneOf: number = 0, type: string | undefined;
+        let track = path.slice(0, i);
+        let { oneOf, type } = getOneOf ? getOneOf(track) : detectOneOfNType(schemaPart, commonLib_1.getIn(value, track), track);
         if (commonLib_2.isArray(schemaPart))
             schemaPart = schemaPart[oneOf || 0];
+        if (commonLib_2.isUndefined(type))
+            type = commonLib_1.toArray(schemaPart.type || 'null')[0];
         if (type == 'array') {
             if (isNaN(parseInt(path[i])))
                 throw new Error(errorText + path.join('/'));
@@ -4942,8 +5018,10 @@ function getSchemaPart(schema, path, getOneOf, fullOneOf) {
     schemaPart = combineSchemasINNER_PROCEDURE(schemaPart);
     if (fullOneOf)
         return schemaPart;
-    if (commonLib_2.isArray(schemaPart))
-        schemaPart = schemaPart[getOneOf(path).oneOf || 0];
+    if (commonLib_2.isArray(schemaPart)) {
+        let { oneOf, type } = getOneOf ? getOneOf(path) : detectOneOfNType(schemaPart, commonLib_1.getIn(value, path), path);
+        schemaPart = schemaPart[oneOf || 0];
+    }
     return schemaPart;
 }
 exports.getSchemaPart = getSchemaPart;
@@ -4977,6 +5055,7 @@ const makeDataStorage = commonLib_1.memoize(function (schemaPart, oneOf, type, v
     fData.required = schemaPart.required;
     fData.title = schemaPart.title;
     fData.placeholder = schemaPart._placeholder;
+    fData.additionalProperties = schemaPart.additionalProperties;
     // fData.default = isUndefined(schemaPart.default) ? types.empty[type || 'any'] : schemaPart.default;
     if (schemaPart.enum)
         fData.enum = schemaPart.enum;
@@ -4991,23 +5070,31 @@ const makeDataStorage = commonLib_1.memoize(function (schemaPart, oneOf, type, v
     else if (schemaPart._enumExten && !fData.enum) {
         if (commonLib_2.isArray(fData.enumExten)) {
             let enumExten = {};
+            let _enum = [];
             fData.enumExten.forEach((v) => {
                 // if (!isString(v) && !v) return;
-                if (commonLib_2.isString(v))
+                if (commonLib_2.isString(v)) {
                     enumExten[v] = { label: v };
+                    _enum.push(v);
+                }
                 else if (commonLib_2.isObject(v)) {
                     if (!commonLib_2.isUndefined(v.value)) {
                         if (commonLib_2.isUndefined(v.label))
                             v = Object.assign({}, v, { label: v.value });
                         enumExten[v.value] = v;
+                        _enum.push(v.value);
                     }
-                    else if (!commonLib_2.isUndefined(v.label))
+                    else if (!commonLib_2.isUndefined(v.label)) {
                         enumExten[v.label] = v;
+                        _enum.push(v.label);
+                    }
                 }
             });
             fData.enumExten = enumExten;
+            fData.enum = _enum;
         }
-        fData.enum = commonLib_1.objKeys(fData.enumExten).filter(k => fData.enumExten[k]);
+        else
+            fData.enum = commonLib_1.objKeys(fData.enumExten).filter(k => fData.enumExten[k]);
     }
     if (schemaPart._oneOfSelector)
         fData.oneOfSelector = true;
@@ -5077,6 +5164,8 @@ function makeStateBranch(schema, getNSetOneOf, path = [], value) {
         }
         else if (type == 'object') {
             defaultValues = {};
+            if (value && schemaPart.additionalProperties === false)
+                value = removeNotAllowedProperties(schemaPart, value);
             let arrayOfRequired = result[SymData].fData.required;
             arrayOfRequired = commonLib_2.isArray(arrayOfRequired) && arrayOfRequired.length && arrayOfRequired;
             commonLib_1.objKeys(schemaPart.properties || {}).forEach(field => {
@@ -5117,6 +5206,7 @@ exports.isSelfManaged = isSelfManaged;
 function isSchemaSelfManaged(schemaPart, type) {
     return type !== 'array' && type !== 'object' || commonLib_1.getIn(schemaPart, '_simple');
 }
+exports.isSchemaSelfManaged = isSchemaSelfManaged;
 function findOneOf(oneOfShemas, value, currentOneOf) {
     if (!commonLib_2.isArray(oneOfShemas))
         oneOfShemas = [oneOfShemas];
@@ -5465,7 +5555,7 @@ function updateCurrentPROC(state, UPDATABLE, value, replace, track = [], setOneO
     //   value = getIn(state, SymData, 'inital', track);
     //   if (isUndefined(value)) value = branch[SymData].fData.default;
     // }
-    if (oneOfSelector || !types[type || 'any'](value)) { // if wrong type for current oneOf index search for proper type in oneOf
+    if (!commonLib_2.isUndefined(setOneOf) || oneOfSelector || !types[type || 'any'](value)) { // if wrong type for current oneOf index search for proper type in oneOf
         // setOneOf = 
         const parts = getSchemaPart(schema, track, oneOfFromState(state), true);
         let currentOneOf = branch[SymData].oneOf;
@@ -5479,10 +5569,14 @@ function updateCurrentPROC(state, UPDATABLE, value, replace, track = [], setOneO
         const { schemaPart, oneOf, type } = findOneOf(parts, value, commonLib_2.isUndefined(setOneOf) ? currentOneOf : setOneOf);
         if (currentOneOf !== oneOf) {
             if (schemaPart) {
+                let cur = commonLib_1.getIn(state, SymData, 'current', track);
+                //if (!cur) debugger;
+                if (!isSchemaSelfManaged(schemaPart, type) && branch[SymData].fData.type === type)
+                    value = commonLib_1.merge(commonLib_1.getIn(state, SymData, 'current', track), value, { replace });
                 return updatePROC(state, UPDATABLE, makeNUpdate(track, ['oneOf'], oneOf, false, { type, setValue: value }));
             }
             else
-                console.warn('Type "' + (typeof value) + '" not found in path [' + track.join('/') + ']');
+                console.warn('Type "' + (types.detect(value)) + '" not found in path [' + track.join('/') + ']');
         }
     }
     if (isSelfManaged(branch)) { // if object has own value then replace it directly
@@ -5494,22 +5588,38 @@ function updateCurrentPROC(state, UPDATABLE, value, replace, track = [], setOneO
                 state = updatePROC(state, UPDATABLE, makeNUpdate(track, ['length'], value.length));
                 branch = commonLib_1.getIn(state, track);
             }
+            const removeNotAllowedProps = type == 'object' && branch[SymData].fData.additionalProperties === false;
+            if (removeNotAllowedProps) // keep only existing in state(schema) properties
+                value = removeNotAllowedProperties(getSchemaPart(schema, track, oneOfFromState(state)), value);
             if (replace === true) { // restore value's props-structure that are exist in state
                 let v = commonLib_2.isArray(value) ? [] : {};
                 branchKeys(branch).forEach(k => v[k] = undefined);
                 value = Object.assign(v, value);
             }
             commonLib_1.objKeys(value).forEach(key => state = updateCurrentPROC(state, UPDATABLE, value[key], replace === true ? true : commonLib_1.getIn(replace, key), track.concat(key)));
-            if (replace === true) { // this code removes props from current that are not preset in value and not exists in state
+            if (replace === true || removeNotAllowedProps) { // remove props from current that are not in value or in state
                 state = mergeUPD_PROC(state, UPDATABLE);
                 branch = commonLib_1.getIn(state, track);
                 let current = commonLib_1.getIn(state, SymData, 'current', track);
-                branchKeys(branch).forEach(k => value[k] = current[k]); // value was reassigned in block below, so change it directly
+                //value = {...value};
+                branchKeys(branch).forEach(k => value[k] = current[k]);
                 state = updatePROC(state, UPDATABLE, makeNUpdate([], ['current'].concat(track), value, replace));
             }
         }
     }
     return state;
+}
+function removeNotAllowedProperties(schemaPart, value) {
+    if (schemaPart.type !== 'object' || schemaPart.additionalProperties !== false)
+        return value;
+    let v = {};
+    let properties = schemaPart.properties || {};
+    let patterns = commonLib_1.objKeys(schemaPart.patternProperties || {}).map(pattern => new RegExp(pattern));
+    commonLib_1.objKeys(value).forEach(k => {
+        if (properties[k] || patterns.some(re => k.match(re)))
+            v[k] = value[k];
+    });
+    return v;
 }
 function splitValuePROC(state, UPDATABLE, item) {
     const { value: itemValue, path, replace } = item;
@@ -5735,7 +5845,7 @@ function updatePROC(state, UPDATABLE, item) {
 }
 exports.updatePROC = updatePROC;
 function normalizeStateMaps(dataMap, emitter) {
-    return dataMap.map((item) => {
+    return commonLib_1.toArray(dataMap).map((item) => {
         let { from, to } = item, action = __rest(item, ["from", "to"]);
         if (!action.$)
             action = true;
@@ -5898,8 +6008,8 @@ function normalizeUpdate(update, state) {
             keyPathes = paths.slice(a + 1);
             paths = paths.slice(0, a);
         }
-        paths = multiplyPath(paths, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
-        keyPathes = multiplyPath(keyPathes);
+        paths = multiplePath(paths, { '*': (p) => branchKeys(commonLib_1.getIn(state, p)).join(',') });
+        keyPathes = multiplePath(keyPathes);
         commonLib_1.objKeys(paths).forEach(p => commonLib_1.objKeys(keyPathes).forEach(k => result.push(makeNUpdate(paths[p], keyPathes[k], value, replace, rest))));
     });
     return result;
@@ -5920,7 +6030,7 @@ symConv._data = { '#': '' };
 symConv.sym2str = (sym) => typeof sym == 'symbol' && !commonLib_2.isUndefined(symConv(sym)) ? symConv(sym) : sym;
 symConv.str2sym = (str) => typeof str == 'string' && !commonLib_2.isUndefined(symConv(str)) ? symConv(str) : str;
 symConv('@', SymData);
-function multiplyPath(path, strReplace = {}) {
+function multiplePath(path, strReplace = {}) {
     let result = { '': [] };
     path.forEach(value => {
         let res = {};
@@ -5933,7 +6043,7 @@ function multiplyPath(path, strReplace = {}) {
                 let tmp = value(result[key]);
                 if (typeof tmp == 'string')
                     tmp = string2path(tmp);
-                tmp = multiplyPath(tmp, strReplace);
+                tmp = multiplePath(tmp, strReplace);
                 commonLib_1.objKeys(tmp).forEach(k => res[key && (key + (k ? ',' + k : '')) || k] = result[key].concat(tmp[k]));
             });
         }
@@ -5944,7 +6054,7 @@ function multiplyPath(path, strReplace = {}) {
     });
     return result;
 }
-exports.multiplyPath = multiplyPath;
+exports.multiplePath = multiplePath;
 const num2string = (value) => typeof value == 'number' ? value.toString() : value;
 function relativePath(base, destination) {
     if (base[0] === '#')
@@ -6031,6 +6141,8 @@ exports.string2path = string2path;
 /////////////////////////////////////////////
 //      common utils
 /////////////////////////////////////////////
+const isElemRef = (val) => commonLib_2.isString(val) && val.trim().substr(0, 2) == '^/';
+exports.isElemRef = isElemRef;
 function object2PathValues(vals, options = {}, track = []) {
     const fn = options.symbol ? commonLib_1.objKeysNSymb : commonLib_1.objKeys;
     const check = options.arrayAsValue ? commonLib_2.isObject : commonLib_2.isMergeable;
@@ -6041,8 +6153,10 @@ function object2PathValues(vals, options = {}, track = []) {
         let path = track.concat(key);
         if (check(vals[key]))
             object2PathValues(vals[key], options, path).forEach(item => result.push(item)); // result = result.concat(object2PathValues(vals[key], path));
-        else
-            result.push(commonLib_1.push2array(path, vals[key]));
+        else {
+            path.push(vals[key]);
+            result.push(path);
+        }
     });
     if (!result.length)
         return [commonLib_1.push2array(track.slice(), {})]; // empty object
@@ -8525,7 +8639,7 @@ var weakMemoize = function weakMemoize(func) {
 
 exports = module.exports = __webpack_require__(/*! ../../../fform-constructor/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n.fform-title-container {\r\n    width: 100%;\r\n}\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden, .fform-button-viewer {\r\n    display: none;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap;\r\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n    flex-basis: 0;\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n.fform-title-container {\r\n    width: 100%;\r\n}\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden {\r\n    display: none !important;;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row !important;;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0 !important;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10 !important;;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap !important;;\r\n}\r\n\r\n\r\n", ""]);
 
 
 /***/ }),
@@ -41617,7 +41731,6 @@ let constrElements = {
         reactSelectValue: function (values = []) {
             if (!Array.isArray(values))
                 return values ? [{ value: values, label: values }] : [];
-            // if (!Array.isArray(values)) return {value: values, label: values};
             return [values.map((value) => { return { value, label: value }; })];
         },
         reactSelectPresetOptions: function (values, fieldTypes) {
@@ -42387,94 +42500,6 @@ const FFormSchema = {
                                                 },
                                             }
                                         },
-                                        combine: {
-                                            type: 'object',
-                                            _presets: 'object:$noTitle',
-                                            _stateMaps: [{ from: './selector@value', to: '/@/selectorValue' }],
-                                            _layout: [{
-                                                    className: { 'fform-inline': true },
-                                                    $_fields: [
-                                                        'selector',
-                                                        {
-                                                            "$_ref": "^/parts/ArrayAddButton",
-                                                            "children": ["+field"],
-                                                            "onClick": { $: '^/_usr/addCombine', args: [0] },
-                                                            style: { marginRight: '-1px', marginLeft: '1em' },
-                                                            $_maps: {
-                                                                'className/fform-hidden': false,
-                                                                disabled: false
-                                                            }
-                                                        },
-                                                        {
-                                                            "$_ref": "^/parts/ArrayAddButton",
-                                                            "children": ["+strings"],
-                                                            "onClick": { $: '^/_usr/addCombine', args: [1] },
-                                                            $_maps: {
-                                                                'className/fform-hidden': { $: '^/fn/equal|^/fn/not', args: ['@selectorValue', 'dependencies'] },
-                                                                disabled: false
-                                                            }
-                                                        }
-                                                    ]
-                                                }],
-                                            properties: {
-                                                selector: {
-                                                    type: 'string',
-                                                    'enum': ['dependencies', 'patternProperties', 'allOf', 'oneOf', 'anyOf', 'not'],
-                                                    _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
-                                                },
-                                                allOf: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' }, { _stateMaps: { 0: { args: { 1: 'allOf' } } } }]
-                                                },
-                                                oneOf: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' }, { _stateMaps: { 0: { args: { 1: 'oneOf' } } } }]
-                                                },
-                                                anyOf: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' }, { _stateMaps: { 0: { args: { 1: 'anyOf' } } } }]
-                                                },
-                                                not: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' }, { _stateMaps: { 0: { args: { 1: 'not' } } }, maxItems: 1 }]
-                                                },
-                                                patternProperties: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' }, { _stateMaps: { 0: { args: { 1: 'patternProperties' } } } }]
-                                                    // title: 'patternProperties',
-                                                    // "type": "array",
-                                                    // _presets: 'array',
-                                                    // items: {
-                                                    //   $ref: '#/definitions/fieldTop'
-                                                    // }
-                                                },
-                                                dependencies: {
-                                                    allOf: [{ $ref: '#/definitions/combineArray' },
-                                                        {
-                                                            _stateMaps: { 0: { args: { 1: 'dependencies' } } },
-                                                            items: {
-                                                                oneOf: [
-                                                                    { $ref: '#/definitions/fieldTop' },
-                                                                    {
-                                                                        type: 'object',
-                                                                        _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
-                                                                        properties: {
-                                                                            mame: {
-                                                                                type: 'string',
-                                                                                _presets: 'string',
-                                                                                _placeholder: 'Enter name...'
-                                                                            },
-                                                                            values: {
-                                                                                allOf: [{ $ref: '#/definitions/reactSelectArray' },
-                                                                                    {
-                                                                                        _custom: {
-                                                                                            $_ref: '^/sets/$expand',
-                                                                                        }
-                                                                                    }]
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }],
-                                                },
-                                            }
-                                        }
                                     }
                                 },
                                 ffProps: {
@@ -42756,9 +42781,11 @@ function formObj2JSON(objectValues, UPDATABLE = {}, track = []) {
     if (objectValues.fieldsEnabled && (UPDATABLE.isArray || UPDATABLE.isObject)) {
         if (!commonLib_1.isMergeable(result))
             result = {};
-        const $_fields = [];
-        const { fields = [] } = objectValues;
-        fields.forEach(field => {
+        let { fields = [] } = objectValues;
+        const $_fields = commonLib_1.isArray(fields) ? [] : {};
+        //if(!isArray(fields)) debugger;
+        objKeys(fields).forEach(key => {
+            let field = fields[key];
             if (isFField(field)) {
                 const arrayItem = (UPDATABLE.isArray && UPDATABLE.isObject && ~field.propOrItem.indexOf('item')) || (UPDATABLE.isArray && !UPDATABLE.isObject);
                 const objectProp = (UPDATABLE.isArray && UPDATABLE.isObject && ~field.propOrItem.indexOf('property')) || (!UPDATABLE.isArray && UPDATABLE.isObject);
@@ -42769,11 +42796,11 @@ function formObj2JSON(objectValues, UPDATABLE = {}, track = []) {
                         UPDATABLE.items.push(fieldJson);
                     if (objectProp)
                         UPDATABLE.properties[fieldName] = fieldJson;
-                    $_fields.push(fieldName);
+                    $_fields[key] = (fieldName);
                 }
             }
             else
-                $_fields.push(formObj2JSON(field, UPDATABLE, track.concat($_fields.length))); // '@field_' +
+                $_fields[key] = (formObj2JSON(field, UPDATABLE, track.concat(key))); // '@field_' +
         });
         result.$_fields = $_fields;
     }
@@ -42810,14 +42837,21 @@ exports.formObj2JSON = formObj2JSON;
 function JSON2formObj(JSONValues, UPDATABLE) {
     let result;
     if (commonLib_1.isObject(JSONValues)) {
-        const { $_fields } = JSONValues, rest = __rest(JSONValues, ["$_fields"]);
+        let { $_fields } = JSONValues, rest = __rest(JSONValues, ["$_fields"]);
         result = { value: objKeys(rest).length ? stringify(rest) : '' };
         if ($_fields) {
             result.fieldsEnabled = true;
-            let fields = [];
-            ($_fields || []).forEach((f) => {
+            let fields = commonLib_1.isArray($_fields) ? [] : {};
+            // if ($_fields && !isArray($_fields)) {
+            //   let length = 0
+            //   objKeys($_fields).forEach(k => typeof +k == "number" && +k > length ? (length = +k) : k);
+            //   if(length) $_fields = Array.from({...$_fields, length});
+            //   console.log('$_fields', $_fields);
+            // }
+            (objKeys($_fields || [])).forEach((key) => {
+                let f = $_fields[key];
                 if (commonLib_1.isObject(f))
-                    fields.push(JSON2formObj(f, UPDATABLE));
+                    fields[key] = (JSON2formObj(f, UPDATABLE));
                 if (commonLib_1.isString(f)) {
                     let resA, resO;
                     if (commonLib_1.getIn(UPDATABLE, 'items', f))
@@ -42826,7 +42860,7 @@ function JSON2formObj(JSONValues, UPDATABLE) {
                         resO = JSON2formValues(UPDATABLE.properties[f], f);
                     if (resA && resO) {
                         resA.propOrItem = ['property', 'item'];
-                        fields.push(resA);
+                        fields[key] = resA;
                         if (!commonLib_1.isEqual(UPDATABLE.items[f], UPDATABLE.properties[f], { deep: true }))
                             throw new Error('Different fields with sane name');
                         delete UPDATABLE.items[f];
@@ -42834,12 +42868,12 @@ function JSON2formObj(JSONValues, UPDATABLE) {
                     }
                     else if (resA) {
                         resA.propOrItem = ['item'];
-                        fields.push(resA);
+                        fields[key] = resA;
                         delete UPDATABLE.items[f];
                     }
                     else if (resO) {
                         resO.propOrItem = ['property'];
-                        fields.push(resO);
+                        fields[key] = resO;
                         delete UPDATABLE.properties[f];
                     }
                 }
@@ -42890,17 +42924,15 @@ function formValues2JSON(formValues, track = [], errors = []) {
         result[f] = result[f] == 'field' ? formValues2JSON(result[f + 'Field'], track.concat('@' + f + 'Field'), errors) : JSON.parse(result[f] || 'null');
         delete result[f + 'Field'];
     });
-    if (commonLib_1.getIn(result, 'dependencies', 'length'))
-        result['dependencies'] = mapFields(result['dependencies'], (f, name) => isFField(f) ?
-            formValues2JSON(f, track.concat(['@dependencies', name]), errors) : f.values);
-    ['patternProperties', 'definitions'].forEach(k => commonLib_1.getIn(result, k, 'length') &&
+    // if (getIn(result, 'dependencies', 'length'))
+    //   result['dependencies'] = mapFields(result['dependencies'], (f: any, name: string) => isFField(f) ?
+    //     formValues2JSON(f, track.concat(['@dependencies', name]), errors) : f.values);
+    ['definitions'].forEach(k => commonLib_1.getIn(result, k, 'length') && // 'patternProperties',
         (result[k] = mapFields(result[k], (f, n) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
-    ['allOf', 'oneOf', 'anyOf'].forEach(k => result[k] && result[k].length &&
-        (result[k] = result[k].map((f, n) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
-    if (result.not && result.not.length)
-        result.not = formValues2JSON(result.not[0], track.concat(['@not']), errors);
-    else
-        delete result.not;
+    // ['allOf', 'oneOf', 'anyOf'].forEach(k => result[k] && result[k].length &&
+    //   (result[k] = result[k].map((f: any, n: string) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
+    // if (result.not && result.not.length) result.not = formValues2JSON(result.not[0], track.concat(['@not']), errors);
+    // else delete result.not;
     let ffProps = commonLib_1.getIn(formValues, 'fieldProps', 'ffProps') || {};
     objKeys(ffProps).forEach(key => {
         if (key == '_custom') {
@@ -43045,13 +43077,7 @@ function JSON2formValues(JSONValues, name) {
         'additionalProperties': setAdditional,
         'additionalItemsField': (v, dst) => dst['additionalItemsField'],
         'additionalPropertiesField': (v, dst) => dst['additionalPropertiesField'],
-        'dependencies': (v, dst) => objKeys(v || {}).map(f => commonLib_1.isArray(v[f]) ? { name: f, values: v[f] } : JSON2formValues(v[f], f)),
         'definitions': (v) => objKeys(v || {}).map(f => JSON2formValues(v[f], f)),
-        'patternProperties': (v) => objKeys(v || {}).map(f => JSON2formValues(v[f], f)),
-        'allOf': (v) => (v || []).map((f) => JSON2formValues(f)),
-        'oneOf': (v) => (v || []).map((f) => JSON2formValues(f)),
-        'anyOf': (v) => (v || []).map((f) => JSON2formValues(f)),
-        'not': (v) => (v && [JSON2formValues(v)]) || [],
     }));
     //let ffPropsSchema = getSchema(['fieldProps', 'ffProps']); // getIn(FFormSchema, normalizePath('definitions/field/properties/fieldProps/oneOf/1/properties/ffProps/properties')) || {};// fieldPropsSchema.properties.ffProps.properties;
     mapProps(ffProps, ['fieldProps', 'ffProps'], {
@@ -43067,7 +43093,7 @@ function JSON2formValues(JSONValues, name) {
         },
         '_presets': (v = '') => v && commonLib_1.isString(v) ? v.split(':') : [],
         '_params': (v = {}) => objKeys(v).map(k => (v[k] ? '' : '!') + k),
-        '_stateMaps': (v = []) => v.map((f = {}) => {
+        '_stateMaps': (v = []) => commonLib_1.toArray(v).map((f = {}) => {
             const { from = '', to = '', $ = '', args = [] } = f, rest = __rest(f, ["from", "to", "$", "args"]);
             const res = [from, to, $, ...args.map((v) => JSON2formObj(v))];
             Object.assign(res, rest);
@@ -43591,23 +43617,23 @@ class ConstrView extends React.PureComponent {
             self._formValues = constrUtils_1.JSON2formValues(self._jsonValues, commonLib_1.getIn(values, 'name') || '');
         }
     }
-    _viewerChange(values) {
+    _viewerChange({ value }) {
         const self = this;
         let num = self.props.num; //mainApi.get('/selector@value');
         if (num) {
             //if (self._formValues.name !== self.props.name) self.mainApi.setValue(self._formValues.name, {path: ['value', num, 'name'], replace: true});
             //self.mainApi.setValue(values, {path: ['value', num], replace: true});
-            self.props.updSchema(values);
-            self._syncValues(values);
+            self.props.updSchema(value);
+            self._syncValues(value);
         }
     }
-    _schemaChange(formValues) {
+    _schemaChange({ value: formValues }) {
         const self = this;
         const errorsUPD = [];
         self._formValues = formValues;
         self._jsonValues = constrUtils_1.formValues2JSON(formValues, [], errorsUPD);
         let viewerValues = Object.assign({}, (self.props.value || {}), { schema: Object.assign({}, (commonLib_1.getIn(self.props.value, 'schema') || {}), { code: self._jsonValues }), name: formValues.name || '' });
-        self._viewerChange(viewerValues);
+        self._viewerChange({ value: viewerValues });
         self.viewerCore.set('#/schema/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : []);
     }
     render() {
@@ -43810,6 +43836,7 @@ class MainView extends React.PureComponent {
         self.core.set('/@/storageName', name);
         try {
             let data = getStorage(name);
+            // data = null;
             if (data && testJSONdata(data))
                 self.core.setValue(data, { execute: true, replace: true });
         }
@@ -43824,7 +43851,7 @@ class MainView extends React.PureComponent {
                 React.createElement("div", { className: "modal" },
                     React.createElement("a", { className: "close", onClick: this.closeModal }, "\u00D7"),
                     self.state.text)),
-            React.createElement(fform_1.FForm, Object.assign({ ref: (r) => window && (window['_RefFFormConstructor'] = r), touched: true, "_$useTag": 'div', onChange: (v) => setStorage(self.core.get('/@/storageName'), v), core: self.core }, self.props))));
+            React.createElement(fform_1.FForm, Object.assign({ ref: (r) => window && (window['_RefFFormConstructor'] = r), touched: true, "_$useTag": 'div', onChange: ({ value }) => setStorage(self.core.get('/@/storageName'), value), core: self.core }, self.props))));
     }
 }
 exports.default = MainView;

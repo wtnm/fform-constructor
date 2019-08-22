@@ -31,11 +31,13 @@ function formObj2JSON(objectValues: formObjectType, UPDATABLE: any = {}, track: 
   }
   if (objectValues.fieldsEnabled && (UPDATABLE.isArray || UPDATABLE.isObject)) {
     if (!isMergeable(result)) result = {};
-    const $_fields: any[] = [];
-    const {fields = []} = objectValues;
-    fields.forEach(field => {
-      if (isFField(field)) {
 
+    let {fields = []} = objectValues;
+    const $_fields: any = isArray(fields) ? [] : {};
+    //if(!isArray(fields)) debugger;
+    objKeys(fields).forEach(key => {
+      let field = fields[key];
+      if (isFField(field)) {
         const arrayItem = (UPDATABLE.isArray && UPDATABLE.isObject && ~field.propOrItem.indexOf('item')) || (UPDATABLE.isArray && !UPDATABLE.isObject);
         const objectProp = (UPDATABLE.isArray && UPDATABLE.isObject && ~field.propOrItem.indexOf('property')) || (!UPDATABLE.isArray && UPDATABLE.isObject);
         const fieldName = arrayItem ? (UPDATABLE.counter++).toString() : objectProp && field.name;
@@ -44,11 +46,12 @@ function formObj2JSON(objectValues: formObjectType, UPDATABLE: any = {}, track: 
           let fieldJson = formValues2JSON(field, track.concat(fieldName), UPDATABLE.errors);
           if (arrayItem) UPDATABLE.items.push(fieldJson);
           if (objectProp) UPDATABLE.properties[fieldName] = fieldJson;
-          $_fields.push(fieldName)
+          $_fields[key] = (fieldName)
         }
-      } else $_fields.push(formObj2JSON(field, UPDATABLE, track.concat($_fields.length))); // '@field_' +
+      } else $_fields[key] = (formObj2JSON(field, UPDATABLE, track.concat(key))); // '@field_' +
     });
     result.$_fields = $_fields;
+
   }
   return result;
 }
@@ -85,13 +88,21 @@ function formObj2JSON(objectValues: formObjectType, UPDATABLE: any = {}, track: 
 function JSON2formObj(JSONValues: any, UPDATABLE?: any): formObjectType {
   let result: formObjectType;
   if (isObject(JSONValues)) {
-    const {$_fields, ...rest} = JSONValues;
+    let {$_fields, ...rest} = JSONValues;
     result = {value: objKeys(rest).length ? stringify(rest) : ''};
     if ($_fields) {
       result.fieldsEnabled = true;
-      let fields: any[] = [];
-      ($_fields || []).forEach((f: any) => {
-        if (isObject(f)) fields.push(JSON2formObj(f, UPDATABLE));
+      let fields: any = isArray($_fields) ? [] : {};
+      // if ($_fields && !isArray($_fields)) {
+      //   let length = 0
+      //   objKeys($_fields).forEach(k => typeof +k == "number" && +k > length ? (length = +k) : k);
+      //   if(length) $_fields = Array.from({...$_fields, length});
+      //   console.log('$_fields', $_fields);
+      // }
+
+      (objKeys($_fields || [])).forEach((key: any) => {
+        let f = $_fields[key];
+        if (isObject(f)) fields[key] = (JSON2formObj(f, UPDATABLE));
         if (isString(f)) {
           let resA, resO;
 
@@ -101,18 +112,18 @@ function JSON2formObj(JSONValues: any, UPDATABLE?: any): formObjectType {
 
           if (resA && resO) {
             resA.propOrItem = ['property', 'item'];
-            fields.push(resA);
+            fields[key] = resA;
             if (!isEqual(UPDATABLE.items[f], UPDATABLE.properties[f], {deep: true}))
               throw new Error('Different fields with sane name');
             delete UPDATABLE.items[f];
             delete UPDATABLE.properties[f];
           } else if (resA) {
             resA.propOrItem = ['item'];
-            fields.push(resA);
+            fields[key] = resA;
             delete UPDATABLE.items[f];
           } else if (resO) {
             resO.propOrItem = ['property'];
-            fields.push(resO);
+            fields[key] = resO;
             delete UPDATABLE.properties[f];
           }
         }
@@ -169,16 +180,17 @@ function formValues2JSON(formValues: any, track: Path = [], errors: string[] = [
     }
   );
 
-  if (getIn(result, 'dependencies', 'length'))
-    result['dependencies'] = mapFields(result['dependencies'], (f: any, name: string) => isFField(f) ?
-      formValues2JSON(f, track.concat(['@dependencies', name]), errors) : f.values);
+  // if (getIn(result, 'dependencies', 'length'))
+  //   result['dependencies'] = mapFields(result['dependencies'], (f: any, name: string) => isFField(f) ?
+  //     formValues2JSON(f, track.concat(['@dependencies', name]), errors) : f.values);
 
-  ['patternProperties', 'definitions'].forEach(k => getIn(result, k, 'length') &&
+  [ 'definitions'].forEach(k => getIn(result, k, 'length') && // 'patternProperties',
     (result[k] = mapFields(result[k], (f: any, n: string) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
-  ['allOf', 'oneOf', 'anyOf'].forEach(k => result[k] && result[k].length &&
-    (result[k] = result[k].map((f: any, n: string) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
-  if (result.not && result.not.length) result.not = formValues2JSON(result.not[0], track.concat(['@not']), errors);
-  else delete result.not;
+    
+  // ['allOf', 'oneOf', 'anyOf'].forEach(k => result[k] && result[k].length &&
+  //   (result[k] = result[k].map((f: any, n: string) => formValues2JSON(f, track.concat(['@' + k, n]), errors))));
+  // if (result.not && result.not.length) result.not = formValues2JSON(result.not[0], track.concat(['@not']), errors);
+  // else delete result.not;
 
 
   let ffProps = getIn(formValues, 'fieldProps', 'ffProps') || {};
@@ -327,13 +339,13 @@ function JSON2formValues(JSONValues: any, name?: string): any {
       'additionalProperties': setAdditional,
       'additionalItemsField': (v: any, dst: any) => dst['additionalItemsField'],
       'additionalPropertiesField': (v: any, dst: any) => dst['additionalPropertiesField'],
-      'dependencies': (v: any, dst: any) => objKeys(v || {}).map(f => isArray(v[f]) ? {name: f, values: v[f]} : JSON2formValues(v[f], f)),
       'definitions': (v: any) => objKeys(v || {}).map(f => JSON2formValues(v[f], f)),
-      'patternProperties': (v: any) => objKeys(v || {}).map(f => JSON2formValues(v[f], f)),
-      'allOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
-      'oneOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
-      'anyOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
-      'not': (v: any) => (v && [JSON2formValues(v)]) || [],
+      // 'dependencies': (v: any, dst: any) => objKeys(v || {}).map(f => isArray(v[f]) ? {name: f, values: v[f]} : JSON2formValues(v[f], f)),
+      // 'patternProperties': (v: any) => objKeys(v || {}).map(f => JSON2formValues(v[f], f)),
+      // 'allOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
+      // 'oneOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
+      // 'anyOf': (v: any) => (v || []).map((f: any) => JSON2formValues(f)),
+      // 'not': (v: any) => (v && [JSON2formValues(v)]) || [],
     }));
 
 
@@ -352,7 +364,7 @@ function JSON2formValues(JSONValues: any, name?: string): any {
       },
       '_presets': (v: string = '') => v && isString(v) ? v.split(':') : [],
       '_params': (v: any = {}) => objKeys(v).map(k => (v[k] ? '' : '!') + k),
-      '_stateMaps': (v: any = []) => v.map((f: any = {}) => {
+      '_stateMaps': (v: any = []) => toArray(v).map((f: any = {}) => {
         const {from = '', to = '', $ = '', args = [], ...rest} = f;
         const res = [from, to, $, ...args.map((v: any) => JSON2formObj(v))];
         Object.assign(res, rest);

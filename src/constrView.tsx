@@ -499,18 +499,18 @@ class ConstrView extends React.PureComponent<any, any> {
     }
   }
 
-  _viewerChange(values: any) {
+  _viewerChange({value}: any) {
     const self = this;
     let num = self.props.num;//mainApi.get('/selector@value');
     if (num) {
       //if (self._formValues.name !== self.props.name) self.mainApi.setValue(self._formValues.name, {path: ['value', num, 'name'], replace: true});
       //self.mainApi.setValue(values, {path: ['value', num], replace: true});
-      self.props.updSchema(values);
-      self._syncValues(values);
+      self.props.updSchema(value);
+      self._syncValues(value);
     }
   }
 
-  _schemaChange(formValues: any) {
+  _schemaChange({value: formValues}: any) {
     const self = this;
     const errorsUPD: string[] = [];
     self._formValues = formValues;
@@ -520,7 +520,7 @@ class ConstrView extends React.PureComponent<any, any> {
       schema: {...(getIn(self.props.value, 'schema') || {}), code: self._jsonValues},
       name: formValues.name || ''
     };
-    self._viewerChange(viewerValues);
+    self._viewerChange({value: viewerValues});
     self.viewerCore.set('#/schema/code@messages/0/texts/3', errorsUPD.length ? errorsUPD : [])
   }
 
@@ -735,7 +735,7 @@ class MainView extends React.PureComponent<any, any> {
     self.core.set('/@/storageName', name);
     try {
       let data = getStorage(name);
-
+      // data = null;
       if (data && testJSONdata(data)) self.core.setValue(data, {execute: true, replace: true})
     } catch (e) {
       self.openModal(['Failed to load data with error: ', <b key='bold'>{e.message}</b>, <br key='br'/>, '']);
@@ -751,7 +751,7 @@ class MainView extends React.PureComponent<any, any> {
           {self.state.text}
         </div>
       </Popup>
-      <FForm ref={(r) => window && (window['_RefFFormConstructor'] = r)} touched _$useTag='div' onChange={(v: any) => setStorage(self.core.get('/@/storageName'), v)} core={self.core} {...self.props}/>
+      <FForm ref={(r) => window && (window['_RefFFormConstructor'] = r)} touched _$useTag='div' onChange={({value}: any) => setStorage(self.core.get('/@/storageName'), value)} core={self.core} {...self.props}/>
     </div>)
   }
 }

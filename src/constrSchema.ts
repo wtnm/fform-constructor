@@ -559,99 +559,99 @@ const FFormSchema: JsonSchema = {
 
                       }
                     },
-                    combine: {
-                      type: 'object',
-                      _presets: 'object:$noTitle',
-                      _stateMaps: [{from: './selector@value', to: '/@/selectorValue'}],
-                      _layout: [{
-                        className: {'fform-inline': true},
-                        $_fields: [
-                          'selector',
-                          {
-                            "$_ref": "^/parts/ArrayAddButton",
-                            "children": ["+field"],
-                            "onClick": {$: '^/_usr/addCombine', args: [0]},
-                            style: {marginRight: '-1px', marginLeft: '1em'},
-                            $_maps: {
-                              'className/fform-hidden': false,
-                              disabled: false
-                            }
-                          },
-                          {
-                            "$_ref": "^/parts/ArrayAddButton",
-                            "children": ["+strings"],
-                            "onClick": {$: '^/_usr/addCombine', args: [1]},
-                            $_maps: {
-                              'className/fform-hidden': {$: '^/fn/equal|^/fn/not', args: ['@selectorValue', 'dependencies']},
-                              disabled: false
-                            }
-                          }
-                        ]
-                      }],
-                      properties: {
-                        selector: {
-                          type: 'string',
-                          'enum': ['dependencies', 'patternProperties', 'allOf', 'oneOf', 'anyOf', 'not'],
-                          _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
-                        },
-                        allOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'allOf'}}}}]
-                        },
-                        oneOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'oneOf'}}}}]
-                        },
-                        anyOf: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'anyOf'}}}}]
-                        },
-                        not: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'not'}}}, maxItems: 1}]
-                        },
-                        patternProperties: {
-                          allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'patternProperties'}}}}]
-                          // title: 'patternProperties',
-                          // "type": "array",
-                          // _presets: 'array',
-                          // items: {
-                          //   $ref: '#/definitions/fieldTop'
-                          // }
-                        },
-                        dependencies: {
-                          allOf: [{$ref: '#/definitions/combineArray'},
-                            {
-                              _stateMaps: {0: {args: {1: 'dependencies'}}},
-                              items: {
-                                oneOf: [
-                                  {$ref: '#/definitions/fieldTop'},
-                                  {
-                                    type: 'object',
-                                    _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
-
-                                    properties: {
-                                      mame: {
-                                        type: 'string',
-                                        _presets: 'string',
-                                        _placeholder: 'Enter name...'
-                                      },
-                                      values: {
-                                        allOf: [{$ref: '#/definitions/reactSelectArray'},
-                                          {
-                                            _custom: {
-                                              $_ref: '^/sets/$expand',
-                                              //Main: {menuIsOpen: false}
-                                            }
-                                          }]
-
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            }],
-
-                        },
-
-                      }
-                    }
+                    // combine: {
+                    //   type: 'object',
+                    //   _presets: 'object:$noTitle',
+                    //   _stateMaps: [{from: './selector@value', to: '/@/selectorValue'}],
+                    //   _layout: [{
+                    //     className: {'fform-inline': true},
+                    //     $_fields: [
+                    //       'selector',
+                    //       {
+                    //         "$_ref": "^/parts/ArrayAddButton",
+                    //         "children": ["+field"],
+                    //         "onClick": {$: '^/_usr/addCombine', args: [0]},
+                    //         style: {marginRight: '-1px', marginLeft: '1em'},
+                    //         $_maps: {
+                    //           'className/fform-hidden': false,
+                    //           disabled: false
+                    //         }
+                    //       },
+                    //       {
+                    //         "$_ref": "^/parts/ArrayAddButton",
+                    //         "children": ["+strings"],
+                    //         "onClick": {$: '^/_usr/addCombine', args: [1]},
+                    //         $_maps: {
+                    //           'className/fform-hidden': {$: '^/fn/equal|^/fn/not', args: ['@selectorValue', 'dependencies']},
+                    //           disabled: false
+                    //         }
+                    //       }
+                    //     ]
+                    //   }],
+                    //   properties: {
+                    //     selector: {
+                    //       type: 'string',
+                    //       'enum': ['dependencies', 'patternProperties', 'allOf', 'oneOf', 'anyOf', 'not'],
+                    //       _presets: 'radio:$radioEmpty:$inlineItems:$inlineTitle:$shrink',
+                    //     },
+                    //     allOf: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'allOf'}}}}]
+                    //     },
+                    //     oneOf: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'oneOf'}}}}]
+                    //     },
+                    //     anyOf: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'anyOf'}}}}]
+                    //     },
+                    //     not: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'not'}}}, maxItems: 1}]
+                    //     },
+                    //     patternProperties: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'}, {_stateMaps: {0: {args: {1: 'patternProperties'}}}}]
+                    //       // title: 'patternProperties',
+                    //       // "type": "array",
+                    //       // _presets: 'array',
+                    //       // items: {
+                    //       //   $ref: '#/definitions/fieldTop'
+                    //       // }
+                    //     },
+                    //     dependencies: {
+                    //       allOf: [{$ref: '#/definitions/combineArray'},
+                    //         {
+                    //           _stateMaps: {0: {args: {1: 'dependencies'}}},
+                    //           items: {
+                    //             oneOf: [
+                    //               {$ref: '#/definitions/fieldTop'},
+                    //               {
+                    //                 type: 'object',
+                    //                 _presets: 'object:$inlineLayout:$inlineArrayControls:$arrayControls3but',
+                    //
+                    //                 properties: {
+                    //                   mame: {
+                    //                     type: 'string',
+                    //                     _presets: 'string',
+                    //                     _placeholder: 'Enter name...'
+                    //                   },
+                    //                   values: {
+                    //                     allOf: [{$ref: '#/definitions/reactSelectArray'},
+                    //                       {
+                    //                         _custom: {
+                    //                           $_ref: '^/sets/$expand',
+                    //                           //Main: {menuIsOpen: false}
+                    //                         }
+                    //                       }]
+                    //
+                    //                   }
+                    //                 }
+                    //               }
+                    //             ]
+                    //           }
+                    //         }],
+                    //
+                    //     },
+                    //
+                    //   }
+                    // }
                   }
                 },
                 ffProps: {

@@ -1,6 +1,6 @@
 {
   "name": "fform-constructor",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "description": "FForm constructor",
   "main": "docs/index.html",
   "scripts": {
@@ -15,7 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@types/react-select": "^2.0.19",
-    "ajv": "^6.10.0",
+    "ajv": "^6.10.2",
+    "is-my-json-valid": "^2.20.0",
+    "jsonschema": "^1.2.4",
     "lz-string": "^1.4.4",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",

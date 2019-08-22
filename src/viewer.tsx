@@ -7,11 +7,16 @@ import {getIn, isObject, isString, isUndefined, makeSlice, merge, objKeys, push2
 import {importModule} from "./importModule";
 import {normalizePath, string2path} from "fform/src/stateLib";
 
-import imjvWrapper from 'fform/addons/imjvWrapper';
 import {formObj2JSON, JSON2formObj} from "./constrUtils";
 
-const imjvValidator: any = require('fform/addons/is-my-json-valid-lite');
-const JSONV = imjvWrapper(imjvValidator);
+// import imjvWrapper from 'fform/addons/wrappers/imjv';
+// const imjvValidator: any = require('is-my-json-valid');// require('fform/addons/is-my-json-valid-lite');
+// const JSONV = imjvWrapper(imjvValidator);
+
+const jsonschemaWrapper = require('fform/addons/wrappers/jsonschema').default;
+const JSValidator = require('jsonschema').Validator;
+const JSONV = jsonschemaWrapper(new JSValidator());
+
 
 import Select from 'react-select';
 
