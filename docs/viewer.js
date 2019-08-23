@@ -2620,19 +2620,18 @@ exports.formReducer = formReducer;
 const compileSchema = (schema, elements) => isCompiled(schema) ? schema : getCompiledSchema(elements, schema);
 exports.compileSchema = compileSchema;
 const getCompiledSchema = commonLib_1.memoize((elements, schema) => schemaCompiler(elements, schema));
-function schemaCompiler(elements = {}, schema) {
+function schemaCompiler(elements = {}, schema, track = []) {
     if (isCompiled(schema))
         return schema;
-    let { _validators, _stateMaps, _oneOfSelector } = schema, rest = __rest(schema, ["_validators", "_stateMaps", "_oneOfSelector"]);
     const result = commonLib_1.isArray(schema) ? [] : { _compiled: true };
+    let _a = schema, { _validators, _stateMaps, _oneOfSelector } = _a, rest = __rest(_a, ["_validators", "_stateMaps", "_oneOfSelector"]);
     const nFnOpts = { noStrictArrayResult: true };
-    _validators && (result._validators = commonLib_1.toArray(objectResolver(elements, _validators)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
-    _stateMaps && (result._stateMaps = objectResolver(elements, _stateMaps));
-    _oneOfSelector && (result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts)));
-    //if (isFunction(result._oneOfSelector)) result._oneOfSelector = {$: result._oneOfSelector};
+    _validators && (result._validators = commonLib_1.toArray(objectResolver(elements, _validators, track)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
+    _stateMaps && (result._stateMaps = objectResolver(elements, _stateMaps, track));
+    _oneOfSelector && (result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts), track));
     commonLib_1.objKeys(rest).forEach(key => {
         if (key.substr(0, 1) == '_')
-            return result[key] = rest[key];
+            return result[key] = key !== '_presets' && stateLib_1.isElemRef(rest[key]) ? convRef(elements, rest[key], track) : rest[key];
         switch (key) {
             case 'default':
             case 'enum':
@@ -2642,11 +2641,18 @@ function schemaCompiler(elements = {}, schema) {
             case 'properties':
             case 'patternProperties':
             case 'dependencies':
-                result[key] = stateLib_1.objMap(rest[key], schemaCompiler.bind(null, elements));
+                let res = {};
+                let obj = rest[key] || {};
+                if (commonLib_1.isArray(obj))
+                    res = obj; // "dependencies" may be of string[] type
+                else
+                    commonLib_1.objKeys(obj).forEach((k) => (res[k] = schemaCompiler(elements, obj[k], track.concat(key, k))));
+                result[key] = res;
+                //result[key] = objMap(rest[key], schemaCompiler.bind(null, elements));
                 break;
             default:
                 if (commonLib_1.isMergeable(rest[key]))
-                    result[key] = schemaCompiler(elements, rest[key]);
+                    result[key] = schemaCompiler(elements, rest[key], track.concat(key));
                 else
                     result[key] = rest[key];
                 break;
@@ -2691,8 +2697,9 @@ function skipKey(key, obj) {
     return key.substr(0, 2) == '_$' || obj['_$skipKeys'] && ~obj['_$skipKeys'].indexOf(key);
 }
 exports.skipKey = skipKey;
-function objectResolver(_elements, obj2resolve, track = []) {
-    const convRef = (refs, prefix = '') => commonLib_1.deArray(refs.split('|').map((ref, i) => {
+const convRef = (_elements, refs, track = [], prefix = '') => {
+    const _objs = { '^': _elements };
+    return commonLib_1.deArray(refs.split('|').map((ref, i) => {
         ref = ref.trim();
         if (stateLib_1.isElemRef(ref))
             prefix = ref.substr(0, ref.lastIndexOf('/') + 1);
@@ -2702,8 +2709,10 @@ function objectResolver(_elements, obj2resolve, track = []) {
         testRef(refRes, ref, track.concat('@' + i));
         return refRes;
     }));
+};
+function objectResolver(_elements, obj2resolve, track = []) {
     if (stateLib_1.isElemRef(obj2resolve))
-        return convRef(obj2resolve);
+        return convRef(_elements, obj2resolve, track);
     if (!commonLib_1.isMergeable(obj2resolve))
         return obj2resolve;
     const _objs = { '^': _elements };
@@ -2711,10 +2720,8 @@ function objectResolver(_elements, obj2resolve, track = []) {
     const retResult = commonLib_1.isArray(result) ? [] : {};
     commonLib_1.objKeys(result).forEach((key) => {
         let value = result[key];
-        // if(key == '_$styles') debugger;
-        // console.log('value', value);
         if (stateLib_1.isElemRef(value)) {
-            value = convRef(value);
+            value = convRef(_elements, value, track);
             if (key !== '$' && !skipKey(key, result) && (commonLib_1.isFunction(value) || commonLib_1.isArray(value) && value.every(commonLib_1.isFunction)))
                 value = { $: value };
         }

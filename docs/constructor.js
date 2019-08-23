@@ -2634,19 +2634,18 @@ exports.formReducer = formReducer;
 const compileSchema = (schema, elements) => isCompiled(schema) ? schema : getCompiledSchema(elements, schema);
 exports.compileSchema = compileSchema;
 const getCompiledSchema = commonLib_1.memoize((elements, schema) => schemaCompiler(elements, schema));
-function schemaCompiler(elements = {}, schema) {
+function schemaCompiler(elements = {}, schema, track = []) {
     if (isCompiled(schema))
         return schema;
-    let { _validators, _stateMaps, _oneOfSelector } = schema, rest = __rest(schema, ["_validators", "_stateMaps", "_oneOfSelector"]);
     const result = commonLib_1.isArray(schema) ? [] : { _compiled: true };
+    let _a = schema, { _validators, _stateMaps, _oneOfSelector } = _a, rest = __rest(_a, ["_validators", "_stateMaps", "_oneOfSelector"]);
     const nFnOpts = { noStrictArrayResult: true };
-    _validators && (result._validators = commonLib_1.toArray(objectResolver(elements, _validators)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
-    _stateMaps && (result._stateMaps = objectResolver(elements, _stateMaps));
-    _oneOfSelector && (result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts)));
-    //if (isFunction(result._oneOfSelector)) result._oneOfSelector = {$: result._oneOfSelector};
+    _validators && (result._validators = commonLib_1.toArray(objectResolver(elements, _validators, track)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
+    _stateMaps && (result._stateMaps = objectResolver(elements, _stateMaps, track));
+    _oneOfSelector && (result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts), track));
     commonLib_1.objKeys(rest).forEach(key => {
         if (key.substr(0, 1) == '_')
-            return result[key] = rest[key];
+            return result[key] = key !== '_presets' && stateLib_1.isElemRef(rest[key]) ? convRef(elements, rest[key], track) : rest[key];
         switch (key) {
             case 'default':
             case 'enum':
@@ -2656,11 +2655,18 @@ function schemaCompiler(elements = {}, schema) {
             case 'properties':
             case 'patternProperties':
             case 'dependencies':
-                result[key] = stateLib_1.objMap(rest[key], schemaCompiler.bind(null, elements));
+                let res = {};
+                let obj = rest[key] || {};
+                if (commonLib_1.isArray(obj))
+                    res = obj; // "dependencies" may be of string[] type
+                else
+                    commonLib_1.objKeys(obj).forEach((k) => (res[k] = schemaCompiler(elements, obj[k], track.concat(key, k))));
+                result[key] = res;
+                //result[key] = objMap(rest[key], schemaCompiler.bind(null, elements));
                 break;
             default:
                 if (commonLib_1.isMergeable(rest[key]))
-                    result[key] = schemaCompiler(elements, rest[key]);
+                    result[key] = schemaCompiler(elements, rest[key], track.concat(key));
                 else
                     result[key] = rest[key];
                 break;
@@ -2705,8 +2711,9 @@ function skipKey(key, obj) {
     return key.substr(0, 2) == '_$' || obj['_$skipKeys'] && ~obj['_$skipKeys'].indexOf(key);
 }
 exports.skipKey = skipKey;
-function objectResolver(_elements, obj2resolve, track = []) {
-    const convRef = (refs, prefix = '') => commonLib_1.deArray(refs.split('|').map((ref, i) => {
+const convRef = (_elements, refs, track = [], prefix = '') => {
+    const _objs = { '^': _elements };
+    return commonLib_1.deArray(refs.split('|').map((ref, i) => {
         ref = ref.trim();
         if (stateLib_1.isElemRef(ref))
             prefix = ref.substr(0, ref.lastIndexOf('/') + 1);
@@ -2716,8 +2723,10 @@ function objectResolver(_elements, obj2resolve, track = []) {
         testRef(refRes, ref, track.concat('@' + i));
         return refRes;
     }));
+};
+function objectResolver(_elements, obj2resolve, track = []) {
     if (stateLib_1.isElemRef(obj2resolve))
-        return convRef(obj2resolve);
+        return convRef(_elements, obj2resolve, track);
     if (!commonLib_1.isMergeable(obj2resolve))
         return obj2resolve;
     const _objs = { '^': _elements };
@@ -2725,10 +2734,8 @@ function objectResolver(_elements, obj2resolve, track = []) {
     const retResult = commonLib_1.isArray(result) ? [] : {};
     commonLib_1.objKeys(result).forEach((key) => {
         let value = result[key];
-        // if(key == '_$styles') debugger;
-        // console.log('value', value);
         if (stateLib_1.isElemRef(value)) {
-            value = convRef(value);
+            value = convRef(_elements, value, track);
             if (key !== '$' && !skipKey(key, result) && (commonLib_1.isFunction(value) || commonLib_1.isArray(value) && value.every(commonLib_1.isFunction)))
                 value = { $: value };
         }
@@ -8639,7 +8646,7 @@ var weakMemoize = function weakMemoize(func) {
 
 exports = module.exports = __webpack_require__(/*! ../../../fform-constructor/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n    flex-basis: 0;\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n.fform-title-container {\r\n    width: 100%;\r\n}\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden {\r\n    display: none !important;;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row !important;;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0 !important;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10 !important;;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap !important;;\r\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n.fform-title-container {\r\n    width: 100%;\r\n}\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden {\r\n    display: none !important;;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row !important;;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0 !important;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10 !important;;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap !important;;\r\n}\r\n\r\n\r\n", ""]);
 
 
 /***/ }),
