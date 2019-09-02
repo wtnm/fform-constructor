@@ -983,6 +983,7 @@
                 "definitions": {
                     "loginForm": {
                         "type": "object",
+                        "_presets": "object:$noMessage",
                         "_oneOfSelector": "^/fn/oneOfGetter",
                         "_layout": {
                             "$_fields": [
@@ -1003,6 +1004,12 @@
                                     "$_maps": {
                                         "className/activated": "@/params/activated"
                                     }
+                                },
+                                {
+                                    "className": {
+                                        "fform-wrapper": true
+                                    },
+                                    "$_ref": "^/parts/Message"
                                 },
                                 {
                                     "className": {
@@ -1199,7 +1206,7 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t\tasync testCaptcha(event, value, form){\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n}"
+            "code": "fn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t  async testCaptcha(event){\n               let {value, form} = event;\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n}"
         },
         "css": {
             "links": [
@@ -1225,6 +1232,7 @@
                 "definitions": {
                     "loginForm": {
                         "type": "object",
+                        "_presets": "object:$noMessage",
                         "_oneOfSelector": "^/fn/oneOfGetter",
                         "_layout": {
                             "$_fields": [
@@ -1245,6 +1253,12 @@
                                     "$_maps": {
                                         "className/activated": "@/params/activated"
                                     }
+                                },
+                                {
+                                    "className": {
+                                        "fform-wrapper": true
+                                    },
+                                    "$_ref": "^/parts/Message"
                                 },
                                 {
                                     "className": {
@@ -1469,7 +1483,7 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "  widgets: {\n    reactSelect: Select\n  },\nfn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0,\n    reactSelectParse: function (values) {\n      if (values === null) {\n        if (this.$branch[Symbol.for('FFormData')].fData.type === 'array') return [[]];\n        return null;\n      }\n      if (!Array.isArray(values)) return values.value;\n      return [values.map((item) => item.value)]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values ? [{value: values, label: values}] : [];\n      return [values.map((value) => {return {value, label: value}})]\n    },\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t\tasync testCaptcha(event, value, form){\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n},\nsets: {\n    reactSelect: {\n      $_ref: '^/sets/simple',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        onChange: {$: '^/fn/reactSelectParse|setValue|liveUpdate'},\n        $_maps: {\n          isDisabled: '@/params/disabled',\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n        },\n      },\n    },\n  }"
+            "code": "  widgets: {\n    reactSelect: Select\n  },\nfn:{\n  _submit(even){\n    alert(JSON.stringify(event.value));\n    event.preventDefault();\n  },\n formatPhone(value, ...args){\n            let a = value.substr(3, 3);\n    \t    let b = value.substr(6, 4);\n\t        return [value.substr(0, 3) + (a ? '-' + a : '') + (b ? '-' + b : ''), ...args]\n        },\n   parsePhone: (value, ...args) => [value.replace(/\\D+/g, '').substr(0,10), ...args],\n        getLength: (value, ...args) => [value ? value.length : 0, ...args],\n        restorePass(){\n        \tlet login = this.get(\"./login@value\");\n            if (login && login.length == 10) alert('Password sent to number ' + login)\n\t\t\telse alert('Please enter full number')\n        },\n  oneOfGetter: (value) => value ? value.oneOf : 0,\n    reactSelectParse: function (values) {\n      if (values === null) {\n        if (this.$branch[Symbol.for('FFormData')].fData.type === 'array') return [[]];\n        return null;\n      }\n      if (!Array.isArray(values)) return values.value;\n      return [values.map((item) => item.value)]\n    },\n    reactSelectValue: function (values = []) {\n      if (!Array.isArray(values)) return values ? [{value: values, label: values}] : [];\n      return [values.map((value) => {return {value, label: value}})]\n    },\n},\n    validators:{\n\t\ttestPasswords(value){\n        \tlet result = {path: './confirm', data: ''}\n        \tif (value.password !== value.confirm) result.data = 'Пароли не совпадают';\n            return result;\n        },\nasync testPhoneNumber(value){\n        \treturn value === '1234567890'? 'Номер уже существует' : '';\n        }\n},\n    submits:{\n\t  async testCaptcha(event){\n               let {value, form} = event;\n        \tevent.preventDefault();\n        \tif (value.oneOf===0 || value.captcha === '12345') {\n                alert(JSON.stringify(value))\n                return {}\n            }\n            return {captcha: 'Неверная каптча'};\n        }\n},\nsets: {\n    reactSelect: {\n      $_ref: '^/sets/simple',\n      Main: {\n        _$useTag: '^/widgets/reactSelect',\n        onChange: {$: '^/fn/reactSelectParse|setValue|liveUpdate'},\n        $_maps: {\n          isDisabled: '@/params/disabled',\n          value: {$: '^/fn/reactSelectValue', args: ['@/value']},\n          options: {$: '^/fn/reactSelectValue', args: ['@/fData/enum']},\n        },\n      },\n    },\n  }"
         },
         "css": {
             "links": [

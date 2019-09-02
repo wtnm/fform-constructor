@@ -608,6 +608,7 @@
             "links": [],
             "code": {
                 "type": "object",
+                "_presets": "object:$noMessage",
                 "_layout": {
                     "$_fields": [
                         "json",
@@ -615,6 +616,12 @@
                         "async",
                         "submitError",
                         "submitWarn",
+                        {
+                            "className": {
+                                "fform-wrapper": true
+                            },
+                            "$_ref": "^/parts/Message"
+                        },
                         {
                             "$_ref": "^/parts/Submit",
                             "style": {
@@ -681,7 +688,7 @@
                     "from": "styles.json"
                 }
             ],
-            "code": "  validators: {\n    sync: function (v) {\n      return v === 'sync' ? '' : 'sync validation not passed'\n    },\n    async: function (v) {\n      return new Promise((resolve, reject) => {\n        setTimeout(() => resolve(v === 'async' ? '' : 'async validation not passed'), 1000)\n      })\n    }\n  },\nfn:{\n_submit: function (event) {\n  event.preventDefault();\n  var {value, fform} = event;\n  var valid = fform.valid;\n  return new Promise((resolve, rejects) => {\n    setTimeout(() => {\n      var res = {};\n      var warn = {};\n      if (value.submitError !== 'submit') res['submitError'] = 'submit validation not passed';\n      if (value.submitWarn !== 'warn') warn['submitWarn'] = 'submit warning';\n      fform.api.setMessages(null, {priority: 1});\n      fform.api.setMessages(warn, {priority: 1});\n      if (valid && !Object.keys(res).length) alert('Validation passed');\n      resolve(res);\n    }, 10)\n  })\n}\n}"
+            "code": "  validators: {\n    sync: function (v) {\n      return v === 'sync' ? '' : 'sync validation not passed'\n    },\n    async: function (v) {\n      return new Promise((resolve, reject) => {\n        setTimeout(() => resolve(v === 'async' ? '' : 'async validation not passed'), 1000)\n      })\n    }\n  },\nfn:{\n_submit: function (event) {\n  event.preventDefault();\n  var {value, fform} = event;\n  var valid = fform.valid;\n  return new Promise((resolve, rejects) => {\n    setTimeout(() => {\n      var res = {};\n      var warn = {};\n      var sbm = [];\n      const SymData = Symbol.for(\"FFormData\");\n      if (value.submitError !== 'submit') {\n        res['submitError'] = 'submit validation not passed';\n        sbm.push('submit validation not passed');\n      }\n      if (value.submitWarn !== 'warn') warn['submitWarn'] = 'submit warning';\n      if (valid && !Object.keys(res).length) alert('Validation passed');\n      resolve([sbm, res, {[SymData]: {priority: 1}}, {...warn, [SymData]: {priority: 1}}]);\n    }, 10)\n  })\n}\n}"
         },
         "css": {
             "links": [

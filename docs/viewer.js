@@ -2705,9 +2705,19 @@ const convRef = (_elements, refs, track = [], prefix = '') => {
             prefix = ref.substr(0, ref.lastIndexOf('/') + 1);
         else
             ref = prefix + ref;
-        let refRes = commonLib_1.getIn(_objs, stateLib_1.string2path(ref));
-        testRef(refRes, ref, track.concat('@' + i));
-        return refRes;
+        ref = ref.split(':');
+        let result;
+        for (let i = 0; i < ref.length; i++) {
+            let r = ref[i];
+            if (!r)
+                continue;
+            if (!stateLib_1.isElemRef(r))
+                r = prefix + r;
+            let refRes = commonLib_1.getIn(_objs, stateLib_1.string2path(r));
+            testRef(refRes, r, track.concat('@' + i));
+            result = result ? commonLib_1.merge(result, refRes) : refRes;
+        }
+        return result;
     }));
 };
 function objectResolver(_elements, obj2resolve, track = []) {
@@ -3144,8 +3154,6 @@ class FForm extends react_1.Component {
         this.wrapFns = bindProcessorToThis;
         const self = this;
         let { core: coreParams } = props;
-        // debugger
-        console.log('init');
         self.api = coreParams instanceof api_1.FFormStateAPI ? coreParams : self._getCoreFromParams(coreParams, context);
         Object.defineProperty(self, "elements", { get: () => self.api.props.elements });
         Object.defineProperty(self, "valid", { get: () => self.api.get('/@/status/valid') });
@@ -3226,8 +3234,10 @@ class FForm extends react_1.Component {
     _submit(event) {
         const self = this;
         const setPending = (val) => self.api.set([], val, { [stateLib_1.SymData]: ['status', 'pending'] });
-        const setMessagesFromSubmit = (messages) => {
+        const setMessagesFromSubmit = (messages = []) => {
             commonLib_1.toArray(messages).forEach(value => {
+                if (!value)
+                    return;
                 let opts = value[stateLib_1.SymData];
                 self.api.setMessages(commonLib_1.objKeys(value).length ? value : null, opts);
             });
@@ -3645,7 +3655,7 @@ class FSection extends FRefsGeneric {
             return { _$widget, $_fields };
         }
         const self = this;
-        const { $branch, $layout, _$cx, arrayStart, LayoutDefaultWidget = 'div', LayoutDefaultClass = {}, uniqKey, focusField } = props;
+        const { $branch, $layout, _$cx, arrayStart, strictLayout, LayoutDefaultWidget = 'div', LayoutDefaultClass = {}, uniqKey, focusField } = props;
         const mapsKeys = ['build', 'data', 'every'];
         mapsKeys.forEach(k => self._maps[k] = []);
         self.$refs = {};
@@ -3656,9 +3666,10 @@ class FSection extends FRefsGeneric {
         self._focusField = focusField || UPDATABLE.keys[0] || '';
         let { _$widget, $_fields } = normalizeLayout(0, commonLib_1.isArray($layout) ? { $_fields: $layout } : $layout);
         self._$widget = _$widget;
-        if ($_fields)
-            self._objectLayouts = makeLayouts_INNER_PROCEDURE(UPDATABLE, $_fields); // we get inital _objectLayouts and every key, that was used in makeLayouts call removed from keys 
-        UPDATABLE.keys.forEach(fieldName => self._objectLayouts.push(self._makeFField(fieldName))); // so here we have only keys was not used and we add them to _objectLayouts
+        if ($_fields) // we make inital _objectLayouts, every key that was used in makeLayouts call removed from UPDATABLE.keys 
+            self._objectLayouts = makeLayouts_INNER_PROCEDURE(UPDATABLE, $_fields);
+        if (strictLayout !== true) // and here in UPDATABLE.keys we have only keys was not used, we add them to the top layer if strictLayout allows
+            UPDATABLE.keys.forEach(fieldName => self._objectLayouts.push(self._makeFField(fieldName)));
         self._arrayLayouts = [];
         self._arrayKey2field = {};
         if (self.props.isArray) { // _makeArrayLayouts
@@ -3673,7 +3684,7 @@ class FSection extends FRefsGeneric {
     }
     _makeFField(fieldName, arrayKey) {
         const self = this;
-        return react_1.createElement(FField, { ref: self._setRef(arrayKey || fieldName), key: arrayKey || fieldName, pFForm: self.props.$FField.pFForm, FFormApi: self.props.FFormApi, id: self.props.id ? self.props.id + (arrayKey || fieldName) : undefined, name: self.props.name ? self.props.name + '[' + (self.props.isArray ? '${idx}_' + (arrayKey || fieldName) : fieldName) + ']' : undefined, getPath: arrayKey ? self._getArrayPath.bind(self, arrayKey) : self._getObjectPath.bind(self, fieldName) });
+        return react_1.createElement(FField, { ref: self._setRef(arrayKey || fieldName), key: arrayKey || fieldName, pFForm: self.props.$FField.pFForm, FFormApi: self.props.FFormApi, id: self.props.id ? self.props.id + '/' + (arrayKey || fieldName) : undefined, name: self.props.name ? self.props.name + '[' + (self.props.isArray ? '${idx}_' + (arrayKey || fieldName) : fieldName) + ']' : undefined, getPath: arrayKey ? self._getArrayPath.bind(self, arrayKey) : self._getObjectPath.bind(self, fieldName) });
     }
     _arrayIndex2key($branch) {
         return this.props.uniqKey ? commonLib_1.getIn(this._getData($branch), stateLib_1.string2path(this.props.uniqKey)) : undefined;
@@ -4160,15 +4171,7 @@ let elementsBase = {
                 className: 'fform-body',
             },
             //Main: {},
-            Message: {
-                _$widget: '^/widgets/Generic',
-                _$cx: '^/_$cx',
-                children: [],
-                $_maps: {
-                    children: { $: '^/fn/messages', args: ['@/messages', {}] },
-                    'className/fform-hidden': { $: '^/fn/or', args: ['@/params/viewer', '!@/status/touched'] },
-                }
-            }
+            Message: { $_ref: '^/parts/Message' }
         },
         simple: {
             $_ref: '^/sets/base',
@@ -4295,6 +4298,7 @@ let elementsBase = {
                     length: '@/length',
                     oneOf: '@/oneOf',
                     branchKeys: '@/branchKeys',
+                    strictLayout: '@/fData/strictLayout',
                     isArray: { $: '^/fn/equal', args: ['@/fData/type', 'array'] },
                     $branch: { $: '^/fn/getProp', args: '$branch', update: 'every' },
                     arrayStart: { $: '^/fn/getArrayStart', args: [], update: 'build' },
@@ -4380,6 +4384,7 @@ let elementsBase = {
         $inlineArrayControls: { Wrapper: { ArrayItemBody: { className: { 'fform-inline': true } } } },
         $arrayControls3but: { Wrapper: { ArrayItemMenu: { buttons: ['up', 'down', 'del'], } } },
         $noTitle: { Title: false },
+        $noMessage: { Message: false },
         $shrink: { Wrapper: { className: { 'fform-shrink': true } } },
         $expand: { Wrapper: { className: { 'fform-expand': true } } },
         $password: { Main: { type: 'password' } }
@@ -4487,6 +4492,15 @@ let elementsBase = {
         }
     },
     parts: {
+        Message: {
+            _$widget: '^/widgets/Generic',
+            _$cx: '^/_$cx',
+            children: [],
+            $_maps: {
+                children: { $: '^/fn/messages', args: ['@/messages', {}] },
+                'className/fform-hidden': { $: '^/fn/or', args: ['@/params/viewer', '!@/status/touched'] },
+            }
+        },
         RadioSelector: {
             _$widget: '^/widgets/Input',
             _$cx: '^/_$cx',
@@ -5049,6 +5063,7 @@ const makeDataStorage = commonLib_1.memoize(function (schemaPart, oneOf, type, v
     fData.title = schemaPart.title;
     fData.placeholder = schemaPart._placeholder;
     fData.additionalProperties = schemaPart.additionalProperties;
+    fData.strictLayout = schemaPart._strictLayout;
     // fData.default = isUndefined(schemaPart.default) ? types.empty[type || 'any'] : schemaPart.default;
     if (schemaPart.enum)
         fData.enum = schemaPart.enum;
@@ -5156,9 +5171,13 @@ function makeStateBranch(schema, getNSetOneOf, path = [], value) {
             }
         }
         else if (type == 'object') {
-            defaultValues = {};
-            if (value && schemaPart.additionalProperties === false)
+            defaultValues = commonLib_2.isObject(schemaPart.default) ? Object.assign({}, schemaPart.default) : {};
+            if (value && schemaPart.additionalProperties === false) {
                 value = removeNotAllowedProperties(schemaPart, value);
+                defaultValues = removeNotAllowedProperties(schemaPart, defaultValues);
+            }
+            if (commonLib_2.isObject(value))
+                Object.assign(defaultValues, value);
             let arrayOfRequired = result[SymData].fData.required;
             arrayOfRequired = commonLib_2.isArray(arrayOfRequired) && arrayOfRequired.length && arrayOfRequired;
             commonLib_1.objKeys(schemaPart.properties || {}).forEach(field => {
