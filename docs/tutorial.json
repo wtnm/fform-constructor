@@ -331,19 +331,7 @@
                         "type": "string",
                         "title": "login",
                         "_presets": "string:$inlineTitle",
-                        "_placeholder": "Enter login...",
-                        "_custom": {
-                            "Main": {
-                                "$_maps": {
-                                    "value": {
-                                        "$": "^/fn/formatPhone",
-                                        "args": [
-                                            "@/value"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
+                        "_placeholder": "Enter login..."
                     },
                     "password": {
                         "type": "string",

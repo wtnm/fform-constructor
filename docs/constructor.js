@@ -3155,24 +3155,32 @@ exports.FFormStateAPI = api_1.FFormStateAPI;
 exports.fformCores = api_1.fformCores;
 exports.formReducer = api_1.formReducer;
 const _$cxSym = Symbol('_$cx');
-// jsonschema Ajv = require('jsonschema');
-//
-// console.log(jsonschema)
 /////////////////////////////////////////////
 //  Main class
 /////////////////////////////////////////////
 class FForm extends react_1.Component {
-    constructor(props, context) {
-        super(props, context);
+    constructor(props, ...args) {
+        super(props, ...args);
         this._methods = { onSubmit: null, onChange: null, onStateChange: null };
         this.wrapFns = bindProcessorToThis;
         const self = this;
-        let { core: coreParams } = props;
-        self.api = coreParams instanceof api_1.FFormStateAPI ? coreParams : self._getCoreFromParams(coreParams, context);
+        self.api = self._coreFromParams(props.core);
         Object.defineProperty(self, "elements", { get: () => self.api.props.elements });
         Object.defineProperty(self, "valid", { get: () => self.api.get('/@/status/valid') });
         self.parent = props.parent;
-        // self.focus = self.focus.bind(self);
+        self._updateMethods(props);
+        self._initState(props);
+        self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
+        self._setRootRef = self._setRootRef.bind(self);
+        self._setFormRef = self._setFormRef.bind(self);
+        self._submit = self._submit.bind(self);
+        self.reset = self.reset.bind(self);
+    }
+    _coreFromParams(coreParams) {
+        return coreParams instanceof api_1.FFormStateAPI ? coreParams : api_1.fformCores(coreParams.name) || new api_1.FFormStateAPI(coreParams);
+    }
+    _initState(props) {
+        const self = this;
         const nextProps = Object.assign({}, props);
         if (props.touched !== null)
             nextProps.touched = !!nextProps.touched;
@@ -3180,17 +3188,11 @@ class FForm extends react_1.Component {
             if (!commonLib_1.isUndefined(nextProps[k]))
                 nextProps[k] = (v) => commonLib_1.isUndefined(v) ? props[k] : v;
         });
-        self._updateMethods(props);
         if (commonLib_1.isUndefined(nextProps['value']))
             nextProps['value'] = nextProps['inital'];
         self._updateValues(nextProps);
         if (!props.noValidation)
             self.api.validate(true);
-        self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
-        self._setRootRef = self._setRootRef.bind(self);
-        self._setFormRef = self._setFormRef.bind(self);
-        self._submit = self._submit.bind(self);
-        self.reset = self.reset.bind(self);
     }
     _updateMethods(nextProps, prevProps = {}) {
         const self = this;
@@ -3274,25 +3276,21 @@ class FForm extends react_1.Component {
                 setMessagesFromSubmit(result);
         }
     }
-    _getCoreFromParams(coreParams, context) {
-        if (commonLib_1.isUndefined(coreParams.store) && context.store)
-            return new api_1.FFormStateAPI(commonLib_1.merge(coreParams, { store: context.store }));
-        else
-            return new api_1.FFormStateAPI(coreParams);
-    }
     shouldComponentUpdate(nextProps) {
         const self = this;
         self.parent = nextProps.parent;
-        let core = nextProps.core;
         let FFrormApiUpdate = false;
-        if (core instanceof api_1.FFormStateAPI && self.api !== core) {
+        let core = self._coreFromParams(nextProps.core);
+        if (self.api !== core) {
             self._unsubscribe();
             self.api = core;
             self._unsubscribe = self.api.addListener(self._handleStateUpdate.bind(self));
             FFrormApiUpdate = true;
+            self._initState(nextProps);
         }
+        else
+            self._updateValues(nextProps, self.props);
         self._updateMethods(nextProps, self.props);
-        self._updateValues(nextProps, self.props);
         return FFrormApiUpdate || !commonLib_1.isEqual(self.props, nextProps, { skipKeys: ['core', 'state', 'value', 'inital', 'extData', 'fieldCache', 'flatten', 'noValidate', 'parent', 'onSubmit', 'onChange', 'onStateChange'] });
     }
     componentWillUnmount() {
@@ -3334,7 +3332,7 @@ class FForm extends react_1.Component {
         FForm.params.forEach(k => delete rest[k]);
         commonLib_1.objKeys(rest).forEach(k => (k[0] === '_' || k[0] === '$') && delete rest[k]); // remove props that starts with '_' or '$'
         return (react_1.createElement(UseTag, Object.assign({ ref: self._setFormRef }, rest, { onSubmit: self._submit, onReset: self.reset }),
-            react_1.createElement(FField, { ref: self._setRootRef, id: rest.id ? rest.id + '/#' : undefined, name: self.api.name, pFForm: self, getPath: FForm._getPath, FFormApi: self.api })));
+            react_1.createElement(FField, { ref: self._setRootRef, id: (rest.id || self.api.name) + '/#', name: self.api.name, pFForm: self, getPath: FForm._getPath, FFormApi: self.api })));
     }
 }
 FForm.params = ['readonly', 'disabled', 'viewer', 'liveValidate', 'liveUpdate'];
@@ -3966,7 +3964,7 @@ function ItemMenu(props) {
     buttons.forEach((key) => delete rest[key]);
     return (react_1.createElement(UseTag, Object.assign({ className: _$cx(className) }, rest), buttons.map((key) => {
         const _a = Object.assign({}, _$buttonDefaults, buttonsProps[key] || {}), { _$widget: ButW = 'button', type = 'button', disabledCheck = '', className: ButCN = {}, onClick = defaultOnClick, title = key, children = key } = _a, restBut = __rest(_a, ["_$widget", "type", "disabledCheck", "className", "onClick", "title", "children"]);
-        return (react_1.createElement(ButW, Object.assign({ key: key, type: type, title: title, className: _$cx ? _$cx(ButCN) : ButCN, children: children, disabled: disabled || disabledCheck && !arrayItem[disabledCheck] }, restBut, { onClick: () => onClick(key) })));
+        return (react_1.createElement(ButW, Object.assign({ key: key, type: type, title: title, className: _$cx ? _$cx(ButCN) : ButCN, children: children }, restBut, { disabled: disabled || disabledCheck && !arrayItem[disabledCheck], onClick: () => onClick(key) })));
     })));
 }
 function CheckboxNull(props) {

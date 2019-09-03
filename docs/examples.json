@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "schema": {
             "links": [],
@@ -145,7 +145,7 @@
                                     },
                                     "$_maps": {
                                         "disabled": "@/params/viewer",
-                                        "className/fform-button-viewer": false
+                                        "className/fform-hidden": "@/params/noEditor"
                                     },
                                     "onClick": {
                                         "$": "^/fn/api",
@@ -170,7 +170,7 @@
                                             "$": "^/fn/not",
                                             "args": "@/params/viewer"
                                         },
-                                        "className/fform-button-viewer": false
+                                        "className/fform-hidden": "@/params/noEditor"
                                     },
                                     "onClick": {
                                         "$": "^/fn/setValue",
@@ -439,12 +439,12 @@
                                         "buttonsProps": {
                                             "up": {
                                                 "children": [
-                                                    "?"
+                                                    "⬆"
                                                 ]
                                             },
                                             "down": {
                                                 "children": [
-                                                    "?"
+                                                    "⬇"
                                                 ]
                                             },
                                             "del": {
