@@ -3026,15 +3026,23 @@ exports.formReducer = formReducer;
 const compileSchema = (schema, elements) => isCompiled(schema) ? schema : getCompiledSchema(elements, schema);
 exports.compileSchema = compileSchema;
 const getCompiledSchema = commonLib_1.memoize((elements, schema) => schemaCompiler(elements, schema));
+const val2obj = (obj) => {
+    return commonLib_1.isObject(obj) ? obj : commonLib_1.toArray(obj);
+};
 function schemaCompiler(elements = {}, schema, track = []) {
     if (isCompiled(schema))
         return schema;
     const result = commonLib_1.isArray(schema) ? [] : { _compiled: true };
-    let _a = schema, { _validators, _stateMaps, _oneOfSelector } = _a, rest = __rest(_a, ["_validators", "_stateMaps", "_oneOfSelector"]);
+    let _a = schema, { _validators, _data$, _stateMaps, _oneOfSelector } = _a, rest = __rest(_a, ["_validators", "_data$", "_stateMaps", "_oneOfSelector"]);
     const nFnOpts = { noStrictArrayResult: true };
-    _validators && (result._validators = commonLib_1.toArray(objectResolver(elements, _validators, track)).map(f => stateLib_1.normalizeFn(f, nFnOpts)));
-    _stateMaps && (result._stateMaps = objectResolver(elements, _stateMaps, track));
-    _oneOfSelector && (result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts), track));
+    if (_validators)
+        result._validators = stateLib_1.objMap(val2obj(objectResolver(elements, _validators, track)), f => stateLib_1.normalizeFn(f, nFnOpts));
+    if (_data$)
+        result._data$ = stateLib_1.objMap(val2obj(objectResolver(elements, _data$, track)), f => stateLib_1.normalizeFn(f));
+    if (_stateMaps)
+        result._stateMaps = objectResolver(elements, _stateMaps, track);
+    if (_oneOfSelector)
+        result._oneOfSelector = objectResolver(elements, stateLib_1.normalizeFn(_oneOfSelector, nFnOpts), track);
     commonLib_1.objKeys(rest).forEach(key => {
         if (key.substr(0, 1) == '_')
             return result[key] = key !== '_presets' && stateLib_1.isElemRef(rest[key]) ? convRef(elements, rest[key], track) : rest[key];
@@ -4025,7 +4033,8 @@ class FSection extends FRefsGeneric {
     _build(props) {
         function makeLayouts_INNER_PROCEDURE(UPDATABLE, fields) {
             const layout = [];
-            fields.forEach(fieldOrLayout => {
+            commonLib_1.objKeys(fields).forEach(key => {
+                let fieldOrLayout = fields[key];
                 const { keys, counter } = UPDATABLE;
                 if (commonLib_1.isString(fieldOrLayout)) { // if field is string then _makeFField
                     let idx = UPDATABLE.keys.indexOf(fieldOrLayout);
@@ -4239,20 +4248,26 @@ class GenericWidget extends FRefsGeneric {
     setRef2rest(rest, $_reactRef) {
         if (!$_reactRef)
             return rest;
-        commonLib_1.objKeys($_reactRef).filter(v => isNaN(+v)).forEach(k => rest[k] = $_reactRef[k]); // assing all except numeric keys
+        commonLib_1.objKeys($_reactRef).filter(v => isNaN(+v)).forEach(k => rest[k] = $_reactRef[k]); // assing all except numeric keys, as then assigned at _mapChildren
         return rest;
-        // if ($_reactRef['ref']) rest.ref = $_reactRef['ref'];
-        // else Object.assign(rest, $_reactRef);
-        // if ($_reactRef['tagRef'])
-        //   rest.tagRef = $_reactRef['tagRef'];
+    }
+    setElements2rest(rest, _$elements) {
+        if (!_$elements)
+            return rest;
+        let elms = { '^': _$elements };
+        commonLib_1.objKeys(rest).forEach(k => stateLib_1.isElemRef(rest[k]) && (rest[k] = commonLib_1.getIn(elms, stateLib_1.string2path(rest[k]))));
+        return rest;
     }
     render() {
         const self = this;
         if (self.props.norender)
             return null;
-        const _a = self.props, { _$useTag: UseTag = 'div', _$cx, className, $_reactRef, children } = _a, rest = __rest(_a, ["_$useTag", "_$cx", "className", "$_reactRef", "children"]);
+        let _a = self.props, { _$useTag: UseTag = 'div', _$cx, _$elements, className, $_reactRef, children } = _a, rest = __rest(_a, ["_$useTag", "_$cx", "_$elements", "className", "$_reactRef", "children"]);
         self._mapChildren(children, $_reactRef);
         self.setRef2rest(rest, $_reactRef);
+        self.setElements2rest(rest, _$elements);
+        if (!_$cx && _$elements)
+            _$cx = _$elements._$cx;
         return (react_1.createElement(UseTag, Object.assign({ children: self._mapped, className: _$cx ? _$cx(className) : className }, rest)));
     }
 }
@@ -4285,9 +4300,12 @@ class UniversalInput extends GenericWidget {
             rest.value = props.value;
             return react_1.createElement(_$widget, rest);
         }
-        let { value, _$useTag: UseTag, type, $_reactRef, _$cx, viewer, viewerProps, children } = props, rest = __rest(props, ["value", "_$useTag", "type", "$_reactRef", "_$cx", "viewer", "viewerProps", "children"]);
+        let { value, _$useTag: UseTag, type, $_reactRef, _$cx, _$elements, viewer, viewerProps, children } = props, rest = __rest(props, ["value", "_$useTag", "type", "$_reactRef", "_$cx", "_$elements", "viewer", "viewerProps", "children"]);
         self._mapChildren(children, $_reactRef);
         self.setRef2rest(rest, $_reactRef);
+        self.setElements2rest(rest, _$elements);
+        if (!_$cx && _$elements)
+            _$cx = _$elements._$cx;
         if (type == 'textarea' || type == 'select')
             UseTag = UseTag || type;
         else {
@@ -4361,7 +4379,7 @@ function ItemMenu(props) {
 }
 function CheckboxNull(props) {
     const self = this;
-    let { checked, onChange, nullValue = null, dual, tagRef, type } = props, rest = __rest(props, ["checked", "onChange", "nullValue", "dual", "tagRef", "type"]);
+    let { checked, onChange, nullValue = "", dual, tagRef, type } = props, rest = __rest(props, ["checked", "onChange", "nullValue", "dual", "tagRef", "type"]);
     return react_1.createElement("input", Object.assign({ type: "checkbox", checked: checked === true }, rest, { onChange: (event) => {
             onChange(dual ? !checked : (checked === nullValue ? true : (checked === true ? false : nullValue)), event);
         }, ref: elem => {
@@ -4678,7 +4696,7 @@ let elementsBase = {
             Main: {
                 _$useTag: '^/widgets/CheckboxNull',
                 $_reactRef: { tagRef: true },
-                onChange: { $: '^/fn/setValue|liveUpdate', args: ['${0}'] },
+                onChange: { $: '^/fn/parseTristate|setValue|liveUpdate', args: ['${0}'] },
             },
         },
         booleanNullLeft: {
@@ -4787,6 +4805,7 @@ let elementsBase = {
         $inlineLayout: { Main: { LayoutDefaultClass: { 'fform-inline': true } } },
         $inlineArrayControls: { Wrapper: { ArrayItemBody: { className: { 'fform-inline': true } } } },
         $arrayControls3but: { Wrapper: { ArrayItemMenu: { buttons: ['up', 'down', 'del'], } } },
+        $arrayControlsDelOnly: { Wrapper: { ArrayItemMenu: { buttons: ['del'], } } },
         $noTitle: { Title: false },
         $noMessage: { Message: false },
         $shrink: { Wrapper: { className: { 'fform-shrink': true } } },
@@ -4808,6 +4827,7 @@ let elementsBase = {
         getProp(key, ...args) { return [commonLib_1.getIn(this, stateLib_1.normalizePath(key)), ...args]; },
         eventValue: (event, ...args) => [event.target.value, ...args],
         eventChecked: (event, ...args) => [event.target.checked, ...args],
+        parseTristate: (value, ...args) => [value === "" ? null : value, ...args],
         eventMultiple: (event, ...args) => [Array.from(event.target.options).filter((o) => o.selected).map((v) => v.value), ...args],
         parseNumber: (value, int = false, empty = null, ...args) => [value === '' ? empty : (int ? parseInt : parseFloat)(value), ...args],
         setValue(value, opts = {}, ...args) {
@@ -5452,7 +5472,7 @@ const basicStatus = { invalid: 0, dirty: 0, untouched: 1, pending: 0, valid: tru
 const makeDataStorage = commonLib_1.memoize(function (schemaPart, oneOf, type, value = schemaPart.default) {
     // const x = schemaPart.x || ({} as FFSchemaExtensionType);
     const { _params = {}, _data = {} } = schemaPart;
-    const result = Object.assign({ params: _params }, _data);
+    let result = Object.assign({ params: _params }, _data);
     if (!commonLib_2.isObject(result.messages))
         result.messages = {};
     if (commonLib_2.isUndefined(value))
@@ -5526,6 +5546,11 @@ const makeDataStorage = commonLib_1.memoize(function (schemaPart, oneOf, type, v
         untouched = commonLib_1.objKeys(schemaPart.properties || {}).length;
     if (untouched != 1)
         result.status = Object.assign(Object.assign({}, result.status), { untouched });
+    if (schemaPart._data$) {
+        let res = [];
+        commonLib_1.objKeys(schemaPart._data$).forEach((k) => commonLib_1.push2array(res, processFn.call({}, schemaPart._data$[k], schemaPart)));
+        result = commonLib_1.merge(result, res);
+    }
     return result;
 });
 function getUniqKey() { return Date.now().toString(36) + Math.random().toString(36); }
@@ -5722,7 +5747,8 @@ function makeValidation(state, dispatch, action) {
         let _validators = schemaPart._validators;
         if (_validators) {
             const field = makeSynthField(UPDATABLE.api, path2string(track));
-            _validators.forEach((validator) => {
+            commonLib_1.objKeys(_validators).forEach((k) => {
+                let validator = _validators[k];
                 const updates = [];
                 field.updates = updates;
                 let result = processFn.call(field, validator, validatedValue);
@@ -6261,7 +6287,8 @@ function updatePROC(state, UPDATABLE, item) {
 }
 exports.updatePROC = updatePROC;
 function normalizeStateMaps(dataMap, emitter) {
-    return commonLib_1.toArray(dataMap).map((item) => {
+    return commonLib_1.objKeys(dataMap).map((key) => {
+        let item = dataMap[key];
         let { from, to } = item, action = __rest(item, ["from", "to"]);
         if (!action.$)
             action = true;
@@ -6658,8 +6685,8 @@ function processFn(map, ...rest) {
                 resArgs.push(!arg._map ? processFn.call(this, arg, ...rest) : arg(...rest));
             else if (arg == '${...}')
                 resArgs.push(...rest);
-            else if (arg == '${0}')
-                resArgs.push(rest[0]);
+            else if (commonLib_2.isString(arg) && ~arg.search(/^\${\d+}$/))
+                resArgs.push(rest[arg.substring(2, arg.length - 1)]);
             else
                 resArgs.push(arg);
         }
