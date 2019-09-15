@@ -6354,7 +6354,7 @@ function setDataMapInState(state, UPDATABLE, dataMaps, unset = false) {
 }
 function executeDataMapsPROC(state, UPDATABLE, maps, item) {
     const { value, path, replace } = item;
-    const keyPath = item[SymData] || [];
+    // const keyPath = item[SymData] || [];
     const from = NUpdate2string(item);
     commonLib_1.objKeys(maps || {}).forEach((pathTo) => {
         //console.log('maps=', maps);
@@ -6374,7 +6374,7 @@ function executeDataMapsPROC(state, UPDATABLE, maps, item) {
             field.updates = null;
             field.get = null;
         }
-        if (!updates.length)
+        if (!updates.length && (!(commonLib_2.isUndefined(executedValue) && commonLib_2.isObject(map))))
             updates.push({ path: NpathTo, value: executedValue, replace: commonLib_2.isUndefined(map.replace) ? replace : map.replace });
         updates.forEach((update) => state = updatePROC(state, UPDATABLE, update));
     });
@@ -9082,7 +9082,7 @@ var weakMemoize = function weakMemoize(func) {
 
 exports = module.exports = __webpack_require__(/*! ../../../fform-constructor/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex, .fform-viewer {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n.fform-title-container {\r\n    width: 100%;\r\n}\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden {\r\n    display: none !important;;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row !important;;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0 !important;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10 !important;;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap !important;;\r\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\r\n.fform-wrapper, .fform-layout, .fform-body, .fform-array-item, .fform-radio, .fform-flex, .fform-viewer {\r\n    display: flex;\r\n    flex-flow: column;\r\n    flex: 1 1 auto;\r\n    align-items: stretch;\r\n    margin: 0;\r\n}\r\n\r\n\r\n.fform-title, .fform-radio-label {\r\n    margin-right: 1em;\r\n}\r\n\r\n\r\n\r\n.fform-title-viewer {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-title-viewer:after {\r\n    content: \"\";\r\n}\r\n\r\n.fform-title-viewer-inverted {\r\n    font-weight: bold;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.fform-required:after {\r\n    content: \" *\";\r\n}\r\n\r\n.fform-wrapper {\r\n    margin-left: 0.5em;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.fform-viewer {\r\n    margin-right: 1em;\r\n    font-weight: bold;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n.fform-viewer-inverted {\r\n    margin-right: 1em;\r\n    font-weight: normal;\r\n    margin-bottom: 1.5em;\r\n}\r\n\r\n.fform-hidden {\r\n    display: none !important;;\r\n}\r\n\r\n.fform-inline {\r\n    flex-direction: row !important;;\r\n}\r\n\r\n.fform-shrink {\r\n    flex-grow: 0 !important;\r\n}\r\n\r\n.fform-expand {\r\n    flex-grow: 10 !important;;\r\n}\r\n\r\n.fform-wrap {\r\n    flex-wrap: wrap !important;;\r\n}\r\n\r\n\r\n", ""]);
 
 
 /***/ }),

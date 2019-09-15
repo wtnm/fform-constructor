@@ -6343,7 +6343,7 @@ function setDataMapInState(state, UPDATABLE, dataMaps, unset = false) {
 }
 function executeDataMapsPROC(state, UPDATABLE, maps, item) {
     const { value, path, replace } = item;
-    const keyPath = item[SymData] || [];
+    // const keyPath = item[SymData] || [];
     const from = NUpdate2string(item);
     commonLib_1.objKeys(maps || {}).forEach((pathTo) => {
         //console.log('maps=', maps);
@@ -6363,7 +6363,7 @@ function executeDataMapsPROC(state, UPDATABLE, maps, item) {
             field.updates = null;
             field.get = null;
         }
-        if (!updates.length)
+        if (!updates.length && (!(commonLib_2.isUndefined(executedValue) && commonLib_2.isObject(map))))
             updates.push({ path: NpathTo, value: executedValue, replace: commonLib_2.isUndefined(map.replace) ? replace : map.replace });
         updates.forEach((update) => state = updatePROC(state, UPDATABLE, update));
     });
