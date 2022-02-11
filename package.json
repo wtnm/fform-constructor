@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/react-select": "^3.0.4",
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "is-my-json-valid": "^2.20.0",
     "jsonschema": "^1.2.4",
     "lz-string": "^1.4.4",
