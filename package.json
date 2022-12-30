@@ -45,7 +45,7 @@
     "ignore-styles": "^5.0.1",
     "immutable": "^4.0.0-rc.12",
     "jsdom": "^15.1.1",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "mock-require": "^3.0.3",
     "postcss-loader": "^3.0.0",
     "react-addons-test-utils": "^15.6.2",
